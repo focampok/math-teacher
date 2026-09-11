@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0b1220">
+<meta name="theme-color" content="#14110e">
 <meta name="description" content="{{ schema.title }} — kit de refuerzo Studykit.">
 <title>{{ schema.title }} — Studykit</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%23f59e0b'/%3E%3Cpath d='M8 22V10M8 22h16' stroke='%23111' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 :root{
-  --bg:#0b1220;--panel:#152237;--panel2:#1e2f4d;--text:#eef2ff;--muted:#a9b8d6;--line:#2b3f63;
-  --ok:#34d399;--bad:#fb7185;--accent:#f59e0b;--accent-ink:#111;--paper:#dfe6f2;--ink:#1c2333;
+  --bg:#14110e;--panel:#1e1a16;--panel2:#26201a;--text:#f6efe4;--muted:#c4b8a5;--line:#3a3228;
+  --ok:#3dba7a;--bad:#ef8b7e;--accent:#e08a1e;--accent-ink:#1a140c;--paper:#f3ece0;--ink:#1c1814;
   --ease:cubic-bezier(.22,.8,.36,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -18,7 +18,7 @@ body{font-family:Nunito,Segoe UI,system-ui,sans-serif;background:var(--bg);color
 button,input{font:inherit}
 .hidden{display:none!important}
 :focus-visible{outline:3px solid #7dd3fc;outline-offset:2px}
-.kit-bar{position:sticky;top:0;z-index:80;background:rgba(11,18,32,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:8px 12px}
+.kit-bar{position:sticky;top:0;z-index:80;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 12px}
 .kit-row{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .kit-brand{display:flex;align-items:center;gap:10px;background:none;border:none;color:var(--text);cursor:pointer;text-align:left;padding:4px 6px;border-radius:12px}
 .kit-logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#fb923c);color:#111}
@@ -32,8 +32,8 @@ button,input{font:inherit}
 .app-view{display:none} .app-view.activa{display:block}
 body{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
 .hero{max-width:980px;margin:0 auto;padding:22px 14px 10px}
-.hero-card{background:linear-gradient(135deg,rgba(99,102,241,.22),var(--panel));border:1px solid #818cf8;border-radius:22px;padding:22px 20px}
-.kicker{font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#c4b5fd}
+.hero-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px 20px}
+.kicker{font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
 .hero-card h2{font-size:clamp(1.4rem,4vw,2rem);margin:6px 0 8px}
 .hero-card p{color:var(--muted)}
 .hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
@@ -90,7 +90,7 @@ body.sheet-mode{background:var(--paper);color:var(--ink)}
 <body data-vista="inicio">
 <header class="kit-bar">
   <div class="kit-row">
-    <button class="kit-brand" type="button" onclick="irA('inicio')">
+    <button class="kit-brand" type="button" onclick="irA('inicio')" aria-label="Ir al inicio del kit">
       <span class="kit-logo" aria-hidden="true">Σ</span>
       <span><h1>{{ schema.title }} <small>{{ schema.kicker }}</small></h1></span>
     </button>

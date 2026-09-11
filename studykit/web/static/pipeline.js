@@ -54,6 +54,26 @@
     });
   });
 
+  document.querySelectorAll("[data-copy]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const sel = btn.getAttribute("data-copy");
+      const el = sel ? document.querySelector(sel) : null;
+      const raw = el && el.getAttribute("href")
+        ? new URL(el.getAttribute("href"), window.location.origin).href
+        : (el ? el.textContent : "");
+      const label = btn.textContent;
+      try {
+        await navigator.clipboard.writeText((raw || "").trim());
+        btn.textContent = "Copiado";
+      } catch (_err) {
+        btn.textContent = "No se pudo copiar";
+      }
+      window.setTimeout(() => {
+        btn.textContent = label;
+      }, 1600);
+    });
+  });
+
   const preview = document.querySelector("[data-preview]");
   if (preview) {
     const token = readToken();

@@ -166,6 +166,28 @@ def ui_preview(
             ),
             status_code=401,
         )
+    catalog = CatalogService(db)
+    kit = catalog.get_kit(kit_id)
+    if kit is None or kit.status not in {KitStatus.review.value, KitStatus.published.value}:
+        raise HTTPException(status_code=409, detail="kit is not ready to preview")
+    if not kit.artifact_path or not Path(kit.artifact_path).is_file():
+        raise HTTPException(status_code=404, detail="artifact missing")
+    return TEMPLATES.TemplateResponse(
+        request,
+        "preview_frame.html",
+        _kit_ctx(kit, catalog.latest_job(kit_id), settings, {"token": token}),
+    )
+
+
+@router.get("/ui/preview/{kit_id}/raw")
+def ui_preview_raw(
+    kit_id: str,
+    token: str | None = None,
+    db: Session = Depends(db_dep),
+    settings: Settings = Depends(settings_dep),
+):
+    if token != settings.upload_token:
+        raise HTTPException(status_code=401, detail="invalid upload token")
     kit = CatalogService(db).get_kit(kit_id)
     if kit is None or kit.status not in {KitStatus.review.value, KitStatus.published.value}:
         raise HTTPException(status_code=409, detail="kit is not ready to preview")

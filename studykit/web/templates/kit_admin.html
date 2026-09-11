@@ -30,7 +30,10 @@
         {% endif %}
 
         {% if kit.status == 'published' and kit.slug %}
-        <a class="public-url" href="/k/{{ kit.slug }}">{{ public_base }}/k/{{ kit.slug }}</a>
+        <div class="url-row">
+          <a class="public-url" href="/k/{{ kit.slug }}" target="_blank" rel="noopener">{{ public_base }}/k/{{ kit.slug }}</a>
+          <button type="button" class="ghost" data-copy=".public-url">Copiar enlace</button>
+        </div>
         {% endif %}
 
         <div class="actions">
@@ -38,9 +41,8 @@
           <a class="btn" data-preview href="/ui/preview/{{ kit.id }}">Abrir preview</a>
           {% endif %}
           {% if kit.status == 'published' and kit.slug %}
-          <a class="btn secondary" href="/k/{{ kit.slug }}">Ver página pública</a>
+          <a class="btn secondary" href="/k/{{ kit.slug }}" target="_blank" rel="noopener">Abrir kit público</a>
           {% endif %}
-          <a class="btn secondary" href="/">Volver al inicio</a>
         </div>
 
         {% if kit.status == 'review' %}

@@ -1,20 +1,50 @@
 <a class="skip" href="#main">Saltar al contenido</a>
-<header>
-  <a class="brand" href="/">
-    <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="8" fill="#D97706"/>
-      <path d="M8 22V10M8 22h16" fill="none" stroke="#0F172A" stroke-width="2.4" stroke-linecap="round"/>
-    </svg>
-    <span>
-      <strong>Studykit</strong>
-      <small>De un temario a un kit para practicar</small>
-    </span>
-  </a>
+<header class="mast">
+  <div class="mast-row">
+    <a class="brand" href="/" {% if kit is not defined or not kit %}aria-current="page"{% endif %}>
+      <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="#E08A1E"/>
+        <path d="M8 22V10M8 22h16" fill="none" stroke="#1A140C" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+      <span>
+        <strong>Studykit</strong>
+        <small>Temario → kit para practicar</small>
+      </span>
+    </a>
+    <nav class="mast-nav" aria-label="Principal">
+      <a class="home-btn{% if kit is not defined or not kit %} is-current{% endif %}" href="/" {% if kit is not defined or not kit %}aria-current="page"{% endif %}>
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 11.5 12 4l8 7.5"/>
+          <path d="M7 10.5V20h10v-9.5"/>
+        </svg>
+        Inicio
+      </a>
+      {% if kit is defined and kit %}
+      <a class="nav-link is-current" href="/kits/{{ kit.id }}/ui" aria-current="page">{{ kit.title }}</a>
+      {% elif kit_id is defined and kit_id %}
+      <a class="nav-link" href="/kits/{{ kit_id }}/ui">Volver al kit</a>
+      {% endif %}
+    </nav>
+  </div>
   <ol class="steps" aria-label="Pasos del pipeline">
     {% for step in steps %}
     <li class="{% if step.n < current_step %}is-done{% elif step.n == current_step %}is-current{% endif %}">
-      <span class="dot" aria-hidden="true">{{ step.n }}</span>
-      <span class="lbl">{{ step.label }}</span>
+      {% if step.n == 1 %}
+      <a href="/" {% if current_step == 1 %}aria-current="step"{% endif %}>
+        <span class="dot" aria-hidden="true">{{ step.n }}</span>
+        <span class="lbl">{{ step.label }}</span>
+      </a>
+      {% elif kit is defined and kit %}
+      <a href="/kits/{{ kit.id }}/ui" {% if current_step == step.n %}aria-current="step"{% endif %}>
+        <span class="dot" aria-hidden="true">{{ step.n }}</span>
+        <span class="lbl">{{ step.label }}</span>
+      </a>
+      {% else %}
+      <span>
+        <span class="dot" aria-hidden="true">{{ step.n }}</span>
+        <span class="lbl">{{ step.label }}</span>
+      </span>
+      {% endif %}
     </li>
     {% endfor %}
   </ol>

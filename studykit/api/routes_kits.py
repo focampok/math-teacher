@@ -13,9 +13,11 @@ from studykit.storage.files import FileStore
 router = APIRouter()
 
 _ALLOWED = {".md", ".txt", ".json"}
-EXAMPLE_DIST = (
-    Path(__file__).resolve().parents[2] / "examples" / "matematica-iv" / "dist" / "index.html"
-)
+_ROOT = Path(__file__).resolve().parents[2]
+EXAMPLE_DIST = _ROOT / "examples" / "matematica-iv" / "dist" / "index.html"
+EXAMPLE_SCHEMAS = {
+    "python-15": _ROOT / "examples" / "python-15" / "kit.schema.json",
+}
 
 
 def _catalog(db: Session) -> CatalogService:
@@ -117,11 +119,18 @@ def public_kit(slug: str, db: Session = Depends(db_dep), settings: Settings = De
     if slug == settings.example_slug and EXAMPLE_DIST.is_file():
         return FileResponse(EXAMPLE_DIST, media_type="text/html")
     kit = _catalog(db).get_by_slug(slug)
-    if kit is None or kit.status != KitStatus.published.value:
-        raise HTTPException(status_code=404, detail="kit not found")
-    if not kit.artifact_path or not Path(kit.artifact_path).is_file():
+    if kit is not None and kit.status == KitStatus.published.value:
+        if kit.artifact_path and Path(kit.artifact_path).is_file():
+            return FileResponse(kit.artifact_path, media_type="text/html")
         raise HTTPException(status_code=404, detail="artifact missing")
-    return FileResponse(kit.artifact_path, media_type="text/html")
+    schema_path = EXAMPLE_SCHEMAS.get(slug)
+    if schema_path is not None and schema_path.is_file():
+        from studykit.domain.schema import KitSchema
+        from studykit.renderer.engine import render_kit
+
+        schema = KitSchema.model_validate_json(schema_path.read_text(encoding="utf-8"))
+        return HTMLResponse(render_kit(schema, storage_key=f"studykit:{slug}"))
+    raise HTTPException(status_code=404, detail="kit not found")
 
 
 @router.get("/k/{slug}/generated")

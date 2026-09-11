@@ -37,6 +37,21 @@ def test_upload_process_preview_publish(client):
     assert 'id="view-inicio"' in preview.text
     assert "function shuffle" in preview.text
 
+    gate = client.get(f"/ui/preview/{kit_id}")
+    assert gate.status_code == 401
+    assert "Confirma para ver el preview" in gate.text
+    assert "Inicio" in gate.text
+
+    framed = client.get(f"/ui/preview/{kit_id}", params={"token": "test-token"})
+    assert framed.status_code == 200
+    assert "preview-frame" in framed.text
+    assert f"/ui/preview/{kit_id}/raw" in framed.text
+    assert "Volver al kit" in framed.text
+
+    raw = client.get(f"/ui/preview/{kit_id}/raw", params={"token": "test-token"})
+    assert raw.status_code == 200
+    assert 'id="view-inicio"' in raw.text
+
     published = client.post(
         f"/kits/{kit_id}/publish",
         headers={"X-Upload-Token": "test-token"},
@@ -48,6 +63,12 @@ def test_upload_process_preview_publish(client):
     public = client.get("/k/demo-kit")
     assert public.status_code == 200
     assert "KIT_DATA" in public.text
+
+
+def test_python_example_route(client):
+    response = client.get("/k/python-15")
+    assert response.status_code == 200
+    assert "Python para principiantes" in response.text
 
 
 def test_example_fallback_route(client):

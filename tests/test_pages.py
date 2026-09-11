@@ -3,6 +3,9 @@ def test_home_lists_example(client):
     assert response.status_code == 200
     assert "Studykit" in response.text
     assert "/k/matematica-iv" in response.text
+    assert "/k/python-15" in response.text
+    assert 'class="home-btn' in response.text
+    assert "Inicio" in response.text
     assert "Subir" in response.text
     assert "Generar" in response.text
 
