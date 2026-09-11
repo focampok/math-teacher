@@ -1,0 +1,1 @@
+The first Matemática IV kit lives here for history. The platform copies it to `examples/matematica-iv/`. New work goes through Studykit (`studykit/`). The hand-built page is served at `/k/matematica-iv`.

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preview — Studykit</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+  <div class="shell">
+    {% set current_step = 3 %}
+    {% include "_chrome.html" %}
+    <main id="main">
+      {% if error %}
+      <p class="banner bad" role="alert"><strong>No se pudo abrir</strong>{{ error }}</p>
+      {% endif %}
+      <section class="card">
+        <h1>Confirma para ver el preview</h1>
+        <p class="lead">El preview no es público hasta que publiques el kit.</p>
+        <form method="get" action="/ui/preview/{{ kit_id }}" data-remember-token>
+          <label class="field" for="token">Token
+            <span class="pw-row">
+              <input id="token" name="token" type="password" required autocomplete="current-password">
+              <button type="button" class="ghost" data-toggle-pw="token">Mostrar</button>
+            </span>
+          </label>
+          <div class="actions">
+            <button type="submit" data-busy="Abriendo…">Ver preview</button>
+            <a class="btn secondary" href="/kits/{{ kit_id }}/ui">Volver</a>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+  <script src="/static/pipeline.js"></script>
+</body>
+</html>

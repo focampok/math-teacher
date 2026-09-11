@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: studykit
+      POSTGRES_PASSWORD: studykit
+      POSTGRES_DB: studykit
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studykit"]
+      interval: 5s
+      timeout: 5s
+      retries: 8
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://studykit:studykit@postgres:5432/studykit
+      UPLOAD_TOKEN: change-me
+      DATA_DIR: /data
+      PUBLIC_BASE_URL: http://127.0.0.1:8000
+    volumes:
+      - kitdata:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  worker:
+    build: .
+    command: ["sh", "-c", "alembic upgrade head && python -m studykit.worker"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://studykit:studykit@postgres:5432/studykit
+      UPLOAD_TOKEN: change-me
+      DATA_DIR: /data
+      PUBLIC_BASE_URL: http://127.0.0.1:8000
+      WORKER_ID: compose-1
+    volumes:
+      - kitdata:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  kitdata:

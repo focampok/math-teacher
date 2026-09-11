@@ -1,0 +1,225 @@
+{
+  "title": "Python para principiantes",
+  "kicker": "15 años · primer curso",
+  "subtitle": "Variables, if/for, listas y funciones. Sin librerías: solo lo que trae Python.",
+  "session_len": 8,
+  "full_len": 20,
+  "points_per_item": 5,
+  "blocks": [
+    {
+      "id": "b1",
+      "name": "Variables y tipos",
+      "weight": 25,
+      "topics": ["Asignar con =", "str, int, float, bool", "print y type"],
+      "formulas": [
+        {"label": "Asignar", "eq": "nombre = valor", "note": "Un igual guarda; no compara"},
+        {"label": "Texto", "eq": "\"Ana\"", "note": "str lleva comillas"},
+        {"label": "Entero / decimal", "eq": "15   1.62", "note": "int y float"}
+      ],
+      "bank": [
+        {
+          "type": "mc",
+          "cat": "Tipos",
+          "prompt": "¿Qué tipo tiene edad = 15?",
+          "opts": ["int", "str", "float", "bool"],
+          "correct": 0,
+          "hint": "15 no tiene punto decimal ni comillas.",
+          "explain": "15 es un entero → int. 15.0 sería float y \"15\" sería str."
+        },
+        {
+          "type": "mc",
+          "cat": "Tipos",
+          "prompt": "¿Qué imprime type(\"Hola\")?",
+          "opts": ["<class 'str'>", "<class 'int'>", "Hola", "True"],
+          "correct": 0,
+          "hint": "Las comillas hacen que sea texto.",
+          "explain": "\"Hola\" es str. type() muestra la clase, no el valor."
+        },
+        {
+          "type": "mc",
+          "cat": "Asignación",
+          "prompt": "Después de x = 3 y luego x = 8, ¿cuánto vale x?",
+          "opts": ["8", "3", "11", "Error"],
+          "correct": 0,
+          "hint": "El último = gana: se pisa el valor anterior.",
+          "explain": "Una variable guarda un solo valor. El segundo x = 8 reemplaza al 3."
+        },
+        {
+          "type": "num",
+          "cat": "print",
+          "prompt": "Si a = 2 y b = 5, ¿qué número imprime print(a + b)?",
+          "answer": 7,
+          "tol": 0.01,
+          "hint": "Suma los dos enteros.",
+          "explain": "2 + 5 = 7."
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "name": "Condicionales y bucles",
+      "weight": 25,
+      "topics": ["if / else", "comparar con ==", "for y range", "while"],
+      "formulas": [
+        {"label": "Comparar", "eq": "a == b", "note": "Dos iguales preguntan; uno solo asigna"},
+        {"label": "Rango", "eq": "range(5)", "note": "0, 1, 2, 3, 4 (no incluye el 5)"}
+      ],
+      "bank": [
+        {
+          "type": "mc",
+          "cat": "if",
+          "prompt": "edad = 15. ¿Qué imprime if edad >= 18: print(\"ok\") else: print(\"no\")?",
+          "opts": ["no", "ok", "15", "Error"],
+          "correct": 0,
+          "hint": "15 no es mayor ni igual que 18.",
+          "explain": "La condición es falsa → entra al else → no."
+        },
+        {
+          "type": "mc",
+          "cat": "== vs =",
+          "prompt": "¿Cuál compara dos valores?",
+          "opts": ["==", "=", "+=", ":"],
+          "correct": 0,
+          "hint": "Asignar usa un igual; preguntar usa dos.",
+          "explain": "x = 3 guarda. x == 3 pregunta si vale 3."
+        },
+        {
+          "type": "num",
+          "cat": "range",
+          "prompt": "¿Cuántos números recorre for n in range(5): ?",
+          "answer": 5,
+          "tol": 0.01,
+          "hint": "range(5) es 0, 1, 2, 3, 4.",
+          "explain": "Cinco vueltas. El 5 no se incluye."
+        },
+        {
+          "type": "num",
+          "cat": "range",
+          "prompt": "En range(5), ¿cuál es el último número que toma n?",
+          "answer": 4,
+          "tol": 0.01,
+          "hint": "Empieza en 0 y no llega a 5.",
+          "explain": "0, 1, 2, 3, 4. El último es 4."
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "name": "Listas",
+      "weight": 20,
+      "topics": ["Índice 0", "len", "append", "último con [-1]"],
+      "formulas": [
+        {"label": "Primero", "eq": "lista[0]", "note": "Los índices empiezan en 0"},
+        {"label": "Último", "eq": "lista[-1]", "note": ""},
+        {"label": "Largo", "eq": "len(lista)", "note": ""}
+      ],
+      "bank": [
+        {
+          "type": "num",
+          "cat": "índice",
+          "prompt": "notas = [80, 90, 70]. ¿Qué imprime notas[0]?",
+          "answer": 80,
+          "tol": 0.01,
+          "hint": "El primer casillero es el 0.",
+          "explain": "notas[0] es 80. notas[1] es 90."
+        },
+        {
+          "type": "num",
+          "cat": "len",
+          "prompt": "Tras notas = [80, 90, 70] y notas.append(95), ¿cuánto vale len(notas)?",
+          "answer": 4,
+          "tol": 0.01,
+          "hint": "append agrega al final.",
+          "explain": "Había 3; append suma uno → 4."
+        },
+        {
+          "type": "num",
+          "cat": "último",
+          "prompt": "notas = [80, 90, 70, 95]. ¿Qué imprime notas[-1]?",
+          "answer": 95,
+          "tol": 0.01,
+          "hint": "[-1] es el último.",
+          "explain": "El último de la lista es 95."
+        }
+      ]
+    },
+    {
+      "id": "b4",
+      "name": "Funciones",
+      "weight": 20,
+      "topics": ["def", "return", "parámetros"],
+      "formulas": [
+        {"label": "Definir", "eq": "def nombre(args):", "note": "Los dos puntos y la sangría importan"},
+        {"label": "Devolver", "eq": "return valor", "note": "Sin return, sale None"}
+      ],
+      "bank": [
+        {
+          "type": "num",
+          "cat": "return",
+          "prompt": "def area(b, h): return b * h. ¿Qué vale area(3, 4)?",
+          "answer": 12,
+          "tol": 0.01,
+          "hint": "Multiplica base por altura.",
+          "explain": "3 × 4 = 12."
+        },
+        {
+          "type": "mc",
+          "cat": "return",
+          "prompt": "Una función sin return, ¿qué entrega?",
+          "opts": ["None", "0", "Error", "\"\""],
+          "correct": 0,
+          "hint": "Python no se queja: devuelve un valor vacío especial.",
+          "explain": "Sin return, el resultado es None."
+        },
+        {
+          "type": "mc",
+          "cat": "def",
+          "prompt": "¿Qué palabra empieza la definición de una función?",
+          "opts": ["def", "fun", "function", "return"],
+          "correct": 0,
+          "hint": "Tres letras, minúsculas.",
+          "explain": "Se escribe def nombre():"
+        }
+      ]
+    },
+    {
+      "id": "b5",
+      "name": "Errores comunes",
+      "weight": 10,
+      "topics": ["Índice fuera de rango", "dividir entre 0"],
+      "formulas": [
+        {"label": "Último índice", "eq": "len(lista) - 1", "note": "Con 4 elementos el último es [3]"}
+      ],
+      "bank": [
+        {
+          "type": "num",
+          "cat": "índice",
+          "prompt": "xs = [10, 20, 30, 40] tiene 4 elementos. ¿Cuál es el índice del último?",
+          "answer": 3,
+          "tol": 0.01,
+          "hint": "Empieza en 0: 0, 1, 2, 3.",
+          "explain": "len es 4, el último índice es 3. xs[4] revienta."
+        },
+        {
+          "type": "mc",
+          "cat": "división",
+          "prompt": "¿Qué pasa con print(10 / 0)?",
+          "opts": ["Error (ZeroDivisionError)", "0", "10", "Infinity"],
+          "correct": 0,
+          "hint": "No se puede partir en cero grupos.",
+          "explain": "Python lanza ZeroDivisionError."
+        }
+      ]
+    }
+  ],
+  "express": [
+    {"n": 1, "text": "Asignar usa", "hide": "="},
+    {"n": 2, "text": "Comparar usa", "hide": "=="},
+    {"n": 3, "text": "Texto (str) va entre", "hide": "comillas"},
+    {"n": 4, "text": "range(5) llega hasta", "hide": "4"},
+    {"n": 5, "text": "El primer elemento de una lista es", "hide": "[0]"},
+    {"n": 6, "text": "El último elemento es", "hide": "[-1]"},
+    {"n": 7, "text": "Una función se define con", "hide": "def"},
+    {"n": 8, "text": "Para devolver un valor se usa", "hide": "return"}
+  ]
+}

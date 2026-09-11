@@ -1,0 +1,3347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Kit de refuerzo de Matemática IV: práctica interactiva, ficha de fórmulas y hoja exprés. Para celular, tablet y computadora.">
+<title>Matemática IV — Kit de refuerzo 2026</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%23f59e0b'/%3E%3Cpath d='M8 22V10M8 22h16' stroke='%23111' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M8 22l4-6 3 3 5-7 4 4' stroke='%23111' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    /* Tono base (oscuro / apto para lectura larga) */
+    --bg:#0b1220; --bg2:#0f172a; --panel:#152237; --panel2:#1e2f4d; --panel3:#26395c;
+    --text:#eef2ff; --muted:#a9b8d6; --line:#2b3f63;
+    /* Semántica */
+    --ok:#34d399; --ok-bg:rgba(52,211,153,.15); --ok-line:#34d399;
+    --bad:#fb7185; --bad-bg:rgba(251,113,133,.14); --bad-line:#fb7185;
+    --accent:#f59e0b; --accent-ink:#111;
+    --info:#38bdf8; --ring:#7dd3fc;
+    /* Identidad por bloque */
+    --b1:#3b82f6; --b2:#22c55e; --b3:#eab308; --b4:#fb923c; --b5:#a78bfa;
+    --radius:18px;
+    --ease:cubic-bezier(.22,.8,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:
+        radial-gradient(1100px 480px at 85% -12%, rgba(99,102,241,.20), transparent 60%),
+        radial-gradient(900px 420px at -10% 12%, rgba(56,189,248,.13), transparent 55%),
+        var(--bg);
+        color:var(--text);
+        font-family:'Baloo 2','Fredoka','Nunito','Segoe UI',system-ui,Roboto,Arial,sans-serif;
+        line-height:1.55; min-height:100dvh; -webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;}
+  input{font-family:inherit;}
+  a.skip-prac{position:fixed;left:-999px;top:8px;z-index:2000;background:var(--accent);color:var(--accent-ink);
+         font-weight:800;padding:12px 18px;border-radius:12px;}
+  a.skip-prac:focus{left:10px;color:var(--accent-ink);}
+  :focus-visible{outline:3px solid var(--ring);outline-offset:2px;}
+  ::selection{background:var(--accent);color:var(--accent-ink);}
+  .hidden{display:none!important;}
+
+  /* ---------- Cabecera: marca + mapa de navegación ---------- */
+  header.prac-head{position:sticky;top:0;z-index:40;background:rgba(11,18,32,.9);
+         backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .hrow{max-width:980px;margin:0 auto;padding:10px 14px 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:10px;background:none;border:none;color:var(--text);
+         cursor:pointer;text-align:left;padding:4px 6px;border-radius:12px;transition:background .18s;}
+  .brand:hover{background:rgba(255,255,255,.06);}
+  .brand .logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none;
+               background:linear-gradient(135deg,var(--accent),#fb923c);box-shadow:0 4px 14px rgba(245,158,11,.35);}
+  .brand h1{font-size:1.05rem;line-height:1.2;font-weight:800;}
+  .brand h1 small{display:block;font-weight:600;color:var(--muted);font-size:.72rem;letter-spacing:.3px;}
+  .stats{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+  .stat{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);
+        padding:5px 12px;border-radius:999px;font-size:.84rem;font-weight:700;min-height:40px;white-space:nowrap;}
+  .stat svg{flex:none;}
+  .stat b{color:var(--accent);font-variant-numeric:tabular-nums;}
+
+  /* Mapa de navegación (pasos 1→4) */
+  nav.steps{max-width:980px;margin:0 auto;padding:4px 12px 10px;display:flex;gap:0;overflow-x:auto;scrollbar-width:thin;}
+  .step{display:inline-flex;align-items:center;gap:7px;border:none;background:transparent;cursor:default;
+        color:var(--muted);font-weight:700;font-size:.82rem;padding:7px 10px;border-radius:999px;
+        white-space:nowrap;transition:color .2s,background .2s;}
+  .step .lbl{display:inline-flex;align-items:center;gap:6px;}
+  .step .mode-dot{width:9px;height:9px;border-radius:50%;flex:none;background:transparent;box-shadow:inset 0 0 0 2px var(--muted);}
+  .step.active .mode-dot,.step.done .mode-dot{background:#8b5cf6;box-shadow:none;}
+  .step:not([data-step="intro"]) .mode-dot{display:none;}
+  .step .num{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.74rem;flex:none;
+             background:var(--panel2);color:var(--muted);border:1px solid var(--line);font-variant-numeric:tabular-nums;}
+  .step.done{color:var(--text);cursor:pointer;}
+  .step.done:hover{background:rgba(255,255,255,.07);}
+  .step.done .num{background:rgba(52,211,153,.16);color:#6ee7b7;border-color:rgba(52,211,153,.55);}
+  .step.active{color:#fff;}
+  .step.active .num{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 0 0 4px rgba(245,158,11,.2);}
+  .step.upcoming{opacity:.55;}
+  .step.arrow{color:var(--line);padding:0 2px;font-size:1rem;flex:none;}
+
+  #pracMain{max-width:980px;margin:0 auto;padding:20px 14px 90px;}
+  .screen{animation:rise .32s var(--ease) both;}
+  @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+        border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:0 8px 26px rgba(0,0,0,.28);}
+  .center{text-align:center;}
+  h2{font-size:1.4rem;line-height:1.25;margin-bottom:8px;}
+  h3{font-size:1.08rem;margin-bottom:6px;}
+  .muted{color:var(--muted);}
+  .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:.78rem;font-weight:800;letter-spacing:1.1px;
+           text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .eyebrow svg{opacity:.9;}
+
+  /* ---------- Inicio ---------- */
+  .how{background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--line);}
+  .how h2{font-size:1.15rem;display:flex;align-items:center;gap:8px;}
+  .howsteps{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0 6px;}
+  .howstep{display:flex;gap:10px;align-items:flex-start;background:var(--bg2);border:1px solid var(--line);
+           padding:12px;border-radius:14px;text-align:left;}
+  .howstep .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:none;
+                color:#111;background:var(--panel3);}
+  .howstep .ico.s1{background:var(--info);}
+  .howstep .ico.s2{background:var(--accent);}
+  .howstep .ico.s3{background:var(--ok);}
+  .howstep b{display:block;font-size:.95rem;}
+  .howstep span{font-size:.8rem;color:var(--muted);line-height:1.35;}
+  .dismissrow{display:flex;justify-content:flex-end;margin-top:6px;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;}
+  #blocksGrid .block{position:relative;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--info);
+         border-radius:var(--radius);padding:18px;cursor:pointer;text-align:left;color:var(--text);
+         overflow:hidden;transition:transform .18s var(--ease),box-shadow .18s var(--ease),border-color .18s;}
+  #blocksGrid .block:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.4);}
+  #blocksGrid .block:active{transform:translateY(0) scale(.99);}
+  #blocksGrid .block .top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+  #blocksGrid .block .chip{font-size:.68rem;font-weight:800;letter-spacing:.4px;padding:3px 9px;border-radius:999px;color:#111;
+               background:var(--line);text-transform:uppercase;}
+  #blocksGrid .block h3{font-size:1.12rem;line-height:1.3;}
+  #blocksGrid .block .desc{font-size:.82rem;color:var(--muted);margin:2px 0 10px;line-height:1.4;}
+  #blocksGrid .block .pts{display:inline-block;background:var(--panel2);border:1px solid var(--line);padding:3px 11px;
+              border-radius:999px;font-size:.76rem;color:var(--muted);font-weight:700;margin-bottom:8px;}
+  .bar{height:8px;background:var(--bg2);border-radius:999px;overflow:hidden;}
+  .bar i{display:block;height:100%;width:0;border-radius:999px;transition:width .4s var(--ease);}
+  .barlbl{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-top:5px;}
+  #blocksGrid .go{position:absolute;right:16px;bottom:16px;width:34px;height:34px;border-radius:50%;display:grid;
+      place-items:center;background:var(--panel2);border:1px solid var(--line);color:var(--text);opacity:0;
+      transform:translateX(-6px);transition:.2s var(--ease);}
+  #blocksGrid .block:hover #blocksGrid .go{opacity:1;transform:none;}
+  .bb1{border-left-color:var(--b1);}.bc1{color:var(--b1)!important;}
+  .bb2{border-left-color:var(--b2);}.bc2{color:var(--b2)!important;}
+  .bb3{border-left-color:var(--b3);}.bc3{color:var(--b3)!important;}
+  .bb4{border-left-color:var(--b4);}.bc4{color:var(--b4)!important;}
+  .bb5{border-left-color:var(--b5);}.bc5{color:var(--b5)!important;}
+  .ch1{background:var(--b1);}.ch2{background:var(--b2);}.ch3{background:var(--b3);}
+  .ch4{background:var(--b4);}.ch5{background:var(--b5);}
+
+  /* ---------- Prueba completa (simulacro del examen) ---------- */
+  .fullcard{display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,rgba(99,102,241,.20),var(--panel));
+    border:1px solid rgba(129,140,248,.5);border-radius:var(--radius);padding:18px 20px;
+    margin:18px 0 4px;box-shadow:0 8px 26px rgba(0,0,0,.28);}
+  .fullcard::before{content:'';position:absolute;right:-80px;top:-80px;width:220px;height:220px;pointer-events:none;
+    background:radial-gradient(circle,rgba(167,139,250,.35),transparent 70%);}
+  .fullcard .big{width:58px;height:58px;border-radius:17px;flex:none;display:grid;place-items:center;color:#111;
+    background:linear-gradient(135deg,#a78bfa,#6366f1);box-shadow:0 8px 22px rgba(99,102,241,.4);}
+  .fullcard .txt{flex:1 1 300px;min-width:230px;}
+  .fullcard h3{font-size:1.15rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 0;}
+  .fullcard .desc{font-size:.88rem;color:var(--muted);margin:4px 0 0;line-height:1.5;}
+  .fullcard .desc b{color:#fff;}
+  .fullcard .pts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+  .fullcard .pt{background:rgba(15,23,42,.55);border:1px solid var(--line);border-radius:999px;
+    padding:3px 10px;font-size:.74rem;font-weight:700;color:var(--text);}
+  .fullcard .pt b{color:#c4b5fd;}
+  .fullbadge{display:inline-flex;align-items:center;gap:6px;color:#c4b5fd;font-size:.72rem;font-weight:800;
+    letter-spacing:.9px;text-transform:uppercase;}
+  .btn.full{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;}
+  .btn.full:hover{filter:brightness(1.12);box-shadow:0 8px 20px rgba(99,102,241,.45);}
+
+  /* Zona "Nuevo alumno" (perfil por equipo / reinicio total) */
+  .resetrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    margin:20px 0 0;padding-top:14px;border-top:1px dashed var(--line);}
+  .resetrow .rtxt{font-size:.86rem;color:var(--muted);max-width:480px;line-height:1.5;}
+  .resetrow .rtxt b{color:#fff;}
+  .btn.ghost-danger{background:transparent;border:1px solid rgba(251,113,133,.5);color:#fecdd3;}
+  .btn.ghost-danger:hover{background:rgba(251,113,133,.14);filter:none;box-shadow:none;}
+  .btn .ico{width:20px;height:20px;}
+
+  /* ---------- Intro de bloque ---------- */
+  .introhead{display:flex;align-items:center;gap:14px;margin-bottom:6px;flex-wrap:wrap;}
+  .introhead .big{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;color:#111;flex:none;}
+  .introhead h2{margin:0;font-size:1.5rem;}
+  .topics{list-style:none;margin:10px 0 4px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;}
+  .topics li{display:flex;gap:9px;align-items:flex-start;background:var(--bg2);border:1px solid var(--line);
+             padding:9px 12px;border-radius:12px;font-size:.9rem;}
+  .topics li svg{flex:none;margin-top:2px;color:var(--ok);}
+  .scorebox{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0 6px;}
+  .scoremini{flex:1 1 150px;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;}
+  .scoremini .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:800;}
+  .scoremini .val{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums;}
+  .method{display:flex;gap:8px;align-items:center;background:rgba(56,189,248,.08);border:1px dashed var(--info);
+          padding:10px 14px;border-radius:12px;font-size:.9rem;color:#cdeffd;margin:6px 0 0;}
+  .method b{color:#fff;}
+  .method .m-arrow{color:var(--info);font-weight:900;}
+
+  /* ---------- Botones ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);
+       color:var(--accent-ink);border:none;cursor:pointer;font-weight:800;font-size:1rem;
+       padding:13px 22px;border-radius:14px;min-height:48px;transition:transform .12s var(--ease),filter .15s,box-shadow .18s;}
+  .btn:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 8px 20px rgba(245,158,11,.25);}
+  .btn:active{transform:scale(.97);}
+  .btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line);}
+  .btn.secondary:hover{filter:brightness(1.15);box-shadow:none;}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);}
+  .btn.danger{background:rgba(251,113,133,.15);color:#fecdd3;border:1px solid var(--bad-line);}
+  .btn.big{font-size:1.15rem;padding:16px 30px;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;filter:grayscale(.3);box-shadow:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+  .btnrow.right{justify-content:flex-end;}
+  .btnrow.center{justify-content:center;}
+  .btn .ico{width:20px;height:20px;}
+
+  /* ---------- Pantalla de práctica ---------- */
+  .qtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .tag{padding:5px 12px;border-radius:999px;font-size:.78rem;font-weight:800;color:#111;letter-spacing:.2px;
+       display:inline-flex;align-items:center;gap:6px;}
+  .qcount{display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--line);
+          padding:5px 13px;border-radius:999px;font-size:.85rem;font-weight:700;}
+  .qcount b{font-variant-numeric:tabular-nums;color:var(--accent);}
+  .spacer{flex:1;}
+  .exitbtn{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);
+           color:var(--muted);font-weight:700;font-size:.85rem;padding:8px 13px;border-radius:999px;cursor:pointer;
+           min-height:42px;transition:.15s;}
+  .exitbtn:hover{color:#fff;border-color:var(--bad-line);background:rgba(251,113,133,.12);}
+  .exitbtn .ico{width:17px;height:17px;}
+
+  .progwrap{margin-bottom:16px;}
+  .proglbl{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);font-weight:700;margin-bottom:6px;}
+  .track{height:10px;background:var(--bg2);border-radius:999px;overflow:hidden;border:1px solid var(--line);}
+  .fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--b4));
+        transition:width .35s var(--ease);}
+  .dots{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--panel3);border:1px solid var(--line);
+       transition:.2s;}
+  .dot.on{background:var(--ok);border-color:var(--ok);}
+  .dot.cur{box-shadow:0 0 0 4px rgba(245,158,11,.25);background:var(--accent);border-color:var(--accent);
+           animation:pulse 1.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+
+  .prompt{background:var(--bg2);border:1px solid var(--line);border-left:4px solid var(--info);
+          padding:16px 18px;border-radius:14px;}
+  .prompt .cat{font-size:.8rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);}
+  .prompt .math{display:block;font-size:1.22rem;font-weight:700;margin-top:6px;color:#fff;line-height:1.45;
+                word-break:break-word;}
+
+  .opts{display:grid;gap:10px;margin-top:16px;}
+  .opt{background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:14px 16px;min-height:54px;
+       text-align:left;cursor:pointer;font-size:1rem;color:var(--text);transition:border-color .15s,transform .1s,background .15s;}
+  .opt:hover:not(:disabled){border-color:var(--info);}
+  .opt:active:not(:disabled){transform:scale(.995);}
+  .opt .key{display:inline-flex;width:26px;height:26px;border-radius:8px;align-items:center;justify-content:center;
+            background:var(--bg2);border:1px solid var(--line);font-size:.8rem;font-weight:800;margin-right:10px;
+            color:var(--muted);font-variant-numeric:tabular-nums;}
+  .opt.correct{background:var(--ok-bg);border-color:var(--ok-line);}
+  .opt.correct .key{background:var(--ok);color:var(--accent-ink);border-color:var(--ok);}
+  .opt.wrong{background:var(--bad-bg);border-color:var(--bad-line);}
+  .opt.wrong .key{background:var(--bad);color:#fff;border-color:var(--bad);}
+  .opt:disabled{cursor:default;}
+
+  .numwrap{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;align-items:flex-end;}
+  .field{flex:1 1 220px;display:flex;flex-direction:column;gap:6px;}
+  .field label{font-weight:700;font-size:.9rem;}
+  .field .helper{font-size:.78rem;color:var(--muted);}
+  .numfield{display:flex;align-items:center;gap:10px;background:var(--panel2);border:2px solid var(--line);
+            border-radius:14px;padding:6px 8px 6px 16px;}
+  #numIn{background:transparent;border:none;color:var(--text);font-size:1.4rem;font-weight:700;width:100%;
+         min-width:0;padding:8px 0;outline:none;font-variant-numeric:tabular-nums;}
+  #numIn::placeholder{color:var(--muted);font-weight:500;font-size:1rem;}
+  .numfield:focus-within{border-color:var(--ring);box-shadow:0 0 0 3px rgba(125,211,252,.22);}
+  .numfield .unit{color:var(--muted);font-size:.95rem;font-weight:700;padding-right:10px;}
+
+  .feedback{margin-top:14px;padding:14px 16px;border-radius:14px;font-size:.98rem;line-height:1.5;
+            animation:rise .25s var(--ease) both;}
+  .feedback.ok{background:var(--ok-bg);border:1px solid var(--ok-line);}
+  .feedback.bad{background:var(--bad-bg);border:1px solid var(--bad-line);}
+  .feedback .hd{display:flex;align-items:center;gap:8px;font-weight:800;margin-bottom:6px;}
+  .feedback.ok .hd{color:#a7f3d0;}
+  .feedback.bad .hd{color:#fecdd3;}
+  .feedback code,.prompt .math,.ml{font-family:'Cambria Math','Times New Roman',serif;}
+  .hint{margin-top:10px;color:var(--info);font-size:.9rem;font-style:italic;background:rgba(56,189,248,.07);
+        border-left:3px solid var(--info);padding:9px 12px;border-radius:10px;}
+  .hint .ico{width:15px;height:15px;vertical-align:-2px;margin-right:4px;}
+  .actions{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap;}
+
+  /* ---------- Resultado ---------- */
+  .result{text-align:center;}
+  .resmedal{width:92px;height:92px;border-radius:26px;margin:0 auto 12px;display:grid;place-items:center;color:#111;
+            box-shadow:0 12px 30px rgba(245,158,11,.3);}
+  .result h2{font-size:1.7rem;}
+  .big-num{font-size:3.2rem;font-weight:800;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums;}
+  .big-num small{font-size:1.3rem;color:var(--muted);font-weight:700;}
+  .pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0 2px;}
+  .pill{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px 16px;font-size:.85rem;font-weight:700;}
+  .pill b{color:var(--accent);font-variant-numeric:tabular-nums;}
+
+  /* ---------- Resultado de Prueba completa (desglose) ---------- */
+  .breakdown{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;
+    margin:16px 0 2px;text-align:left;}
+  .bkline{background:var(--bg2);border:1px solid var(--line);border-left:5px solid var(--info);
+    border-radius:12px;padding:11px 13px;}
+  .bkline .t{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;font-size:.8rem;}
+  .bkline .t b{color:#fff;font-size:.88rem;display:block;}
+  .bkline .meta{color:var(--muted);font-size:.72rem;}
+  .bkline .sc{font-size:1.15rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--accent);white-space:nowrap;}
+  .bkline .sc small{font-size:.7rem;color:var(--muted);font-weight:700;}
+  .bkline .bar{height:6px;margin-top:8px;}
+
+  /* ---------- Logros ---------- */
+  .achrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;}
+  .ach{display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--line);
+       border-radius:12px;padding:7px 12px;font-size:.82rem;font-weight:700;opacity:.5;filter:grayscale(.4);}
+  .ach.unlocked{opacity:1;filter:none;border-color:var(--accent);box-shadow:0 4px 14px rgba(245,158,11,.18);}
+  .ach.glow{animation:pop .5s var(--ease);}
+  @keyframes pop{0%{transform:scale(.6);}55%{transform:scale(1.18);}100%{transform:scale(1);}}
+  .ach .ico{width:17px;height:17px;color:var(--accent);}
+
+  /* ---------- Diálogo de confirmación ---------- */
+  .dialog{position:fixed;inset:0;background:rgba(2,6,23,.66);backdrop-filter:blur(3px);z-index:120;
+          display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .2s both;}
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
+  .dialogbox{background:var(--panel2);border:1px solid var(--line);border-radius:20px;max-width:400px;width:100%;
+             padding:22px;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:pop2 .24s var(--ease) both;}
+  @keyframes pop2{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:none;}}
+  .dialogbox h3{display:flex;align-items:center;gap:9px;font-size:1.15rem;}
+  .dialogbox p{margin:8px 0 4px;color:var(--muted);font-size:.94rem;}
+  .dialogbox .btnrow{margin-top:18px;justify-content:flex-end;}
+  .dialogbox .btnrow .btn{margin:0;}
+
+  /* ---------- Toast ---------- */
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel3);
+         color:#fff;padding:13px 24px;border-radius:999px;font-weight:700;box-shadow:0 10px 28px rgba(0,0,0,.45);
+         opacity:0;transition:.3s var(--ease);z-index:150;pointer-events:none;max-width:min(92vw,480px);text-align:center;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ---------- Confeti ---------- */
+  .confetti{position:fixed;top:-14px;z-index:160;pointer-events:none;animation:confetti linear forwards;}
+  @keyframes confetti{0%{transform:translateY(0) rotate(0);opacity:1;}
+                      100%{transform:translateY(105vh) rotate(720deg);opacity:0;}}
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important;scroll-behavior:auto!important;}
+    #blocksGrid .block:hover{transform:none;}
+  }
+  @media (max-width:560px){
+    .stat{font-size:.78rem;padding:4px 10px;min-height:36px;}
+    .step{font-size:.76rem;padding:6px 8px;}
+    .step .num{width:21px;height:21px;font-size:.68rem;}
+    h2{font-size:1.22rem;}
+    .brand h1{font-size:.95rem;}
+    .opt{padding:13px 12px;}
+  }
+
+
+/* ========== Kit unificado: cromo de la app ========== */
+html{height:100%;}
+body{
+  padding-bottom:calc(68px + env(safe-area-inset-bottom,0px));
+}
+body.sheet-mode{
+  background:#dfe6f2;
+  color:#1c2333;
+}
+.kit-skip{position:fixed;left:-999px;top:8px;z-index:3000;background:var(--accent);color:var(--accent-ink);
+  font-weight:800;padding:12px 18px;border-radius:12px;}
+.kit-skip:focus{left:10px;}
+
+.kit-bar{
+  position:sticky;top:0;z-index:80;
+  background:rgba(11,18,32,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+  padding:8px 12px calc(8px + env(safe-area-inset-top,0px));
+}
+.kit-row{
+  max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.kit-brand{
+  display:flex;align-items:center;gap:10px;background:none;border:none;color:var(--text);
+  cursor:pointer;text-align:left;padding:4px 6px;border-radius:12px;
+}
+.kit-brand:hover{background:rgba(255,255,255,.06);}
+.kit-logo{
+  width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none;
+  background:linear-gradient(135deg,var(--accent),#fb923c);box-shadow:0 4px 14px rgba(245,158,11,.35);color:#111;
+}
+.kit-brand h1{font-size:1.02rem;line-height:1.15;font-weight:800;margin:0;}
+.kit-brand h1 small{display:block;font-weight:600;color:var(--muted);font-size:.7rem;letter-spacing:.3px;}
+.kit-nav{
+  display:none;margin-left:auto;gap:6px;flex-wrap:wrap;
+}
+.kit-nav button{
+  border:1px solid var(--line);background:var(--panel2);color:var(--text);
+  font:inherit;font-weight:800;font-size:.82rem;padding:8px 14px;border-radius:999px;
+  min-height:42px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+}
+.kit-nav button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+.kit-nav button:hover:not(.on){background:var(--panel3);}
+
+.kit-tabs{
+  position:fixed;left:0;right:0;bottom:0;z-index:90;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2px;
+  background:rgba(15,23,42,.96);backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));
+}
+.kit-tabs button{
+  border:none;background:transparent;color:var(--muted);font:inherit;font-weight:800;
+  font-size:.68rem;padding:6px 4px 4px;border-radius:12px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:2px;min-height:52px;
+}
+.kit-tabs button svg{width:22px;height:22px;}
+.kit-tabs button.on{color:#fff;background:rgba(245,158,11,.16);}
+.kit-tabs button.on svg{color:var(--accent);}
+
+.app-view{display:none;}
+.app-view.activa{display:block;animation:kitIn .28s var(--ease) both;}
+@keyframes kitIn{from{opacity:0;}to{opacity:1;}}
+@media (prefers-reduced-motion:reduce){
+  .app-view.activa{animation:none;}
+}
+
+#view-practica header.prac-head{position:sticky;top:58px;z-index:40;}
+#pracMain{padding-bottom:24px;}
+
+/* Subnavegación de fichas: va DENTRO del kit-bar (un solo encabezado, ancho completo, centrada) */
+.kit-sub{
+  display:none;
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;padding:0 12px 10px;
+}
+body[data-vista="formulas"] #subFormulas,
+body[data-vista="expres"] #subExpres{display:flex;}
+.kit-sub .chip-nav{
+  display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+  width:100%;max-width:210mm;
+}
+.kit-sub .chip-nav a{
+  flex:none;white-space:nowrap;text-decoration:none;font-size:.75rem;font-weight:800;
+  padding:8px 12px;border-radius:999px;min-height:40px;
+  display:inline-flex;align-items:center;color:#fff;border:2px solid transparent;
+}
+.kit-sub .chip-nav a.cn1{background:#1d4ed8;}
+.kit-sub .chip-nav a.cn2{background:#15803d;}
+.kit-sub .chip-nav a.cn3{background:#a16207;}
+.kit-sub .chip-nav a.cn4{background:#c2410c;}
+.kit-sub .chip-nav a.cn5{background:#6d28d9;}
+.kit-sub .chip-nav a.cnx{background:#334155;}
+.kit-sub .chip-nav a:hover{filter:brightness(1.12);}
+.kit-sub .chip-nav a.on{border-color:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.35);}
+.kit-sub .sheet-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.kit-sub button.ghost, .kit-sub .btn-print{
+  border:none;cursor:pointer;font:inherit;font-weight:800;
+  padding:10px 16px;border-radius:999px;min-height:44px;
+}
+.kit-sub button.ghost{
+  background:#1e293b;color:#eef2ff;border:1px solid #475569;
+}
+.kit-sub .btn-print{background:#f59e0b;color:#111;}
+.sheet-hint{
+  max-width:210mm;margin:10px auto 0;padding:10px 14px;
+  background:#fff7ed;border:1px solid #fdba74;border-radius:12px;
+  font-size:.86rem;color:#9a3412;
+}
+body.sheet-mode .kit-row{max-width:210mm;}
+
+/* Inicio del kit */
+.hero{
+  max-width:980px;margin:0 auto;padding:22px 14px 10px;
+}
+.hero-card{
+  background:linear-gradient(135deg,rgba(99,102,241,.22),var(--panel));
+  border:1px solid rgba(129,140,248,.45);border-radius:22px;padding:22px 20px 18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.28);position:relative;overflow:hidden;
+}
+.hero-card::after{
+  content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;pointer-events:none;
+  background:radial-gradient(circle,rgba(245,158,11,.28),transparent 70%);
+}
+.hero-card .kicker{font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#c4b5fd;}
+.hero-card h2{font-size:clamp(1.45rem,4vw,2rem);margin:6px 0 8px;line-height:1.15;}
+.hero-card p{color:var(--muted);margin:0;max-width:36em;}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.hero-pills span{
+  background:rgba(15,23,42,.55);border:1px solid var(--line);border-radius:999px;
+  padding:4px 12px;font-size:.78rem;font-weight:700;
+}
+.hero-pills b{color:var(--accent);}
+
+.kit-grid{
+  max-width:980px;margin:0 auto;padding:8px 14px 20px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;
+}
+.kit-card{
+  text-align:left;cursor:pointer;color:var(--text);font:inherit;
+  background:linear-gradient(180deg,var(--panel),var(--panel2));
+  border:1px solid var(--line);border-radius:20px;padding:18px 18px 16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+  transition:transform .18s var(--ease),box-shadow .18s;
+  display:flex;flex-direction:column;gap:8px;min-height:210px;
+}
+.kit-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.4);}
+.kit-card:active{transform:scale(.99);}
+.kit-card .ico{
+  width:48px;height:48px;border-radius:14px;display:grid;place-items:center;color:#111;
+}
+.kit-card.c1 .ico{background:linear-gradient(135deg,#38bdf8,#6366f1);}
+.kit-card.c2 .ico{background:linear-gradient(135deg,#34d399,#22c55e);}
+.kit-card.c3 .ico{background:linear-gradient(135deg,#f59e0b,#fb923c);}
+.kit-card h3{font-size:1.18rem;margin:4px 0 0;}
+.kit-card p{font-size:.88rem;color:var(--muted);margin:0;line-height:1.45;flex:1;}
+.kit-card .go{
+  display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:.88rem;color:var(--accent);
+}
+.kit-mini{
+  max-width:980px;margin:0 auto 28px;padding:0 14px;
+}
+.kit-mini h3{font-size:1rem;margin:0 0 10px;}
+.bloques-row{display:flex;gap:8px;flex-wrap:wrap;}
+.bloques-row a{
+  text-decoration:none;color:#fff;font-weight:800;font-size:.8rem;
+  padding:10px 12px;border-radius:12px;min-height:44px;display:inline-flex;align-items:center;
+}
+.bbk1{background:#1d4ed8;} .bbk2{background:#15803d;} .bbk3{background:#a16207;}
+.bbk4{background:#c2410c;} .bbk5{background:#6d28d9;}
+
+#view-formulas, #view-expres{min-height:60vh;padding-bottom:24px;}
+#view-formulas *, #view-expres *{box-sizing:border-box;}
+#f-b1,#f-b2,#f-b3,#f-b4,#f-b5,#f-expres{scroll-margin-top:128px;}
+@media screen and (max-width:720px){
+  #view-formulas .toc{grid-template-columns:1fr 1fr;}
+}
+@media screen and (max-width:420px){
+  #view-formulas .toc{grid-template-columns:1fr;}
+}
+.toast{bottom:calc(78px + env(safe-area-inset-bottom,0px)) !important;}
+button{touch-action:manipulation;}
+
+/* Tablas que no quepan: scroll horizontal en móvil */
+#view-formulas table, #view-expres table{
+  max-width:100%;
+}
+#view-formulas .doc, #view-expres .doc{overflow-x:auto;}
+
+/* Modo recitar: tapa las fórmulas; toca para ver */
+#view-expres.recitando .eq,
+#view-expres.recitando td .eq,
+#view-expres.recitando .recite p{
+  background:#1c2333;color:#1c2333;border-radius:6px;user-select:none;
+}
+#view-expres.recitando .eq:active,
+#view-expres.recitando .recite p:active{
+  background:#eef1f7;color:inherit;
+}
+.recite-banner{
+  max-width:210mm;margin:8px auto 0;padding:8px 12px;border-radius:10px;
+  background:#0f172a;color:#eef2ff;font-size:.84rem;font-weight:700;
+}
+
+.kit-foot{
+  max-width:980px;margin:28px auto 12px;padding:16px 18px 8px;
+  border-top:1px solid var(--line);
+  color:var(--muted);font-size:.78rem;line-height:1.5;text-align:center;
+}
+.kit-foot p{margin:0 0 8px;}
+.kit-foot a{color:var(--accent);font-weight:800;text-decoration:underline;text-underline-offset:2px;}
+.kit-foot a:hover{filter:brightness(1.12);}
+body.sheet-mode .kit-foot{
+  max-width:210mm;color:#3d4a63;border-top-color:#c5cedc;
+}
+body.sheet-mode .kit-foot a{color:#c2410c;}
+
+@media (min-width:840px){
+  body{padding-bottom:12px;}
+  .kit-nav{display:flex;}
+  .kit-tabs{display:none;}
+  #view-practica header.prac-head{top:60px;}
+  .kit-sub{flex-direction:row;flex-wrap:wrap;padding:4px 12px 10px;}
+  .toast{bottom:22px !important;}
+}
+@media (max-width:560px){
+  .kit-brand h1{font-size:.92rem;}
+  .kit-logo{width:36px;height:36px;border-radius:10px;}
+  .hero-card{padding:18px 14px;}
+  .kit-card{min-height:0;}
+  #view-practica .prac-head .brand{display:none;}
+  #view-practica .prac-head .stats{margin-left:0;}
+}
+
+@media print{
+  .kit-bar, .kit-tabs, .kit-skip, .kit-foot, .kit-sub, #view-inicio, #view-practica,
+  #dialog, #toast, .sheet-hint, .recite-banner{display:none !important;}
+  body{padding:0 !important;background:#fff !important;}
+  .app-view{display:none !important;animation:none !important;}
+  body[data-vista="formulas"] #view-formulas,
+  body[data-vista="expres"] #view-expres{display:block !important;}
+  #view-formulas, #view-expres{padding:0 !important;}
+}
+
+#view-formulas{
+    --ink:#1c2333; --muted:#3d4a63; --soft:#5b6578;
+    --paper:#fff; --wash:#f4f6fb; --line:#d5dce8;
+    --b1:#1d4ed8; --b1bg:#eef4ff; --b1ink:#1e3a8a;
+    --b2:#15803d; --b2bg:#edfdf3; --b2ink:#14532d;
+    --b3:#a16207; --b3bg:#fffbeb; --b3ink:#713f12;
+    --b4:#c2410c; --b4bg:#fff4eb; --b4ink:#9a3412;
+    --b5:#6d28d9; --b5bg:#f5f3ff; --b5ink:#4c1d95;
+    --warn:#991b1b; --warnbg:#fef2f2; --warnline:#fecaca;
+    --tipbg:#eff6ff;
+    --goldbg:#fff7ed;
+    --eqbg:#f1f4fa;
+  }
+#view-formulas *{box-sizing:border-box;}
+#view-formulas,#view-formulas{margin:0;padding:0;}
+#view-formulas{
+    background:#dfe6f2;
+    color:var(--ink);
+    font-family:"Nunito","DejaVu Sans","Segoe UI","Calibri",system-ui,sans-serif;
+    font-size:15px; line-height:1.42;
+    -webkit-font-smoothing:antialiased;
+  }
+#view-formulas a.skip{position:absolute;left:-999px;top:8px;z-index:20;background:#f59e0b;color:#111;
+         font-weight:800;padding:10px 16px;border-radius:10px;}
+#view-formulas a.skip:focus{left:10px;}
+#view-formulas :focus-visible{outline:3px solid #1d4ed8;outline-offset:2px;}
+#view-formulas .toolbar{
+    position:sticky;top:0;z-index:30;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    background:#0f172a;color:#eef2ff;
+    padding:10px 16px;
+  }
+#view-formulas .toolbar .brand{display:flex;align-items:center;gap:10px;font-weight:800;}
+#view-formulas .toolbar .logo{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+                 background:linear-gradient(135deg,#f59e0b,#fb923c);color:#111;}
+#view-formulas .toolbar small{display:block;font-weight:600;color:#94a3b8;font-size:.72rem;}
+#view-formulas .toolbar nav{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;}
+#view-formulas .toolbar nav a{
+    color:#eef2ff;text-decoration:none;font-size:.78rem;font-weight:800;
+    padding:8px 10px;border-radius:999px;border:1px solid #475569;min-height:40px;
+    display:inline-flex;align-items:center;
+  }
+#view-formulas .toolbar nav a:hover{background:#1e293b;}
+#view-formulas .btn-print{
+    border:none;cursor:pointer;font:inherit;font-weight:800;
+    background:#f59e0b;color:#111;padding:10px 16px;border-radius:999px;
+    min-height:44px;
+  }
+#view-formulas .hint{
+    max-width:210mm;margin:12px auto 0;padding:10px 14px;
+    background:#fff7ed;border:1px solid #fdba74;border-radius:12px;
+    font-size:.86rem;color:#9a3412;
+  }
+#view-formulas .doc{
+    max-width:210mm;margin:14px auto 40px;background:var(--paper);
+    padding:12mm 13mm 14mm;box-shadow:0 18px 40px rgba(15,23,42,.18);
+  }
+#view-formulas header.cover{
+    display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;
+    padding-bottom:10px;margin-bottom:12px;border-bottom:3px solid var(--ink);
+  }
+#view-formulas .kicker{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);}
+#view-formulas header.cover h1{font-size:1.55rem;line-height:1.15;margin:.15em 0 0;}
+#view-formulas header.cover p{margin:4px 0 0;color:var(--muted);font-size:.92rem;}
+#view-formulas .peso{text-align:right;font-size:.78rem;font-weight:800;color:var(--soft);}
+#view-formulas .peso b{display:block;font-size:1.35rem;color:var(--ink);line-height:1;}
+#view-formulas .toc{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:0 0 14px;}
+#view-formulas .toc a{
+    text-decoration:none;color:inherit;background:var(--wash);
+    border:1px solid var(--line);border-radius:8px;
+    padding:8px 8px 7px;min-height:56px;display:grid;grid-template-columns:auto 1fr;gap:7px;align-items:start;
+  }
+#view-formulas .toc a em{
+    font-style:normal;width:22px;height:22px;border-radius:6px;
+    display:grid;place-items:center;color:#fff;font-size:.72rem;font-weight:800;
+  }
+#view-formulas .t1 em{background:var(--b1);}
+#view-formulas .t2 em{background:var(--b2);}
+#view-formulas .t3 em{background:var(--b3);}
+#view-formulas .t4 em{background:var(--b4);}
+#view-formulas .t5 em{background:var(--b5);}
+#view-formulas .toc a strong{display:block;font-size:.78rem;}
+#view-formulas .toc a span{display:block;font-size:.7rem;color:var(--soft);font-weight:700;}
+#view-formulas h2{font-size:1.12rem;margin:0 0 8px;display:flex;align-items:center;gap:8px;}
+#view-formulas h2 .num{
+    width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+    color:#fff;font-size:.85rem;flex:none;
+  }
+#view-formulas h3{font-size:.95rem;margin:12px 0 6px;}
+#view-formulas p{margin:0 0 8px;}
+#view-formulas .block{margin:0 0 16px;padding:10px 10px 8px;border:1px solid var(--line);border-radius:12px;background:#fff;}
+#view-formulas .b1{border-color:#bfdbfe;background:linear-gradient(#fff,#f8fbff);}
+#view-formulas .b2{border-color:#bbf7d0;background:linear-gradient(#fff,#f7fdf9);}
+#view-formulas .b3{border-color:#fde68a;background:linear-gradient(#fff,#fffdf5);}
+#view-formulas .b4{border-color:#fed7aa;background:linear-gradient(#fff,#fffaf5);}
+#view-formulas .b5{border-color:#ddd6fe;background:linear-gradient(#fff,#fbfaff);}
+#view-formulas .b1 .num{background:var(--b1);}
+#view-formulas .b2 .num{background:var(--b2);}
+#view-formulas .b3 .num{background:var(--b3);}
+#view-formulas .b4 .num{background:var(--b4);}
+#view-formulas .b5 .num{background:var(--b5);}
+#view-formulas .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
+#view-formulas table{width:100%;border-collapse:collapse;font-size:.82rem;margin:0 0 8px;}
+#view-formulas th,#view-formulas td{border:1px solid var(--line);padding:5px 7px;vertical-align:top;text-align:left;}
+#view-formulas th{background:var(--wash);font-size:.72rem;letter-spacing:.02em;text-transform:uppercase;}
+#view-formulas .b1 table th{background:var(--b1bg);color:var(--b1ink);}
+#view-formulas .b2 table th{background:var(--b2bg);color:var(--b2ink);}
+#view-formulas .b3 table th{background:var(--b3bg);color:var(--b3ink);}
+#view-formulas .b4 table th{background:var(--b4bg);color:var(--b4ink);}
+#view-formulas .b5 table th{background:var(--b5bg);color:var(--b5ink);}
+#view-formulas tr:nth-child(even) td{background:rgba(15,23,42,.025);}
+#view-formulas .hi td{background:#fff7ed !important;font-weight:700;}
+#view-formulas .eq,#view-formulas .f{
+    font-family:"DejaVu Sans","DejaVu Math TeX Gyre","Cambria Math","Times New Roman",serif;
+    font-weight:700;background:var(--eqbg);padding:.05em .32em;border-radius:4px;
+    white-space:nowrap;
+  }
+#view-formulas .f{background:transparent;padding:0;}
+#view-formulas .call{
+    display:flex;gap:8px;align-items:flex-start;
+    border-radius:8px;padding:7px 9px;margin:6px 0 8px;font-size:.84rem;font-weight:700;
+    border:1px solid;
+  }
+#view-formulas .call .tag{flex:none;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+             padding:2px 7px;border-radius:999px;background:#fff;}
+#view-formulas .stop{background:var(--warnbg);border-color:#fecaca;color:var(--warn);}
+#view-formulas .idea{background:var(--tipbg);border-color:#bfdbfe;color:var(--b1ink);}
+#view-formulas .memo{background:var(--goldbg);border-color:#fdba74;color:#9a3412;}
+#view-formulas .fig{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;}
+#view-formulas .fig svg{max-width:100%;height:auto;display:block;margin:0 auto;}
+#view-formulas .cap{font-size:.7rem;font-weight:800;color:var(--soft);margin-top:4px;letter-spacing:.02em;}
+#view-formulas .chiprow{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 8px;}
+#view-formulas .chip{display:inline-flex;align-items:center;background:#fff;border:1px solid var(--line);
+        border-radius:999px;padding:3px 9px;font-size:.75rem;font-weight:800;}
+#view-formulas ol.steps{margin:0 0 8px;padding-left:1.2em;font-size:.84rem;}
+#view-formulas ol.steps li{margin:2px 0;}
+#view-formulas .grid-sq{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;font-size:.78rem;}
+#view-formulas .sq{background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 6px;text-align:center;}
+#view-formulas .sq b{display:block;font-size:1rem;}
+#view-formulas .sq span{color:var(--soft);font-size:.7rem;}
+#view-formulas .soap{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 8px;}
+#view-formulas .soap div{text-align:center;border-radius:8px;padding:6px 4px;color:#fff;font-weight:800;}
+#view-formulas .soap div small{display:block;font-size:.65rem;opacity:.9;font-weight:700;}
+#view-formulas .sS{background:#1d4ed8;}
+#view-formulas .sO{background:#c2410c;}
+#view-formulas .sA{background:#15803d;}
+#view-formulas .sP{background:#6d28d9;}
+#view-formulas .express{border:2px dashed #0f172a;border-radius:12px;padding:10px 10px 6px;margin-top:8px;background:#fff;}
+#view-formulas .express h2{margin-bottom:6px;}
+#view-formulas .express table td:first-child{width:2.2em;font-weight:800;text-align:center;background:var(--wash);}
+#view-formulas .howto{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;margin-top:8px;}
+#view-formulas .howto ol{margin:4px 0 0;padding-left:1.15em;}
+#view-formulas footer.sheet{
+    display:flex;justify-content:space-between;gap:8px;margin-top:10px;
+    font-size:.68rem;font-weight:800;color:var(--soft);letter-spacing:.03em;
+    white-space:nowrap;
+  }
+@media screen and (max-width:720px){#view-formulas .doc{margin:8px;padding:16px;max-width:100%;}
+#view-formulas .cols,#view-formulas .toc{grid-template-columns:1fr;}
+#view-formulas header.cover{grid-template-columns:1fr;}
+#view-formulas .peso{text-align:left;}
+#view-formulas .toolbar nav{display:none;}
+
+  }
+@media print{@page{size:A4;margin:8mm 9mm 10mm;}
+#view-formulas{background:#fff;font-size:9.1pt;font-family:"DejaVu Sans","Noto Sans",sans-serif;}
+#view-formulas .no-print{display:none !important;}
+#view-formulas .doc{max-width:none;margin:0;padding:0;box-shadow:none;}
+#view-formulas .block{margin-bottom:7px;padding:7px 8px 6px;}
+#view-formulas h2{margin-bottom:4px;}
+#view-formulas h3{margin:8px 0 4px;}
+#view-formulas .toc{margin-bottom:8px;}
+#view-formulas .fig{padding:5px;}
+#view-formulas .fig svg{max-height:118px;}
+#view-formulas .call{margin:4px 0 6px;}
+#view-formulas table{font-size:.78rem;}
+#view-formulas .fig,#view-formulas .call,#view-formulas .soap,#view-formulas .grid-sq,#view-formulas thead,#view-formulas tr{break-inside:avoid;}
+#view-formulas .express{break-before:page;}
+#view-formulas a{color:inherit;text-decoration:none;}
+#view-formulas *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+
+  }
+
+
+#view-expres{
+    --ink:#1c2333; --muted:#3d4a63; --soft:#5b6578;
+    --paper:#fff; --wash:#f3f5fa; --line:#d5dce8;
+    --b1:#1d4ed8; --b1bg:#eef4ff; --b1ink:#1e3a8a;
+    --b2:#15803d; --b2bg:#edfdf3; --b2ink:#14532d;
+    --b3:#a16207; --b3bg:#fffbeb; --b3ink:#713f12;
+    --b4:#c2410c; --b4bg:#fff4eb; --b4ink:#9a3412;
+    --b5:#6d28d9; --b5bg:#f5f3ff; --b5ink:#4c1d95;
+    --warn:#991b1b; --warnbg:#fef2f2;
+    --goldbg:#fff7ed;
+  }
+#view-expres *{box-sizing:border-box;}
+#view-expres,#view-expres{margin:0;padding:0;}
+#view-expres{
+    background:#dfe6f2; color:var(--ink);
+    font-family:"DejaVu Sans","Nunito","Segoe UI",system-ui,sans-serif;
+    font-size:13.5px; line-height:1.32;
+  }
+#view-expres a.skip{position:absolute;left:-999px;top:8px;background:#f59e0b;color:#111;font-weight:800;padding:10px 14px;border-radius:10px;}
+#view-expres a.skip:focus{left:10px;}
+#view-expres :focus-visible{outline:3px solid #1d4ed8;outline-offset:2px;}
+#view-expres .toolbar{
+    position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    background:#0f172a;color:#eef2ff;padding:10px 16px;
+  }
+#view-expres .toolbar strong{font-size:.95rem;}
+#view-expres .toolbar small{display:block;font-weight:600;color:#94a3b8;font-size:.72rem;}
+#view-expres .btn{
+    margin-left:auto;border:none;cursor:pointer;font:inherit;font-weight:800;
+    background:#f59e0b;color:#111;padding:10px 16px;border-radius:999px;min-height:44px;
+  }
+#view-expres .hint{
+    max-width:210mm;margin:10px auto 0;padding:8px 12px;background:#fff7ed;
+    border:1px solid #fdba74;border-radius:10px;font-size:.82rem;color:#9a3412;
+  }
+#view-expres .doc{max-width:210mm;margin:12px auto 32px;}
+#view-expres .page{
+    background:var(--paper);padding:10mm 11mm 9mm;
+    box-shadow:0 14px 36px rgba(15,23,42,.16);margin-bottom:14px;
+  }
+#view-expres header.top{
+    display:flex;justify-content:space-between;gap:10px;align-items:end;
+    border-bottom:2.5px solid var(--ink);padding-bottom:7px;margin-bottom:8px;
+  }
+#view-expres .kicker{font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);}
+#view-expres h1{font-size:1.28rem;margin:2px 0 0;line-height:1.15;}
+#view-expres header.top p{margin:2px 0 0;font-size:.8rem;color:var(--muted);}
+#view-expres .badge{text-align:right;font-size:.72rem;font-weight:800;color:var(--soft);}
+#view-expres .badge b{display:block;font-size:1.05rem;color:var(--ink);}
+#view-expres h2{
+    font-size:.92rem;margin:0 0 6px;display:flex;align-items:center;gap:7px;
+  }
+#view-expres h2 i{
+    font-style:normal;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
+    color:#fff;font-size:.72rem;font-weight:800;flex:none;
+  }
+#view-expres .g1 i{background:var(--b1);}
+#view-expres .g2 i{background:var(--b2);}
+#view-expres .g3 i{background:var(--b3);}
+#view-expres .g4 i{background:var(--b4);}
+#view-expres .g5 i{background:var(--b5);}
+#view-expres .block{border:1px solid var(--line);border-radius:10px;padding:6px 8px 5px;margin:0 0 6px;}
+#view-expres .g1{background:linear-gradient(#fff,#f8fbff);border-color:#bfdbfe;}
+#view-expres .g2{background:linear-gradient(#fff,#f7fdf9);border-color:#bbf7d0;}
+#view-expres .g3{background:linear-gradient(#fff,#fffdf5);border-color:#fde68a;}
+#view-expres .g4{background:linear-gradient(#fff,#fffaf5);border-color:#fed7aa;}
+#view-expres .g5{background:linear-gradient(#fff,#fbfaff);border-color:#ddd6fe;}
+#view-expres .cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start;}
+#view-expres .cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+#view-expres table{width:100%;border-collapse:collapse;font-size:.78rem;margin:0;}
+#view-expres th,#view-expres td{border:1px solid var(--line);padding:3px 6px;vertical-align:top;text-align:left;}
+#view-expres th{font-size:.66rem;letter-spacing:.02em;text-transform:uppercase;}
+#view-expres .g1 th{background:var(--b1bg);color:var(--b1ink);}
+#view-expres .g2 th{background:var(--b2bg);color:var(--b2ink);}
+#view-expres .g3 th{background:var(--b3bg);color:var(--b3ink);}
+#view-expres .g4 th{background:var(--b4bg);color:var(--b4ink);}
+#view-expres .g5 th{background:var(--b5bg);color:var(--b5ink);}
+#view-expres .hi td,#view-expres td.hi{background:#fff7ed;font-weight:700;}
+#view-expres .eq{
+    font-family:"DejaVu Sans","Times New Roman",serif;font-weight:700;
+    background:#eef1f7;padding:.02em .28em;border-radius:3px;white-space:nowrap;
+  }
+#view-expres .n{
+    display:inline-grid;place-items:center;width:18px;height:18px;border-radius:5px;
+    background:#0f172a;color:#fff;font-size:.65rem;font-weight:800;margin-right:4px;
+  }
+#view-expres .fig{background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px 5px;text-align:center;}
+#view-expres .fig svg{max-width:100%;height:auto;display:block;margin:0 auto;}
+#view-expres .cap{font-size:.65rem;font-weight:800;color:var(--soft);margin-top:2px;}
+#view-expres .chips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0;}
+#view-expres .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:2px 8px;font-size:.72rem;font-weight:800;}
+#view-expres .note{
+    font-size:.76rem;font-weight:700;border-radius:7px;padding:5px 7px;margin:5px 0 0;border:1px solid;
+  }
+#view-expres .stop{background:var(--warnbg);border-color:#fecaca;color:var(--warn);}
+#view-expres .memo{background:var(--goldbg);border-color:#fdba74;color:#9a3412;}
+#view-expres .soap{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:4px 0;}
+#view-expres .soap div{text-align:center;border-radius:7px;padding:4px 2px;color:#fff;font-weight:800;font-size:.78rem;}
+#view-expres .soap small{display:block;font-size:.58rem;opacity:.92;font-weight:700;}
+#view-expres .sS{background:#1d4ed8;}
+#view-expres .sO{background:#c2410c;}
+#view-expres .sA{background:#15803d;}
+#view-expres .sP{background:#6d28d9;}
+#view-expres .recite{display:grid;grid-template-columns:1fr 1fr;gap:0 10px;font-size:.74rem;}
+#view-expres .recite p{margin:0 0 3px;}
+#view-expres .foot{
+    display:flex;justify-content:space-between;gap:8px;margin-top:6px;
+    font-size:.65rem;font-weight:800;color:var(--soft);
+  }
+@media screen and (max-width:720px){#view-expres .page{margin:8px;padding:14px;}
+#view-expres .cols,#view-expres .cols3,#view-expres .recite{grid-template-columns:1fr;}
+#view-expres header.top{flex-direction:column;align-items:flex-start;}
+#view-expres .badge{text-align:left;}
+
+  }
+@media print{@page{size:A4;margin:8mm 8mm 9mm;}
+#view-expres{background:#fff;font-size:8.7pt;font-family:"DejaVu Sans","Noto Sans",sans-serif;}
+#view-expres .no-print{display:none !important;}
+#view-expres .doc{max-width:none;margin:0;}
+#view-expres .page{box-shadow:none;padding:0;margin:0;break-after:page;}
+#view-expres .page:last-child{break-after:auto;}
+#view-expres .fig svg{max-height:72px;}
+#view-expres h1{font-size:1.12rem;}
+#view-expres h2{margin-bottom:4px;}
+#view-expres header.top{margin-bottom:6px;padding-bottom:5px;}
+#view-expres .note{margin-top:4px;padding:4px 6px;}
+#view-expres .fig,#view-expres table,#view-expres .note{break-inside:avoid;}
+#view-expres *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+
+  }
+
+
+</style>
+</head>
+<body data-vista="inicio">
+<a class="kit-skip" href="#kitMain">Saltar al contenido</a>
+
+<header class="kit-bar">
+  <div class="kit-row">
+    <button class="kit-brand" type="button" onclick="irA('inicio')" aria-label="Ir al inicio del kit">
+      <span class="kit-logo" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M4 19l4-6 3 3 5-7 4 4"/></svg>
+      </span>
+      <span><h1>Matemática IV <small>Kit de refuerzo · Admisión 2026</small></h1></span>
+    </button>
+    <nav class="kit-nav" aria-label="Secciones del kit">
+      <button type="button" data-vista="inicio" onclick="irA('inicio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/></svg> Inicio</button>
+      <button type="button" data-vista="practica" onclick="irA('practica')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg> Practicar</button>
+      <button type="button" data-vista="formulas" onclick="irA('formulas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg> Fórmulas</button>
+      <button type="button" data-vista="expres" onclick="irA('expres')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Exprés</button>
+    </nav>
+  </div>
+  <div class="kit-sub" id="subFormulas">
+    <nav class="chip-nav" aria-label="Ir a un bloque">
+      <a class="cn1" href="#f-b1">1 Geometría</a>
+      <a class="cn2" href="#f-b2">2 Factorización</a>
+      <a class="cn3" href="#f-b3">3 Desigualdades</a>
+      <a class="cn4" href="#f-b4">4 Recta</a>
+      <a class="cn5" href="#f-b5">5 Funciones</a>
+      <a class="cnx" href="#f-expres">★ Exprés</a>
+    </nav>
+    <div class="sheet-actions">
+      <button class="btn-print" type="button" onclick="window.print()">Imprimir ficha</button>
+    </div>
+  </div>
+  <div class="kit-sub" id="subExpres">
+    <div class="sheet-actions">
+      <button class="ghost" id="btnRecitar" type="button" aria-pressed="false">Modo recitar</button>
+      <button class="btn-print" type="button" onclick="window.print()">Imprimir 2 páginas</button>
+    </div>
+  </div>
+</header>
+
+<div id="kitMain">
+
+<section id="view-inicio" class="app-view activa" aria-labelledby="heroTitle">
+  <div class="hero">
+    <div class="hero-card">
+      <div class="kicker">Examen de admisión 2026</div>
+      <h2 id="heroTitle">Tu kit de refuerzo de Matemática IV</h2>
+      <p>Tres herramientas en un solo lugar: practica con puntos y rachas, consulta las fórmulas y recita la hoja exprés. Funciona en el celular, la tablet y la computadora — sin instalar nada.</p>
+      <div class="hero-pills" aria-label="Tu progreso">
+        <span>Puntos <b id="homePts">0</b></span>
+        <span>Aciertos <b id="homeHit">0/0</b></span>
+        <span>5 bloques · 100 pts</span>
+      </div>
+    </div>
+  </div>
+  <div class="kit-grid">
+    <button type="button" class="kit-card c1" onclick="irA('practica')">
+      <span class="ico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg></span>
+      <h3>Practicar</h3>
+      <p>8 retos por bloque o un simulacro de 20 preguntas (nota /100). Respuesta al instante, pistas y logros.</p>
+      <span class="go">Empezar práctica →</span>
+    </button>
+    <button type="button" class="kit-card c2" onclick="irA('formulas')">
+      <span class="ico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></span>
+      <h3>Fórmulas</h3>
+      <p>Tablas, dibujos y conversiones de los 5 bloques. Lo que el examen no te va a dar. También se puede imprimir.</p>
+      <span class="go">Abrir ficha →</span>
+    </button>
+    <button type="button" class="kit-card c3" onclick="irA('expres')">
+      <span class="ico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+      <h3>Hoja exprés</h3>
+      <p>Las 18 fórmulas en 2 páginas. Activa el modo recitar, tápate la respuesta y dilas en voz alta.</p>
+      <span class="go">Recitar ahora →</span>
+    </button>
+  </div>
+  <div class="kit-mini">
+    <h3>Saltar a un bloque de fórmulas</h3>
+    <div class="bloques-row">
+      <a class="bbk1" href="#f-b1">1 Geometría</a>
+      <a class="bbk2" href="#f-b2">2 Factorización</a>
+      <a class="bbk3" href="#f-b3">3 Desigualdades</a>
+      <a class="bbk4" href="#f-b4">4 Recta</a>
+      <a class="bbk5" href="#f-b5">5 Funciones</a>
+    </div>
+  </div>
+</section>
+
+
+<section id="view-practica" class="app-view" aria-label="Práctica interactiva">
+<header class="prac-head">
+  <div class="hrow">
+    <button class="brand" id="btnHome" onclick="goHome()" aria-label="Volver al inicio">
+      <span class="logo" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M4 19l4-6 3 3 5-7 4 4"/></svg>
+      </span>
+      <span><h1>Práctica <small>8 retos o simulacro /100</small></h1></span>
+    </button>
+    <div class="stats" aria-label="Tus estadísticas">
+      <span class="stat" title="Puntos totales">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+        <b id="statPts">0</b>
+      </span>
+      <span class="stat" title="Racha de aciertos">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="#fb923c"><path d="M13 2L4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg>
+        <b id="statStreak">0</b>
+      </span>
+      <span class="stat" title="Ejercicios acertados">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg>
+        <b id="statHit">0</b>/<span id="statTot">0</span>
+      </span>
+    </div>
+  </div>
+  <!-- Mapa de navegación: siempre visible, la pantalla activa queda resaltada -->
+  <nav class="steps" aria-label="Mapa de navegación">
+    <button class="step" data-step="home" type="button"><span class="num">1</span><span class="lbl">Inicio</span></button>
+    <span class="step arrow" aria-hidden="true">›</span>
+    <button class="step" data-step="intro" type="button"><span class="num">2</span><span class="lbl"><span class="mode-dot" aria-hidden="true"></span><span id="navStep2Txt">Bloque</span></span></button>
+    <span class="step arrow" aria-hidden="true">›</span>
+    <button class="step" data-step="game" type="button"><span class="num">3</span><span class="lbl">Práctica</span></button>
+    <span class="step arrow" aria-hidden="true">›</span>
+    <button class="step" data-step="result" type="button"><span class="num">4</span><span class="lbl">Resultado</span></button>
+  </nav>
+</header>
+<main id="pracMain">
+  <!-- ==================== 1. INICIO ==================== -->
+  <section id="home" class="screen" aria-labelledby="homeTitle">
+    <div class="card how" id="guideCard">
+      <h2 id="homeTitle">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg>
+        ¿Cómo funciona?
+      </h2>
+      <p class="muted" style="font-size:.93rem">Cada práctica dura 8 ejercicios y sigue la misma ruta de la guía:
+         primero <b style="color:#fff">leen el tema</b>, miran <b style="color:#fff">el ejemplo</b> y luego
+         <b style="color:#fff">practican aquí</b> con pistas, puntos y rachas.</p>
+      <div class="howsteps">
+        <div class="howstep">
+          <span class="ico s1" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </span>
+          <span><b>Elige bloque</b><span>Toca una tarjeta. Puedes hacerlos en el orden que quieras.</span></span>
+        </div>
+        <div class="howstep">
+          <span class="ico s2" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+          </span>
+          <span><b>Resuelve 8 retos</b><span>Respuesta inmediata, pista si te atascas. Sumas puntos y racha.</span></span>
+        </div>
+        <div class="howstep">
+          <span class="ico s3" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+          </span>
+          <span><b>Mira tu resultado</b><span>Qué dominas y qué conviene repasar en la guía de estudio.</span></span>
+        </div>
+      </div>
+      <div class="dismissrow">
+        <button class="btn secondary" id="btnGuideOk" style="padding:8px 16px;min-height:40px">Entendido ✓</button>
+      </div>
+    </div>
+
+    <div class="card center">
+      <div class="eyebrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6-6 6 6M6 15l6 6 6-6"/></svg>
+        TUS LOGROS
+      </div>
+      <div class="achrow" id="achHome" aria-label="Logros desbloqueados"></div>
+    </div>
+
+    <!-- Tarjeta Prueba completa: simulacro con el peso real del examen -->
+    <div class="fullcard">
+      <span class="big" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 3-5"/></svg>
+      </span>
+      <div class="txt">
+        <div class="fullbadge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+          Prueba completa · Simulacro del examen
+        </div>
+        <h3>Mezcla los 5 bloques con el peso real del examen</h3>
+        <p class="desc">20 ejercicios mezclados y repartidos según lo que vale cada bloque en la prueba de admisión:
+          <b>Geometría 20 · Factorización 10 · Desigualdades 25 · Recta 25 · Funciones 20</b>.
+          Sin pistas, como en el examen. Al final verás tu nota <b>/100</b> con el desglose por bloque.</p>
+        <div class="pts">
+          <span class="pt"><b>20</b> preguntas</span>
+          <span class="pt">Puntaje <b>/100</b></span>
+          <span class="pt">Sin pistas</span>
+        </div>
+      </div>
+      <button class="btn big full" id="btnOpenFull" type="button">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg>
+        Iniciar simulacro
+      </button>
+    </div>
+
+    <h2 style="font-size:1.15rem;margin:4px 2px 12px">
+      Elige un bloque para practicar
+    </h2>
+    <div class="grid" id="blocksGrid"></div>
+
+    <!-- Zona "Nuevo alumno": varios alumnos comparten este equipo -->
+    <div class="resetrow">
+      <div class="rtxt"><b>¿Otro alumno va a usar este equipo?</b>
+        Borra todo el progreso guardado (puntos, rachas, logros y avance por bloque) y empieza desde cero.</div>
+      <button class="btn ghost-danger" id="btnResetStudent" type="button">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>
+        Nuevo alumno · borrar todo
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== 2. INTRO DE BLOQUE ==================== -->
+  <section id="intro" class="screen hidden" aria-labelledby="introTitle">
+    <div class="card">
+      <div class="introhead">
+        <span class="big" id="introBadge" aria-hidden="true"></span>
+        <span>
+          <div class="eyebrow" id="introEyebrow">BLOQUE</div>
+          <h2 id="introTitle">Bloque</h2>
+          <p class="muted" id="introPts" style="font-size:.9rem"></p>
+        </span>
+      </div>
+
+      <ul class="topics" id="introTopics" aria-label="Temas que incluye este bloque"></ul>
+
+      <div class="method" id="introMethod">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
+        <span><b>Enseño → Ejemplo → Practico.</b> Antes de empezar, revisa este tema en la guía de estudio:
+        <b style="color:#7dd3fc">Enseño → Ejemplo → ¡Practico!</b></span>
+      </div>
+
+      <div class="scorebox">
+        <div class="scoremini">
+          <div class="lbl">Tu precisión</div>
+          <div class="val" id="introPct">—</div>
+          <div class="bar" style="margin-top:8px"><i id="introBarFill" style="width:0;background:var(--accent)"></i></div>
+        </div>
+        <div class="scoremini">
+          <div class="lbl">Ejercicios resueltos</div>
+          <div class="val" id="introSolved">—</div>
+          <p class="muted" style="font-size:.74rem;margin-top:4px">Se guarda automáticamente</p>
+        </div>
+      </div>
+
+      <div class="btnrow">
+        <button class="btn big" id="btnStartPractice">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg>
+          Comenzar práctica
+        </button>
+        <button class="btn ghost" id="btnIntroFormulas" type="button">Ver fórmulas</button>
+        <button class="btn secondary" id="btnIntroBack">Volver a bloques</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2b. INTRO DE PRUEBA COMPLETA (simulacro) ============ -->
+  <section id="introFull" class="screen hidden" aria-labelledby="introFullTitle">
+    <div class="card">
+      <div class="introhead">
+        <span class="big" id="introFullBadge" aria-hidden="true"
+          style="background:linear-gradient(135deg,#a78bfa,#6366f1);color:#111">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 3-5"/></svg>
+        </span>
+        <span>
+          <div class="eyebrow" style="color:#c4b5fd">PRUEBA COMPLETA · SIMULACRO</div>
+          <h2 id="introFullTitle" style="color:#ddd6fe;font-size:1.5rem;margin:0">Examen completo</h2>
+          <p class="muted" id="introFullPts" style="font-size:.9rem">20 preguntas mezcladas, igual que en la prueba de admisión.</p>
+        </span>
+      </div>
+
+      <ul class="topics" id="introFullList" aria-label="Reparto de preguntas por bloque"></ul>
+
+      <div class="method" id="introFullMethod"
+        style="background:rgba(139,92,246,.10);border-color:#8b5cf6;color:#e4d9ff;align-items:flex-start">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        <span><b style="color:#fff">Como en el examen real: sin pistas ni puntos extra.</b>
+          Cada acierto suma <b style="color:#c4b5fd">5 puntos</b> según el peso del bloque (20 · 10 · 25 · 25 · 20 = 100).
+          Al terminar verás tu nota <b style="color:#fff">sobre 100</b> y el desglose por bloque.
+          Este simulacro no altera tus puntos ni logros de práctica.</span>
+      </div>
+
+      <div class="btnrow">
+        <button class="btn big full" id="btnStartFull">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg>
+          Comenzar simulacro
+        </button>
+        <button class="btn ghost" id="btnFullFormulas" type="button">Repasar fórmulas</button>
+        <button class="btn secondary" id="btnFullBack">Volver a bloques</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. PRÁCTICA ==================== -->
+  <section id="game" class="screen hidden" aria-labelledby="gamePrompt">
+    <div class="card">
+      <div class="qtop">
+        <span class="tag" id="gameTag">Bloque</span>
+        <span class="qcount" id="qCountPill">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Pregunta <b id="qNow">1</b> / <span id="qTotal">8</span>
+        </span>
+        <span class="spacer"></span>
+        <button class="exitbtn" id="btnExitGame" aria-label="Salir de la práctica">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          Salir
+        </button>
+      </div>
+
+      <div class="progwrap">
+        <div class="proglbl"><span>Tu avance</span><span id="progTxt">0 %</span></div>
+        <div class="track"><div class="fill" id="progFill"></div></div>
+        <div class="dots" id="progDots" aria-hidden="true"></div>
+      </div>
+
+      <div class="prompt">
+        <span class="cat" id="qCat"></span>
+        <span class="math" id="gamePrompt"></span>
+      </div>
+
+      <div id="qArea"></div>
+      <div class="feedback hidden" id="qFeedback" role="status"></div>
+      <div class="hint hidden" id="qHint"></div>
+
+      <div class="actions" id="qActions">
+        <button class="btn secondary" id="btnHint" type="button">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg>
+          Pista (−1 pt)
+        </button>
+        <span class="spacer"></span>
+        <div id="nextArea"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. RESULTADO ==================== -->
+  <section id="result" class="screen hidden" aria-labelledby="resTitle">
+    <div class="card result">
+      <div class="resmedal" id="resMedal" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M8.5 13 7 22l5-3 5 3-1.5-9"/></svg>
+      </div>
+      <div class="eyebrow" id="resEyebrow" style="justify-content:center">RESULTADO DEL BLOQUE</div>
+      <h2 id="resTitle">Resultado</h2>
+      <p class="muted" id="resSub"></p>
+      <div class="big-num" id="resScore" role="status">0</div>
+      <p class="muted" id="resMsg" style="max-width:520px;margin:8px auto 0"></p>
+      <div class="pills">
+        <span class="pill" id="resPill1"><span id="resPill1Lbl">Puntos de la práctica</span> <b id="resPts">+0</b></span>
+        <span class="pill" id="resPill2"><span id="resPill2Lbl">Racha máxima</span> <b id="resStreak">0</b></span>
+      </div>
+      <div class="breakdown hidden" id="resBreakdown" aria-label="Resultado por bloque"></div>
+      <div class="btnrow center">
+        <button class="btn big" id="btnRetry">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg>
+          <span id="btnRetryTxt">Practicar otra vez</span>
+        </button>
+        <button class="btn ghost" id="btnResFormulas" type="button">Repasar fórmulas</button>
+        <button class="btn secondary" id="btnHomeResult">Volver a bloques</button>
+      </div>
+    </div>
+  </section>
+</main>
+</section>
+
+<section id="view-formulas" class="app-view" aria-label="Ficha de fórmulas">
+<main id="f-contenido" class="doc">
+  <header class="cover">
+    <div>
+      <div class="kicker">Hoja de repaso · Examen de admisión 2026</div>
+      <h1>Tablas de conversión y fórmulas</h1>
+      <p>Lo que en el examen <b>no te van a dar</b>. Léela 2 minutos antes de cada bloque; si fallas un ejercicio, vuelve a la fila que te faltó.</p>
+    </div>
+    <div class="peso">5 bloques · 100 pts<b>IV Bach.</b></div>
+  </header>
+
+  <nav class="toc" aria-label="Mapa de la ficha">
+    <a class="t1" href="#f-b1"><em>1</em><span><strong>Geometría</strong><span>/20 pts · ángulos, Pitágoras, seno</span></span></a>
+    <a class="t2" href="#f-b2"><em>2</em><span><strong>Factorización</strong><span>/10 pts · casos y signos</span></span></a>
+    <a class="t3" href="#f-b3"><em>3</em><span><strong>Desigualdades</strong><span>/25 pts · intervalos y |x|</span></span></a>
+    <a class="t4" href="#f-b4"><em>4</em><span><strong>Recta</strong><span>/25 pts · m, formas, ⊥</span></span></a>
+    <a class="t5" href="#f-b5"><em>5</em><span><strong>Funciones</strong><span>/20 pts · dominio y gráfica</span></span></a>
+  </nav>
+
+  <section class="block b1" id="f-b1">
+    <h2><span class="num">1</span> Geometría y trigonometría</h2>
+
+    <h3>1.1 Conversión de ángulos</h3>
+    <div class="cols">
+      <table>
+        <thead><tr><th>Relación</th><th>Conversión</th><th>Recuerda</th></tr></thead>
+        <tbody>
+          <tr><td>Complementarios</td><td><span class="eq">β = 90° − α</span></td><td>juntos forman esquina</td></tr>
+          <tr><td>Suplementarios</td><td><span class="eq">β = 180° − α</span></td><td>juntos forman línea</td></tr>
+          <tr><td>Opuestos por el vértice</td><td><span class="eq">β = α</span></td><td>iguales</td></tr>
+          <tr><td>Adyacentes (sobre una recta)</td><td><span class="eq">β = 180° − α</span></td><td>suplementarios</td></tr>
+          <tr><td>Tercer ángulo del triángulo</td><td><span class="eq">γ = 180° − α − β</span></td><td>siempre suman 180°</td></tr>
+          <tr><td>Base de isósceles (vértice α)</td><td>cada base = <span class="eq">(180° − α) / 2</span></td><td>los de la base son iguales</td></tr>
+        </tbody>
+      </table>
+      <div class="fig" role="img" aria-label="Ángulos complementarios que suman 90 grados y suplementarios que suman 180 grados.">
+        <svg viewBox="0 0 340 118" width="320" height="118">
+          <text x="70" y="14" text-anchor="middle" font-size="11" font-weight="800" fill="#1e3a8a">Complementarios = 90°</text>
+          <path d="M20 100 H120 V20" fill="none" stroke="#1c2333" stroke-width="2"/>
+          <path d="M20 100 L78 42" fill="none" stroke="#1d4ed8" stroke-width="2"/>
+          <path d="M32 100 A12 12 0 0 0 32 88" fill="none" stroke="#1d4ed8" stroke-width="1.6"/>
+          <path d="M120 88 H108 V100" fill="none" stroke="#1c2333" stroke-width="1.4"/>
+          <text x="48" y="92" font-size="12" font-weight="700" fill="#1d4ed8">α</text>
+          <text x="96" y="78" font-size="12" font-weight="700" fill="#1c2333">90−α</text>
+          <text x="250" y="14" text-anchor="middle" font-size="11" font-weight="800" fill="#1e3a8a">Suplementarios = 180°</text>
+          <line x1="170" y1="70" x2="330" y2="70" stroke="#1c2333" stroke-width="2"/>
+          <line x1="250" y1="70" x2="300" y2="22" stroke="#1d4ed8" stroke-width="2"/>
+          <path d="M268 70 A18 18 0 0 1 262 54" fill="none" stroke="#1d4ed8" stroke-width="1.6"/>
+          <path d="M232 70 A18 18 0 0 0 238 54" fill="none" stroke="#c2410c" stroke-width="1.6"/>
+          <text x="278" y="58" font-size="12" font-weight="700" fill="#1d4ed8">α</text>
+          <text x="198" y="58" font-size="12" font-weight="700" fill="#c2410c">180−α</text>
+        </svg>
+        <div class="cap">Esquina vs. línea recta</div>
+      </div>
+    </div>
+
+    <h3>Paralelas cortadas por una transversal</h3>
+    <p>Si un ángulo mide <span class="eq">α</span>, los 8 ángulos solo tienen <b>dos medidas</b>: <span class="eq">α</span> y <span class="eq">180° − α</span>, intercaladas.</p>
+    <div class="cols">
+      <div class="fig" role="img" aria-label="Dos rectas paralelas cortadas por una transversal. Los ángulos se alternan entre alfa y 180 menos alfa.">
+        <svg viewBox="0 0 280 150" width="300" height="150">
+          <line x1="20" y1="48" x2="268" y2="48" stroke="#1c2333" stroke-width="2.4"/>
+          <line x1="20" y1="110" x2="268" y2="110" stroke="#1c2333" stroke-width="2.4"/>
+          <line x1="86" y1="12" x2="196" y2="140" stroke="#1d4ed8" stroke-width="2.2"/>
+          <text x="22" y="42" font-size="10" font-weight="800" fill="#5b6578">paralela</text>
+          <text x="22" y="104" font-size="10" font-weight="800" fill="#5b6578">paralela</text>
+          <text x="96" y="36" font-size="13" font-weight="800" fill="#1d4ed8">α</text>
+          <text x="156" y="36" font-size="11" font-weight="800" fill="#c2410c">180−α</text>
+          <text x="72" y="78" font-size="11" font-weight="800" fill="#c2410c">180−α</text>
+          <text x="168" y="78" font-size="13" font-weight="800" fill="#1d4ed8">α</text>
+          <text x="108" y="102" font-size="13" font-weight="800" fill="#1d4ed8">α</text>
+          <text x="176" y="102" font-size="11" font-weight="800" fill="#c2410c">180−α</text>
+          <text x="118" y="136" font-size="11" font-weight="800" fill="#c2410c">180−α</text>
+          <text x="196" y="136" font-size="13" font-weight="800" fill="#1d4ed8">α</text>
+        </svg>
+        <div class="cap">Misma esquina = mismo valor</div>
+      </div>
+      <table>
+        <thead><tr><th>Tipo</th><th>Valor</th><th>Cómo reconocerlo</th></tr></thead>
+        <tbody>
+          <tr><td>Correspondientes</td><td><span class="eq">α</span> iguales</td><td>misma “esquina” en cada cruce</td></tr>
+          <tr><td>Alternos internos</td><td><span class="eq">α</span> iguales</td><td>en Z, entre las paralelas</td></tr>
+          <tr><td>Alternos externos</td><td><span class="eq">α</span> iguales</td><td>en Z, fuera de las paralelas</td></tr>
+          <tr><td>Internos del mismo lado</td><td><span class="eq">180° − α</span></td><td>juntan el espacio entre paralelas</td></tr>
+          <tr><td>Opuestos por el vértice</td><td><span class="eq">α</span></td><td>cruzados en el mismo vértice</td></tr>
+          <tr><td>Adyacentes</td><td><span class="eq">180° − α</span></td><td>juntos forman línea</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>1.2 Teorema de Pitágoras</h3>
+    <div class="cols">
+      <div>
+        <div class="fig" role="img" aria-label="Triángulo rectángulo con catetos a y b e hipotenusa c.">
+          <svg viewBox="0 0 220 132" width="260" height="132">
+            <polygon points="28,112 28,28 188,112" fill="#eef4ff" stroke="#1c2333" stroke-width="2"/>
+            <rect x="28" y="96" width="16" height="16" fill="none" stroke="#1c2333" stroke-width="1.5"/>
+            <text x="8" y="74" font-size="16" font-weight="800">a</text>
+            <text x="100" y="128" font-size="16" font-weight="800">b</text>
+            <text x="118" y="62" font-size="16" font-weight="800" fill="#1d4ed8">c</text>
+          </svg>
+          <div class="cap">La hipotenusa siempre va sola</div>
+        </div>
+        <table>
+          <thead><tr><th>Qué buscas</th><th>Fórmula</th></tr></thead>
+          <tbody>
+            <tr><td>Hipotenusa c</td><td><span class="eq">c = √(a² + b²)</span></td></tr>
+            <tr><td>Cateto a</td><td><span class="eq">a = √(c² − b²)</span></td></tr>
+            <tr><td>¿Es rectángulo?</td><td><span class="eq">a² + b² ≟ c²</span></td></tr>
+          </tbody>
+        </table>
+        <div class="call stop"><span class="tag">Cuidado</span><span>La hipotenusa <b>siempre</b> va sola: <span class="f">c² = a² + b²</span>. Nunca la pongas como cateto.</span></div>
+      </div>
+      <div>
+        <h3 style="margin-top:0">Ternas (si las ves, no calcules raíz)</h3>
+        <table>
+          <thead><tr><th>Cateto</th><th>Cateto</th><th>Hip.</th><th>Múltiplos</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>3</td><td>4</td><td>5</td><td>6-8-10 · 9-12-15 · 12-16-20</td></tr>
+            <tr class="hi"><td>5</td><td>12</td><td>13</td><td>10-24-26</td></tr>
+            <tr><td>6</td><td>8</td><td>10</td><td>2×(3-4-5)</td></tr>
+            <tr><td>7</td><td>24</td><td>25</td><td>—</td></tr>
+            <tr class="hi"><td>8</td><td>15</td><td>17</td><td>—</td></tr>
+            <tr><td>9</td><td>12</td><td>15</td><td>3×(3-4-5)</td></tr>
+            <tr><td>9</td><td>40</td><td>41</td><td>—</td></tr>
+            <tr><td>20</td><td>21</td><td>29</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>Triángulos especiales</h3>
+    <div class="cols">
+      <div class="fig" role="img" aria-label="Triángulo 45 45 90: catetos a y a, hipotenusa a raíz de 2.">
+        <svg viewBox="0 0 220 140" width="280" height="140">
+          <text x="110" y="16" text-anchor="middle" font-size="13" font-weight="800">45°–45°–90°</text>
+          <polygon points="40,124 40,40 124,124" fill="#eef4ff" stroke="#1c2333" stroke-width="2"/>
+          <rect x="40" y="108" width="16" height="16" fill="none" stroke="#1c2333"/>
+          <text x="52" y="78" font-size="12" font-weight="700">45°</text>
+          <text x="108" y="116" font-size="12" font-weight="700">45°</text>
+          <text x="72" y="136" font-size="14" font-weight="800">a</text>
+          <text x="14" y="88" font-size="14" font-weight="800">a</text>
+          <text x="98" y="72" font-size="14" font-weight="800" fill="#1d4ed8">a√2</text>
+        </svg>
+        <div class="cap">Catetos iguales · hipotenusa = cateto × √2</div>
+      </div>
+      <div class="fig" role="img" aria-label="Triángulo 30 60 90: lado corto a, opuesto a 60 es a raíz de 3, hipotenusa 2a.">
+        <svg viewBox="0 0 240 140" width="300" height="140">
+          <text x="120" y="16" text-anchor="middle" font-size="13" font-weight="800">30°–60°–90°</text>
+          <polygon points="40,124 40,28 96,124" fill="#eef4ff" stroke="#1c2333" stroke-width="2"/>
+          <rect x="40" y="108" width="16" height="16" fill="none" stroke="#1c2333"/>
+          <text x="48" y="48" font-size="12" font-weight="700">30°</text>
+          <text x="78" y="118" font-size="12" font-weight="700">60°</text>
+          <text x="8" y="80" font-size="14" font-weight="800">a√3</text>
+          <text x="58" y="138" font-size="14" font-weight="800">a</text>
+          <text x="86" y="68" font-size="14" font-weight="800" fill="#1d4ed8">2a</text>
+        </svg>
+        <div class="cap">opuesto a 30° = a · opuesto a 60° = a√3 · hipotenusa = 2a</div>
+      </div>
+    </div>
+    <p style="font-size:.84rem">Si te dan la hipotenusa c en 45-45-90: cada cateto = <span class="eq">c / √2 = (c√2)/2</span>.</p>
+
+    <h3>1.3 SOH-CAH-TOA</h3>
+    <div class="cols">
+      <div class="fig" role="img" aria-label="Triángulo rectángulo con ángulo theta. Opuesto frente a theta, adyacente al lado de theta, hipotenusa.">
+        <svg viewBox="0 0 260 150" width="300" height="150">
+          <polygon points="28,128 28,36 220,128" fill="#eef4ff" stroke="#1c2333" stroke-width="2"/>
+          <rect x="28" y="112" width="16" height="16" fill="none" stroke="#1c2333"/>
+          <text x="48" y="116" font-size="14" font-weight="800" fill="#1d4ed8">θ</text>
+          <text x="4" y="86" font-size="12" font-weight="800">opuesto</text>
+          <text x="96" y="144" font-size="12" font-weight="800">adyacente</text>
+          <text x="138" y="72" font-size="12" font-weight="800" fill="#1d4ed8">hipotenusa</text>
+        </svg>
+        <div class="chiprow" style="justify-content:center">
+          <span class="chip">sen = op / hip</span>
+          <span class="chip">cos = ady / hip</span>
+          <span class="chip">tan = op / ady</span>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Quieres</th><th>Tienes</th><th>Fórmula</th></tr></thead>
+        <tbody>
+          <tr><td>Opuesto</td><td>hip y θ</td><td><span class="eq">op = hip · sen θ</span></td></tr>
+          <tr><td>Adyacente</td><td>hip y θ</td><td><span class="eq">ady = hip · cos θ</span></td></tr>
+          <tr><td>Opuesto</td><td>ady y θ</td><td><span class="eq">op = ady · tan θ</span></td></tr>
+          <tr><td>Adyacente</td><td>op y θ</td><td><span class="eq">ady = op / tan θ</span></td></tr>
+          <tr><td>Hipotenusa</td><td>op y θ</td><td><span class="eq">hip = op / sen θ</span></td></tr>
+          <tr><td>Hipotenusa</td><td>ady y θ</td><td><span class="eq">hip = ady / cos θ</span></td></tr>
+          <tr><td>El ángulo θ</td><td>dos lados</td><td><span class="eq">θ = sen⁻¹ / cos⁻¹ / tan⁻¹</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.84rem"><span class="eq">tan θ = sen θ / cos θ</span> · <span class="eq">sen²θ + cos²θ = 1</span></p>
+
+    <h3>Valores exactos (de memoria)</h3>
+    <div class="call memo"><span class="tag">Atajo</span><span>Los tres que más ahorran tiempo: <span class="f">sen 30° = 1/2</span> · <span class="f">cos 60° = 1/2</span> · <span class="f">tan 45° = 1</span>.</span></div>
+    <table>
+      <thead><tr><th>θ</th><th>sen θ</th><th>cos θ</th><th>tan θ</th><th>Decimal útil</th></tr></thead>
+      <tbody>
+        <tr><td>0°</td><td>0</td><td>1</td><td>0</td><td>0 · 1 · 0</td></tr>
+        <tr class="hi"><td>30°</td><td>1/2</td><td>√3/2</td><td>1/√3 = √3/3</td><td>0.5 · 0.866 · 0.577</td></tr>
+        <tr class="hi"><td>45°</td><td>√2/2</td><td>√2/2</td><td>1</td><td>0.707 · 0.707 · 1</td></tr>
+        <tr class="hi"><td>60°</td><td>√3/2</td><td>1/2</td><td>√3</td><td>0.866 · 0.5 · 1.732</td></tr>
+        <tr><td>90°</td><td>1</td><td>0</td><td>no existe</td><td>1 · 0 · —</td></tr>
+      </tbody>
+    </table>
+    <div class="fig" role="img" aria-label="Truco de senos: raíz de 0, 1, 2, 3 y 4, sobre 2, de 0 a 90 grados. Cosenos al revés.">
+      <svg viewBox="0 0 520 70" width="100%" height="70">
+        <text x="8" y="18" font-size="12" font-weight="800">sen 0°→90°</text>
+        <text x="110" y="22" font-size="14" font-weight="700">√0 / 2</text>
+        <text x="190" y="22" font-size="14" font-weight="700">√1 / 2</text>
+        <text x="270" y="22" font-size="14" font-weight="700">√2 / 2</text>
+        <text x="350" y="22" font-size="14" font-weight="700">√3 / 2</text>
+        <text x="430" y="22" font-size="14" font-weight="700">√4 / 2</text>
+        <text x="128" y="44" font-size="11" fill="#5b6578">0°</text>
+        <text x="208" y="44" font-size="11" fill="#5b6578">30°</text>
+        <text x="288" y="44" font-size="11" fill="#5b6578">45°</text>
+        <text x="368" y="44" font-size="11" fill="#5b6578">60°</text>
+        <text x="448" y="44" font-size="11" fill="#5b6578">90°</text>
+        <text x="8" y="64" font-size="12" font-weight="800">cos: al revés · tan = sen ÷ cos</text>
+      </svg>
+    </div>
+
+    <h3>Elevación vs. depresión</h3>
+    <table>
+      <thead><tr><th>Tipo</th><th>Dónde está el ángulo</th><th>Conversión práctica</th></tr></thead>
+      <tbody>
+        <tr><td>Elevación</td><td>desde el suelo hacia arriba</td><td><span class="eq">tan θ = altura / distancia</span></td></tr>
+        <tr><td>Depresión</td><td>desde lo alto hacia abajo</td><td>depresión = elevación interna (alternos internos)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="block b2" id="f-b2">
+    <h2><span class="num">2</span> Factorización</h2>
+    <div class="call memo"><span class="tag">Orden</span><span>1) factor común → 2) cuenta términos → 3) aplica el caso → 4) ¿se puede seguir? (completamente).</span></div>
+
+    <h3>2.1 Qué fórmula aplicar</h3>
+    <table>
+      <thead><tr><th>Ves esto</th><th>Caso</th><th>Fórmula</th></tr></thead>
+      <tbody>
+        <tr><td>Algo se repite en todos los términos</td><td>Factor común</td><td><span class="eq">ax + ay = a(x + y)</span></td></tr>
+        <tr><td>4 términos</td><td>Agrupación</td><td><span class="eq">ax+ay+bx+by = (a+b)(x+y)</span></td></tr>
+        <tr><td>Resta de dos cuadrados</td><td>Diferencia de cuadrados</td><td><span class="eq">a² − b² = (a+b)(a−b)</span></td></tr>
+        <tr class="hi"><td>Suma de dos cuadrados</td><td><b>No factoriza</b> (reales)</td><td>deja <span class="eq">a² + b²</span></td></tr>
+        <tr><td>Suma de cubos</td><td>Suma de cubos</td><td><span class="eq">a³ + b³ = (a+b)(a² − ab + b²)</span></td></tr>
+        <tr><td>Resta de cubos</td><td>Diferencia de cubos</td><td><span class="eq">a³ − b³ = (a−b)(a² + ab + b²)</span></td></tr>
+        <tr><td>Extremos cuadrados y medio = doble</td><td>TCP</td><td><span class="eq">a² ± 2ab + b² = (a ± b)²</span></td></tr>
+        <tr><td><span class="f">x² + bx + c</span></td><td>Trinomio simple</td><td><span class="eq">(x+p)(x+q)</span> con p+q=b, p·q=c</td></tr>
+        <tr><td><span class="f">ax² + bx + c</span> (a ≠ 1)</td><td>Método del ac</td><td>parte el medio y agrupa</td></tr>
+      </tbody>
+    </table>
+
+    <div class="cols">
+      <div>
+        <h3>2.2 Signos del trinomio x² + bx + c</h3>
+        <table>
+          <thead><tr><th>Signo de c</th><th>Signo de b</th><th>Factores</th></tr></thead>
+          <tbody>
+            <tr><td>+</td><td>+</td><td>ambos +: <span class="eq">(x+p)(x+q)</span></td></tr>
+            <tr><td>+</td><td>−</td><td>ambos −: <span class="eq">(x−p)(x−q)</span></td></tr>
+            <tr><td>−</td><td>+</td><td>el de mayor |valor| es +</td></tr>
+            <tr><td>−</td><td>−</td><td>el de mayor |valor| es −</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3>2.3 Cubos: SOAP</h3>
+        <div class="soap" aria-label="Mnemotecnia SOAP: Same, Opposite, Always Positive">
+          <div class="sS">S<small>Same (igual)</small></div>
+          <div class="sO">O<small>Opposite</small></div>
+          <div class="sA">A<small>Always</small></div>
+          <div class="sP">P<small>Positive</small></div>
+        </div>
+        <table>
+          <thead><tr><th>Caso</th><th>1.er paréntesis</th><th>Medio del 2.º</th><th>Último</th></tr></thead>
+          <tbody>
+            <tr><td>a³ + b³</td><td>(a + b)</td><td>−ab (contrario)</td><td>+ b² siempre</td></tr>
+            <tr><td>a³ − b³</td><td>(a − b)</td><td>+ab (contrario)</td><td>+ b² siempre</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>2.4 Cuadrados perfectos n → n²</h3>
+    <div class="grid-sq" aria-label="Cuadrados del 1 al 20 y 25">
+      <div class="sq"><span>1</span><b>1</b></div>
+      <div class="sq"><span>2</span><b>4</b></div>
+      <div class="sq"><span>3</span><b>9</b></div>
+      <div class="sq"><span>4</span><b>16</b></div>
+      <div class="sq"><span>5</span><b>25</b></div>
+      <div class="sq"><span>6</span><b>36</b></div>
+      <div class="sq"><span>7</span><b>49</b></div>
+      <div class="sq"><span>8</span><b>64</b></div>
+      <div class="sq"><span>9</span><b>81</b></div>
+      <div class="sq"><span>10</span><b>100</b></div>
+      <div class="sq"><span>11</span><b>121</b></div>
+      <div class="sq"><span>12</span><b>144</b></div>
+      <div class="sq"><span>13</span><b>169</b></div>
+      <div class="sq"><span>14</span><b>196</b></div>
+      <div class="sq"><span>15</span><b>225</b></div>
+      <div class="sq"><span>16</span><b>256</b></div>
+      <div class="sq"><span>17</span><b>289</b></div>
+      <div class="sq"><span>18</span><b>324</b></div>
+      <div class="sq"><span>19</span><b>361</b></div>
+      <div class="sq"><span>20</span><b>400</b></div>
+    </div>
+    <p style="font-size:.8rem;margin-top:6px">También 25² = <b>625</b>. Útiles para TCP y diferencia de cuadrados: 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225.</p>
+
+    <div class="cols">
+      <div>
+        <h3>2.5 Cubos perfectos n → n³</h3>
+        <div class="grid-sq" aria-label="Cubos del 1 al 10">
+          <div class="sq"><span>1</span><b>1</b></div>
+          <div class="sq"><span>2</span><b>8</b></div>
+          <div class="sq"><span>3</span><b>27</b></div>
+          <div class="sq"><span>4</span><b>64</b></div>
+          <div class="sq"><span>5</span><b>125</b></div>
+          <div class="sq"><span>6</span><b>216</b></div>
+          <div class="sq"><span>7</span><b>343</b></div>
+          <div class="sq"><span>8</span><b>512</b></div>
+          <div class="sq"><span>9</span><b>729</b></div>
+          <div class="sq"><span>10</span><b>1000</b></div>
+        </div>
+        <p style="font-size:.8rem;margin-top:6px">Reconócelos también en <span class="eq">8x³ = (2x)³</span>, <span class="eq">27x³ = (3x)³</span>, <span class="eq">125x³ = (5x)³</span>.</p>
+      </div>
+      <div>
+        <h3>2.6 Método del ac</h3>
+        <ol class="steps">
+          <li>Calcula <span class="eq">a · c</span>.</li>
+          <li>Busca p, q con <span class="eq">p · q = a·c</span> y <span class="eq">p + q = b</span>.</li>
+          <li>Reescribe <span class="eq">ax² + px + qx + c</span>.</li>
+          <li>Agrupa y saca factor común.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="block b3" id="f-b3">
+    <h2><span class="num">3</span> Desigualdades</h2>
+
+    <h3>3.1 De desigualdad a intervalo</h3>
+    <div class="cols">
+      <table>
+        <thead><tr><th>Desigualdad</th><th>Intervalo</th><th>Gráfica</th></tr></thead>
+        <tbody>
+          <tr><td>x &gt; a</td><td>(a, ∞)</td><td>○ hueco, flecha a la derecha</td></tr>
+          <tr><td>x ≥ a</td><td>[a, ∞)</td><td>● relleno, flecha a la derecha</td></tr>
+          <tr><td>x &lt; a</td><td>(−∞, a)</td><td>○ hueco, flecha a la izquierda</td></tr>
+          <tr><td>x ≤ a</td><td>(−∞, a]</td><td>● relleno, flecha a la izquierda</td></tr>
+          <tr><td>a &lt; x &lt; b</td><td>(a, b)</td><td>○ en a y b, segmento</td></tr>
+          <tr><td>a ≤ x ≤ b</td><td>[a, b]</td><td>● en a y b, segmento</td></tr>
+          <tr><td>a &lt; x ≤ b</td><td>(a, b]</td><td>○ en a, ● en b</td></tr>
+          <tr><td>a ≤ x &lt; b</td><td>[a, b)</td><td>● en a, ○ en b</td></tr>
+          <tr><td>x &lt; a <b>o</b> x &gt; b</td><td>(−∞, a) U (b, ∞)</td><td>dos rayos</td></tr>
+          <tr><td>todo R</td><td>(−∞, ∞) = R</td><td>toda la recta</td></tr>
+          <tr><td>vacío</td><td>conjunto vacío</td><td>nada</td></tr>
+        </tbody>
+      </table>
+      <div>
+        <div class="fig" role="img" aria-label="Rectas numéricas: intervalo abierto con círculos huecos, cerrado con rellenos.">
+          <svg viewBox="0 0 280 128" width="100%" height="128">
+            <text x="8" y="16" font-size="11" font-weight="800">(a, b) abierto</text>
+            <line x1="20" y1="32" x2="260" y2="32" stroke="#1c2333" stroke-width="2"/>
+            <line x1="80" y1="32" x2="200" y2="32" stroke="#a16207" stroke-width="6"/>
+            <circle cx="80" cy="32" r="7" fill="#fff" stroke="#a16207" stroke-width="2.5"/>
+            <circle cx="200" cy="32" r="7" fill="#fff" stroke="#a16207" stroke-width="2.5"/>
+            <text x="74" y="52" font-size="11">a</text>
+            <text x="194" y="52" font-size="11">b</text>
+            <text x="8" y="72" font-size="11" font-weight="800">[a, b] cerrado</text>
+            <line x1="20" y1="88" x2="260" y2="88" stroke="#1c2333" stroke-width="2"/>
+            <line x1="80" y1="88" x2="200" y2="88" stroke="#a16207" stroke-width="6"/>
+            <circle cx="80" cy="88" r="7" fill="#a16207"/>
+            <circle cx="200" cy="88" r="7" fill="#a16207"/>
+            <text x="74" y="110" font-size="11">a</text>
+            <text x="194" y="110" font-size="11">b</text>
+            <text x="8" y="126" font-size="10" font-weight="700" fill="#5b6578">○ = no incluye · ● = sí incluye</text>
+          </svg>
+        </div>
+        <table>
+          <thead><tr><th>Símbolo</th><th>¿Incluye el extremo?</th><th>Equivale a</th></tr></thead>
+          <tbody>
+            <tr><td>( )</td><td>no</td><td>&lt; o &gt;</td></tr>
+            <tr><td>[ ]</td><td>sí</td><td>≤ o ≥</td></tr>
+            <tr><td>∞ / −∞</td><td>nunca</td><td>siempre ) o (</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.84rem"><span class="eq">U</span> unión = “o”, pinta ambas zonas. Intersección = “y”, pinta solo el traslape.</p>
+      </div>
+    </div>
+
+    <h3>3.2 Regla de oro (lineales)</h3>
+    <table>
+      <thead><tr><th>Operación</th><th>¿Cambia el sentido?</th></tr></thead>
+      <tbody>
+        <tr><td>Sumar o restar (cualquier número)</td><td>no</td></tr>
+        <tr><td>Multiplicar o dividir por positivo</td><td>no</td></tr>
+        <tr class="hi"><td>Multiplicar o dividir por <b>negativo</b></td><td><b>sí: invierte</b> &lt; ↔ &gt; y ≤ ↔ ≥</td></tr>
+        <tr><td>Cambiar de lado un término</td><td>no (es sumar el opuesto)</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.84rem">Ejemplo: <span class="eq">−x &gt; 5</span> → × (−1) → <span class="eq">x &lt; −5</span>.</p>
+
+    <h3>3.3 Valor absoluto</h3>
+    <p><span class="eq">|X|</span> = distancia de X al 0. Siempre <span class="eq">|X| ≥ 0</span>. Frase: <b>menor que → entre</b> · <b>mayor que → afuera (unión)</b>.</p>
+    <div class="cols">
+      <table>
+        <thead><tr><th>Ves</th><th>Se convierte en</th><th>Intervalo</th></tr></thead>
+        <tbody>
+          <tr><td>|X| &lt; a (a &gt; 0)</td><td>−a &lt; X &lt; a</td><td>(−a, a)</td></tr>
+          <tr><td>|X| ≤ a</td><td>−a ≤ X ≤ a</td><td>[−a, a]</td></tr>
+          <tr><td>|X| &gt; a</td><td>X &lt; −a <b>o</b> X &gt; a</td><td>(−∞, −a) U (a, ∞)</td></tr>
+          <tr><td>|X| ≥ a</td><td>X ≤ −a <b>o</b> X ≥ a</td><td>(−∞, −a] U [a, ∞)</td></tr>
+          <tr><td>|X| = a</td><td>X = −a o X = a</td><td>dos puntos</td></tr>
+          <tr><td>|X| &lt; 0</td><td>imposible</td><td>vacío</td></tr>
+          <tr><td>|X| ≤ 0</td><td>solo X = 0</td><td>{0}</td></tr>
+        </tbody>
+      </table>
+      <div class="fig" role="img" aria-label="Valor absoluto menor que a pinta el segmento entre menos a y a. Mayor que a pinta las dos colas.">
+        <svg viewBox="0 0 300 120" width="100%" height="120">
+          <text x="8" y="16" font-size="12" font-weight="800">|X| &lt; a  →  entre</text>
+          <line x1="16" y1="36" x2="284" y2="36" stroke="#1c2333" stroke-width="2"/>
+          <line x1="90" y1="36" x2="210" y2="36" stroke="#a16207" stroke-width="7"/>
+          <circle cx="90" cy="36" r="6" fill="#fff" stroke="#a16207" stroke-width="2"/>
+          <circle cx="210" cy="36" r="6" fill="#fff" stroke="#a16207" stroke-width="2"/>
+          <text x="148" y="32" font-size="11" font-weight="800">0</text>
+          <text x="78" y="54" font-size="11">−a</text>
+          <text x="204" y="54" font-size="11">a</text>
+          <text x="8" y="76" font-size="12" font-weight="800">|X| &gt; a  →  afuera</text>
+          <line x1="16" y1="96" x2="284" y2="96" stroke="#1c2333" stroke-width="2"/>
+          <line x1="16" y1="96" x2="84" y2="96" stroke="#c2410c" stroke-width="7"/>
+          <line x1="216" y1="96" x2="284" y2="96" stroke="#c2410c" stroke-width="7"/>
+          <circle cx="90" cy="96" r="6" fill="#fff" stroke="#c2410c" stroke-width="2"/>
+          <circle cx="210" cy="96" r="6" fill="#fff" stroke="#c2410c" stroke-width="2"/>
+        </svg>
+        <div class="cap">Si el interior no es solo x: primero deja |expresión|, después despeja</div>
+      </div>
+    </div>
+
+    <h3>3.4 Polinómicas y racionales — receta</h3>
+    <ol class="steps">
+      <li>Pasa todo a un lado → f(x) &gt; 0 (o &lt;, ≥, ≤).</li>
+      <li>Factoriza (bloque 2).</li>
+      <li>Marca ceros del numerador y del denominador.</li>
+      <li>Divide la recta en intervalos.</li>
+      <li>Prueba un número en cada intervalo (tabla de signos).</li>
+      <li>Elige los intervalos que cumplen.</li>
+    </ol>
+    <table>
+      <thead><tr><th>Tipo de punto</th><th>Si es &gt; o &lt;</th><th>Si es ≥ o ≤</th></tr></thead>
+      <tbody>
+        <tr><td>Raíz del numerador (cero de f)</td><td>excluir ○</td><td>incluir ●</td></tr>
+        <tr class="hi"><td>Raíz del denominador (no existe)</td><td>excluir siempre ○</td><td>excluir siempre ○</td></tr>
+      </tbody>
+    </table>
+    <div class="call idea"><span class="tag">Idea</span><span>El signo de A/B es el mismo que el de A·B. Al cruzar raíz de multiplicidad <b>impar</b>, el signo cambia; si es <b>par</b>, se queda.</span></div>
+  </section>
+
+  <section class="block b4" id="f-b4">
+    <h2><span class="num">4</span> Ecuación de la recta</h2>
+    <p>Dados A(x₁, y₁) y B(x₂, y₂):</p>
+    <div class="cols">
+      <table>
+        <thead><tr><th>Qué</th><th>Fórmula</th><th>Lectura</th></tr></thead>
+        <tbody>
+          <tr><td>Distancia</td><td><span class="eq">d = √[(x₂−x₁)² + (y₂−y₁)²]</span></td><td>Pitágoras en el plano</td></tr>
+          <tr><td>Punto medio</td><td><span class="eq">M = ((x₁+x₂)/2 , (y₁+y₂)/2)</span></td><td>promedio de x, promedio de y</td></tr>
+          <tr><td>Pendiente</td><td><span class="eq">m = (y₂ − y₁) / (x₂ − x₁)</span></td><td>subida / avance</td></tr>
+          <tr><td>Misma x (vertical)</td><td><span class="eq">d = |y₂ − y₁|</span></td><td>—</td></tr>
+          <tr><td>Misma y (horizontal)</td><td><span class="eq">d = |x₂ − x₁|</span></td><td>—</td></tr>
+        </tbody>
+      </table>
+      <div class="fig" role="img" aria-label="Recta y igual a mx más b. Corta el eje y en b. Desde ahí sube el numerador y avanza el denominador de la pendiente.">
+        <svg viewBox="0 0 240 150" width="280" height="150">
+          <line x1="20" y1="130" x2="220" y2="130" stroke="#94a3b8" stroke-width="1.5"/>
+          <line x1="40" y1="16" x2="40" y2="140" stroke="#94a3b8" stroke-width="1.5"/>
+          <line x1="20" y1="118" x2="210" y2="28" stroke="#c2410c" stroke-width="2.4"/>
+          <circle cx="40" cy="108" r="4.5" fill="#c2410c"/>
+          <text x="48" y="104" font-size="12" font-weight="800">(0, b)</text>
+          <path d="M40 108 V68 H110" fill="none" stroke="#1d4ed8" stroke-width="1.8"/>
+          <text x="18" y="90" font-size="11" font-weight="800" fill="#1d4ed8">sube</text>
+          <text x="62" y="82" font-size="11" font-weight="800" fill="#1d4ed8">avanza</text>
+          <text x="150" y="48" font-size="13" font-weight="800">y = mx + b</text>
+        </svg>
+        <div class="cap">Marca (0, b) → aplica m = sube/avanza</div>
+      </div>
+    </div>
+
+    <h3>4.2 Formas de la recta</h3>
+    <table>
+      <thead><tr><th>Forma</th><th>Ecuación</th><th>Qué se lee de golpe</th></tr></thead>
+      <tbody>
+        <tr><td>Pendiente-intersección</td><td><span class="eq">y = mx + b</span></td><td>m = pendiente, corta y en (0, b)</td></tr>
+        <tr><td>Punto-pendiente</td><td><span class="eq">y − y₁ = m(x − x₁)</span></td><td>pasa por (x₁, y₁) con pendiente m</td></tr>
+        <tr><td>Estándar</td><td><span class="eq">Ax + By = C</span></td><td>A, B, C enteros</td></tr>
+        <tr><td>Interceptos</td><td><span class="eq">x/a + y/b = 1</span></td><td>corta x en (a, 0) y y en (0, b)</td></tr>
+        <tr><td>Horizontal</td><td><span class="eq">y = k</span></td><td>m = 0</td></tr>
+        <tr><td>Vertical</td><td><span class="eq">x = h</span></td><td>m no existe (no es función)</td></tr>
+      </tbody>
+    </table>
+    <div class="cols">
+      <div>
+        <h3>De dos puntos → y = mx + b</h3>
+        <ol class="steps">
+          <li><span class="eq">m = (y₂ − y₁)/(x₂ − x₁)</span></li>
+          <li><span class="eq">y − y₁ = m(x − x₁)</span></li>
+          <li>Despeja y.</li>
+        </ol>
+        <p style="font-size:.84rem">De interceptos a y b: <span class="eq">m = −b/a</span>.</p>
+      </div>
+      <div>
+        <h3>Pendiente: significado</h3>
+        <table>
+          <thead><tr><th>Pendiente</th><th>Gráfico</th></tr></thead>
+          <tbody>
+            <tr><td>m &gt; 0</td><td>sube hacia la derecha</td></tr>
+            <tr><td>m &lt; 0</td><td>baja hacia la derecha</td></tr>
+            <tr><td>m = 0</td><td>horizontal</td></tr>
+            <tr><td>m indefinida</td><td>vertical</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>4.3 Paralelas y perpendiculares</h3>
+    <div class="cols">
+      <table>
+        <thead><tr><th>Relación</th><th>Conversión de m</th><th>Prueba</th></tr></thead>
+        <tbody>
+          <tr><td>Paralelas</td><td><span class="eq">m₂ = m₁</span></td><td>solo cambia b</td></tr>
+          <tr class="hi"><td>Perpendiculares</td><td><span class="eq">m₂ = −1/m₁</span></td><td>m₁ · m₂ = −1</td></tr>
+          <tr><td>Horizontal ⊥ vertical</td><td>m = 0 ⊥ x = h</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <table>
+        <thead><tr><th>Si m₁ es…</th><th>m₂ perpendicular es…</th></tr></thead>
+        <tbody>
+          <tr><td>2</td><td>−1/2</td></tr>
+          <tr><td>−2</td><td>1/2</td></tr>
+          <tr><td>1/3</td><td>−3</td></tr>
+          <tr><td>−3/4</td><td>4/3</td></tr>
+          <tr><td>4</td><td>−1/4</td></tr>
+          <tr><td>1</td><td>−1</td></tr>
+          <tr><td>−1</td><td>1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>4.4 Del enunciado a y = mx + b</h3>
+    <table>
+      <thead><tr><th>Dato del problema</th><th>Se convierte en</th></tr></thead>
+      <tbody>
+        <tr><td>Valor inicial / arranque / cuando x = 0</td><td>b</td></tr>
+        <tr><td>“por cada…”, “cada semana”, “por km”</td><td>m (razón de cambio)</td></tr>
+        <tr><td>“se vacía / disminuye”</td><td>m negativa</td></tr>
+        <tr><td>“¿cuánto cuando x = …?”</td><td>sustituye en y = mx + b</td></tr>
+        <tr><td>“¿cuándo llega a y = …?”</td><td>despeja x</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="block b5" id="f-b5">
+    <h2><span class="num">5</span> Funciones</h2>
+
+    <h3>5.1 Al evaluar: el cuidado de cada tipo</h3>
+    <table>
+      <thead><tr><th>Tipo</th><th>Cuidado</th></tr></thead>
+      <tbody>
+        <tr><td>Lineal f(x) = mx + b</td><td>sustituye, listo</td></tr>
+        <tr><td>Cuadrática f(x) = x² + …</td><td><span class="eq">(−n)² = +n²</span> — el signo queda dentro</td></tr>
+        <tr><td>Valor absoluto f(x) = |…|</td><td>resultado ≥ 0; opera adentro, luego quita el signo</td></tr>
+        <tr><td>Racional f(x) = n/d</td><td>si el denominador da 0 → <b>no existe</b></td></tr>
+        <tr><td>Radical par f(x) = √(…)</td><td>interior ≥ 0; si es negativo → <b>no existe</b> (reales)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.2 Prueba de la recta vertical</h3>
+    <div class="cols">
+      <div class="fig" role="img" aria-label="Parábola: una recta vertical toca un punto, sí es función. Círculo: una vertical toca dos puntos, no es función.">
+        <svg viewBox="0 0 320 130" width="100%" height="130">
+          <text x="70" y="16" text-anchor="middle" font-size="12" font-weight="800" fill="#15803d">SÍ es función</text>
+          <path d="M20 110 Q70 10 120 110" fill="none" stroke="#6d28d9" stroke-width="2.4"/>
+          <line x1="70" y1="18" x2="70" y2="120" stroke="#94a3b8" stroke-dasharray="3 3"/>
+          <circle cx="70" cy="48" r="4" fill="#15803d"/>
+          <text x="230" y="16" text-anchor="middle" font-size="12" font-weight="800" fill="#991b1b">NO es función</text>
+          <circle cx="230" cy="72" r="38" fill="none" stroke="#6d28d9" stroke-width="2.4"/>
+          <line x1="248" y1="20" x2="248" y2="120" stroke="#94a3b8" stroke-dasharray="3 3"/>
+          <circle cx="248" cy="42" r="4" fill="#991b1b"/>
+          <circle cx="248" cy="102" r="4" fill="#991b1b"/>
+        </svg>
+        <div class="cap">Si alguna vertical toca 2 o más puntos → no es función</div>
+      </div>
+      <table>
+        <thead><tr><th>Ecuación</th><th>¿Función?</th><th>Por qué</th></tr></thead>
+        <tbody>
+          <tr><td>y = … (un solo valor)</td><td>sí</td><td>cada x da un y</td></tr>
+          <tr><td>x = k (vertical)</td><td>no</td><td>infinitos y para un x</td></tr>
+          <tr><td>x = y²</td><td>no</td><td>±</td></tr>
+          <tr><td>x² + y² = r² (círculo)</td><td>no</td><td>dos y por x interior</td></tr>
+          <tr><td>y = |x|</td><td>sí</td><td>una salida</td></tr>
+          <tr><td>y = ±√x (ambos signos)</td><td>no</td><td>dos salidas</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>5.3 Dominio por tipo</h3>
+    <table>
+      <thead><tr><th>Tipo</th><th>Dominio</th><th>Cómo se escribe</th></tr></thead>
+      <tbody>
+        <tr><td>Lineal, cuadrática, | |, polinomio</td><td>todos los reales</td><td>R o (−∞, ∞)</td></tr>
+        <tr><td>Racional p(x)/q(x)</td><td>todo menos donde q(x)=0</td><td>x ≠ a o R − {a}</td></tr>
+        <tr><td>Radical par √g(x)</td><td>g(x) ≥ 0</td><td>intervalo, p. ej. [a, ∞)</td></tr>
+        <tr><td>Radical impar (raíz cúbica)</td><td>todos los reales</td><td>R</td></tr>
+        <tr><td>Pares ordenados {(x,y),…}</td><td>los primeros de cada par</td><td>conjunto {…}</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.84rem"><b>Rango</b> = valores de salida y posibles. En gráfica: ● incluye, ○ no incluye.</p>
+    <table>
+      <thead><tr><th>Desde…</th><th>Dominio</th><th>Rango</th></tr></thead>
+      <tbody>
+        <tr><td>Pares ordenados</td><td>primeras componentes</td><td>segundas, sin repetir</td></tr>
+        <tr><td>Parábola y = x², vértice (h, k) abre arriba</td><td>R</td><td>[k, ∞)</td></tr>
+        <tr><td>Parábola abre abajo, vértice (h, k)</td><td>R</td><td>(−∞, k]</td></tr>
+        <tr><td>y = |x|</td><td>R</td><td>[0, ∞)</td></tr>
+        <tr><td>y = √(x − a)</td><td>[a, ∞)</td><td>[0, ∞)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.4 Función por trozos</h3>
+    <p style="font-size:.84rem">Para evaluar f(c): mira <b>en qué intervalo cae c</b> y usa <b>solo</b> esa fórmula. En un extremo, respeta ≤ / &lt;. Dominio = unión de los intervalos. Rango = junta las salidas de cada trozo (ojo a huecos).</p>
+  </section>
+
+  <section class="express" id="f-expres">
+    <h2><span class="num" style="background:#0f172a;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:.85rem;">★</span> Hoja exprés — una página mental</h2>
+    <p>Cópiala en una ficha o recítala en voz alta. Tápate la columna de la derecha y di la conversión.</p>
+    <table>
+      <thead><tr><th>#</th><th>Fórmula / conversión</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Complementarios 90° · suplementarios 180° · triángulo 180°</td></tr>
+        <tr><td>2</td><td>Paralelas: correspondientes = · alternos = · mismo lado 180°</td></tr>
+        <tr><td>3</td><td>a² + b² = c² · ternas 3-4-5, 5-12-13, 8-15-17</td></tr>
+        <tr><td>4</td><td>SOH-CAH-TOA · sen 30° = 1/2 · cos 60° = 1/2 · tan 45° = 1</td></tr>
+        <tr><td>5</td><td>45-45-90: a, a, a√2 · 30-60-90: a, a√3, 2a</td></tr>
+        <tr><td>6</td><td>a² − b² = (a+b)(a−b) · a² + b² no factoriza</td></tr>
+        <tr><td>7</td><td>a³ + b³ = (a+b)(a² − ab + b²) · a³ − b³ = (a−b)(a² + ab + b²)</td></tr>
+        <tr><td>8</td><td>TCP: a² ± 2ab + b² = (a ± b)²</td></tr>
+        <tr><td>9</td><td>x² + bx + c = (x+p)(x+q) con p+q=b, p·q=c</td></tr>
+        <tr><td>10</td><td>&gt; usa ( · ≥ usa [ · ∞ nunca cerrado</td></tr>
+        <tr><td>11</td><td>× o ÷ por negativo → <b>invierte</b> la desigualdad</td></tr>
+        <tr><td>12</td><td>|X| &lt; a → entre · |X| &gt; a → afuera (unión)</td></tr>
+        <tr><td>13</td><td>Cero del denominador: <b>nunca</b> se incluye</td></tr>
+        <tr><td>14</td><td>d = √(Δx² + Δy²) · M = (promedio x, promedio y)</td></tr>
+        <tr><td>15</td><td>m = Δy/Δx · y = mx + b · y − y₁ = m(x − x₁)</td></tr>
+        <tr><td>16</td><td>Paralelas: misma m · perpendiculares: m₂ = −1/m₁</td></tr>
+        <tr><td>17</td><td>Racional: x ≠ lo que anula el denom · radical par: interior ≥ 0</td></tr>
+        <tr><td>18</td><td>Recta vertical: si toca 2 puntos → no es función</td></tr>
+      </tbody>
+    </table>
+    <div class="howto">
+      <b>Cómo usarla en la jornada</b>
+      <ol>
+        <li>Antes de cada bloque: lee solo las tablas de ese bloque (2–3 min).</li>
+        <li>Al fallar un “Practico”: vuelve a esta ficha, no al ejemplo largo.</li>
+        <li>En el repaso de 30 min: tápate la conversión y recítala.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer class="sheet">
+    <span>Matemática IV · Ficha de fórmulas 2026</span>
+    <span>Para estudiar · el día del examen va en la cabeza</span>
+  </footer>
+</main>
+</section>
+
+<section id="view-expres" class="app-view" aria-label="Hoja exprés">
+  <p class="recite-banner hidden no-print" id="reciteBanner">Las fórmulas están tapadas. Toca una para verla un momento. Vuelve a pulsar «Dejar de recitar» cuando termines.</p>
+<main id="ficha" class="doc">
+
+  <!-- PÁGINA 1 -->
+  <section class="page">
+    <header class="top">
+      <div>
+        <div class="kicker">Examen de admisión 2026 · Matemática IV</div>
+        <h1>Hoja exprés</h1>
+        <p>Lo que el examen no te va a dar. Tápate las fórmulas y recítalas.</p>
+      </div>
+      <div class="badge">Pégala en el cuaderno<b>Página 1 de 2</b></div>
+    </header>
+
+    <section class="block g1">
+      <h2 class="g1"><i>1</i> Geometría y trigonometría <span style="font-weight:700;color:var(--soft);font-size:.75rem;">/20 pts · ítems 1–5</span></h2>
+      <div class="cols">
+        <table>
+          <thead><tr><th>#</th><th>Conversión</th></tr></thead>
+          <tbody>
+            <tr><td><span class="n">1</span></td><td>Complementarios <span class="eq">90°</span> · suplementarios <span class="eq">180°</span> · triángulo <span class="eq">180°</span></td></tr>
+            <tr><td><span class="n">2</span></td><td>Paralelas: correspondientes = · alternos = · mismo lado <span class="eq">180°</span></td></tr>
+            <tr><td><span class="n">3</span></td><td><span class="eq">a² + b² = c²</span> · hipotenusa siempre sola</td></tr>
+          </tbody>
+        </table>
+        <div class="fig" role="img" aria-label="Complementarios 90 grados y suplementarios 180 grados.">
+          <svg viewBox="0 0 320 88" width="100%" height="72">
+            <path d="M16 76 H108 V16" fill="none" stroke="#1c2333" stroke-width="2"/>
+            <path d="M16 76 L70 28" fill="none" stroke="#1d4ed8" stroke-width="2"/>
+            <path d="M108 64 H96 V76" fill="none" stroke="#1c2333"/>
+            <text x="40" y="70" font-size="12" font-weight="700" fill="#1d4ed8">α</text>
+            <text x="84" y="58" font-size="11" font-weight="700">90−α</text>
+            <line x1="150" y1="52" x2="310" y2="52" stroke="#1c2333" stroke-width="2"/>
+            <line x1="230" y1="52" x2="278" y2="16" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="252" y="42" font-size="12" font-weight="700" fill="#1d4ed8">α</text>
+            <text x="168" y="42" font-size="11" font-weight="700" fill="#c2410c">180−α</text>
+          </svg>
+          <div class="cap">Esquina = 90° · línea = 180°</div>
+        </div>
+      </div>
+      <div class="cols" style="margin-top:6px">
+        <div class="fig" role="img" aria-label="Dos paralelas y una transversal. Los ángulos se intercalan alfa y 180 menos alfa.">
+          <svg viewBox="0 0 240 92" width="100%" height="72">
+            <line x1="10" y1="28" x2="230" y2="28" stroke="#1c2333" stroke-width="2.2"/>
+            <line x1="10" y1="68" x2="230" y2="68" stroke="#1c2333" stroke-width="2.2"/>
+            <line x1="70" y1="8" x2="170" y2="86" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="86" y="22" font-size="12" font-weight="800" fill="#1d4ed8">α</text>
+            <text x="128" y="22" font-size="10" font-weight="800" fill="#c2410c">180−α</text>
+            <text x="96" y="62" font-size="12" font-weight="800" fill="#1d4ed8">α</text>
+            <text x="148" y="62" font-size="10" font-weight="800" fill="#c2410c">180−α</text>
+          </svg>
+          <div class="cap">Solo hay dos medidas, intercaladas</div>
+        </div>
+        <div>
+          <div class="chips">
+            <span class="chip">3-4-5</span>
+            <span class="chip">5-12-13</span>
+            <span class="chip">8-15-17</span>
+            <span class="chip">6-8-10 = 2×(3-4-5)</span>
+          </div>
+          <p style="margin:4px 0 0;font-size:.78rem;">Si ves la terna, <b>no calcules raíz</b>.</p>
+        </div>
+      </div>
+      <div class="cols3" style="margin-top:6px">
+        <div class="fig" role="img" aria-label="Triángulo 45 45 90 con catetos a y hipotenusa a raíz de 2.">
+          <svg viewBox="0 0 140 100" width="100%" height="92">
+            <text x="70" y="12" text-anchor="middle" font-size="11" font-weight="800">45°–45°–90°</text>
+            <polygon points="18,90 18,28 102,90" fill="#eef4ff" stroke="#1c2333" stroke-width="1.8"/>
+            <rect x="18" y="76" width="12" height="14" fill="none" stroke="#1c2333"/>
+            <text x="8" y="64" font-size="12" font-weight="800">a</text>
+            <text x="50" y="98" font-size="12" font-weight="800">a</text>
+            <text x="76" y="52" font-size="12" font-weight="800" fill="#1d4ed8">a√2</text>
+          </svg>
+        </div>
+        <div class="fig" role="img" aria-label="Triángulo 30 60 90: a, a raíz de 3 y 2a.">
+          <svg viewBox="0 0 140 100" width="100%" height="92">
+            <text x="70" y="12" text-anchor="middle" font-size="11" font-weight="800">30°–60°–90°</text>
+            <polygon points="22,90 22,22 68,90" fill="#eef4ff" stroke="#1c2333" stroke-width="1.8"/>
+            <rect x="22" y="76" width="12" height="14" fill="none" stroke="#1c2333"/>
+            <text x="28" y="38" font-size="10" font-weight="700">30°</text>
+            <text x="52" y="86" font-size="10" font-weight="700">60°</text>
+            <text x="4" y="58" font-size="11" font-weight="800">a√3</text>
+            <text x="36" y="99" font-size="11" font-weight="800">a</text>
+            <text x="78" y="52" font-size="12" font-weight="800" fill="#1d4ed8">2a</text>
+          </svg>
+        </div>
+        <div class="fig" role="img" aria-label="SOH CAH TOA: seno opuesto sobre hipotenusa, coseno adyacente sobre hipotenusa, tangente opuesto sobre adyacente.">
+          <svg viewBox="0 0 160 88" width="100%" height="72">
+            <polygon points="16,82 16,22 142,82" fill="#eef4ff" stroke="#1c2333" stroke-width="1.8"/>
+            <rect x="16" y="68" width="12" height="14" fill="none" stroke="#1c2333"/>
+            <text x="32" y="74" font-size="12" font-weight="800" fill="#1d4ed8">θ</text>
+            <text x="2" y="52" font-size="9" font-weight="800">op</text>
+            <text x="64" y="96" font-size="9" font-weight="800">ady</text>
+            <text x="88" y="46" font-size="9" font-weight="800" fill="#1d4ed8">hip</text>
+          </svg>
+          <div class="cap">sen=op/hip · cos=ady/hip · tan=op/ady</div>
+        </div>
+      </div>
+      <p style="margin:6px 0 4px;font-size:.78rem;"><span class="n">4</span> SOH-CAH-TOA &nbsp; <span class="n">5</span> 45-45-90: <span class="eq">a, a, a√2</span> · 30-60-90: <span class="eq">a, a√3, 2a</span></p>
+      <table>
+        <thead><tr><th>θ</th><th>0°</th><th>30°</th><th>45°</th><th>60°</th><th>90°</th></tr></thead>
+        <tbody>
+          <tr><td>sen</td><td>0</td><td class="hi">1/2</td><td>√2/2</td><td>√3/2</td><td>1</td></tr>
+          <tr><td>cos</td><td>1</td><td>√3/2</td><td>√2/2</td><td class="hi">1/2</td><td>0</td></tr>
+          <tr><td>tan</td><td>0</td><td>√3/3</td><td class="hi">1</td><td>√3</td><td>no existe</td></tr>
+        </tbody>
+      </table>
+      <p class="note memo">Memoriza ya: <span class="eq">sen 30° = 1/2</span> · <span class="eq">cos 60° = 1/2</span> · <span class="eq">tan 45° = 1</span>. Truco sen 0°→90°: √0/2, √1/2, √2/2, √3/2, √4/2. Cos al revés.</p>
+    </section>
+
+    <section class="block g2">
+      <h2 class="g2"><i>2</i> Factorización <span style="font-weight:700;color:var(--soft);font-size:.75rem;">/10 pts · ítems 6–9</span></h2>
+      <p style="margin:0 0 5px;font-size:.76rem;font-weight:700;">Orden: factor común → cuenta términos → caso → ¿se puede seguir?</p>
+      <div class="cols">
+        <table>
+          <thead><tr><th>#</th><th>Ves</th><th>Fórmula</th></tr></thead>
+          <tbody>
+            <tr><td><span class="n">6</span></td><td>resta de cuadrados</td><td><span class="eq">a² − b² = (a+b)(a−b)</span></td></tr>
+            <tr class="hi"><td></td><td>suma de cuadrados</td><td><b>no factoriza</b> en reales</td></tr>
+            <tr><td><span class="n">7</span></td><td>suma / resta de cubos</td><td><span class="eq">a³±b³ = (a±b)(a² ∓ ab + b²)</span></td></tr>
+            <tr><td><span class="n">8</span></td><td>TCP</td><td><span class="eq">a² ± 2ab + b² = (a ± b)²</span></td></tr>
+            <tr><td><span class="n">9</span></td><td>x² + bx + c</td><td><span class="eq">(x+p)(x+q)</span> p+q=b, p·q=c</td></tr>
+          </tbody>
+        </table>
+        <div>
+          <div class="soap" aria-label="SOAP: Same Opposite Always Positive">
+            <div class="sS">S<small>igual</small></div>
+            <div class="sO">O<small>contrario</small></div>
+            <div class="sA">A<small>siempre</small></div>
+            <div class="sP">P<small>positivo</small></div>
+          </div>
+          <table>
+            <thead><tr><th>c</th><th>b</th><th>Factores</th></tr></thead>
+            <tbody>
+              <tr><td>+</td><td>+</td><td>(x+p)(x+q)</td></tr>
+              <tr><td>+</td><td>−</td><td>(x−p)(x−q)</td></tr>
+              <tr><td>−</td><td>+</td><td>el mayor | | es +</td></tr>
+              <tr><td>−</td><td>−</td><td>el mayor | | es −</td></tr>
+            </tbody>
+          </table>
+          <p style="margin:3px 0 0;font-size:.72rem;">Cubos: último del 2.º paréntesis es <b>+ b² siempre</b>.</p>
+        </div>
+      </div>
+    </section>
+    <div class="foot"><span>Matemática IV · Hoja exprés 2026</span><span>1 / 2</span></div>
+  </section>
+
+  <!-- PÁGINA 2 -->
+  <section class="page">
+    <header class="top">
+      <div>
+        <div class="kicker">Sigue recitando · tápate las fórmulas</div>
+        <h1>Hoja exprés</h1>
+        <p>Desigualdades, recta y funciones. La lista de 18 está abajo.</p>
+      </div>
+      <div class="badge">Cara de atrás / página 2<b>Página 2 de 2</b></div>
+    </header>
+
+    <section class="block g3">
+      <h2 class="g3"><i>3</i> Desigualdades <span style="font-weight:700;color:var(--soft);font-size:.75rem;">/25 pts · ítems 10–13</span></h2>
+      <div class="cols">
+        <table>
+          <thead><tr><th>#</th><th>Regla</th></tr></thead>
+          <tbody>
+            <tr><td><span class="n">10</span></td><td><span class="eq">&gt;</span> usa <span class="eq">(</span> · <span class="eq">≥</span> usa <span class="eq">[</span> · <span class="eq">∞</span> nunca cerrado</td></tr>
+            <tr class="hi"><td><span class="n">11</span></td><td>× o ÷ por negativo → <b>invierte</b> &lt; ↔ &gt;</td></tr>
+            <tr><td><span class="n">12</span></td><td><span class="eq">|X| &lt; a</span> → entre · <span class="eq">|X| &gt; a</span> → afuera (unión)</td></tr>
+            <tr class="hi"><td><span class="n">13</span></td><td>Cero del denominador: <b>nunca</b> se incluye</td></tr>
+          </tbody>
+        </table>
+        <div>
+          <div class="fig" role="img" aria-label="Intervalo abierto con círculos huecos y cerrado con rellenos. Valor absoluto menor pinta entre, mayor pinta afuera.">
+            <svg viewBox="0 0 280 108" width="100%" height="108">
+              <text x="8" y="14" font-size="10" font-weight="800">(a, b)  ○ hueco</text>
+              <line x1="16" y1="28" x2="264" y2="28" stroke="#1c2333" stroke-width="1.8"/>
+              <line x1="78" y1="28" x2="202" y2="28" stroke="#a16207" stroke-width="5"/>
+              <circle cx="78" cy="28" r="6" fill="#fff" stroke="#a16207" stroke-width="2"/>
+              <circle cx="202" cy="28" r="6" fill="#fff" stroke="#a16207" stroke-width="2"/>
+              <text x="8" y="52" font-size="10" font-weight="800">[a, b]  ● relleno</text>
+              <line x1="16" y1="66" x2="264" y2="66" stroke="#1c2333" stroke-width="1.8"/>
+              <line x1="78" y1="66" x2="202" y2="66" stroke="#a16207" stroke-width="5"/>
+              <circle cx="78" cy="66" r="6" fill="#a16207"/>
+              <circle cx="202" cy="66" r="6" fill="#a16207"/>
+              <text x="8" y="90" font-size="10" font-weight="800">|X|&lt;a entre · |X|&gt;a afuera</text>
+              <line x1="16" y1="102" x2="264" y2="102" stroke="#1c2333" stroke-width="1.6"/>
+              <line x1="16" y1="102" x2="70" y2="102" stroke="#c2410c" stroke-width="5"/>
+              <line x1="210" y1="102" x2="264" y2="102" stroke="#c2410c" stroke-width="5"/>
+              <circle cx="78" cy="102" r="5" fill="#fff" stroke="#c2410c" stroke-width="2"/>
+              <circle cx="202" cy="102" r="5" fill="#fff" stroke="#c2410c" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <p style="margin:5px 0 0;font-size:.76rem;">Racionales: pasa todo a un lado → factoriza → prueba signos. El signo de A/B = el de A·B. Raíz de multiplicidad impar: el signo <b>cambia</b>; par: <b>se queda</b>.</p>
+    </section>
+
+    <section class="block g4">
+      <h2 class="g4"><i>4</i> Recta <span style="font-weight:700;color:var(--soft);font-size:.75rem;">/25 pts · ítems 14–16</span></h2>
+      <div class="cols">
+        <table>
+          <thead><tr><th>#</th><th>Fórmula</th></tr></thead>
+          <tbody>
+            <tr><td><span class="n">14</span></td><td>Distancia <span class="eq">d = √(Δx² + Δy²)</span> · punto medio = promedios</td></tr>
+            <tr><td><span class="n">15</span></td><td><span class="eq">m = Δy/Δx</span> · <span class="eq">y = mx + b</span> · <span class="eq">y − y₁ = m(x − x₁)</span></td></tr>
+            <tr><td><span class="n">16</span></td><td>Paralelas: misma m · perpendiculares: <span class="eq">m₂ = −1/m₁</span></td></tr>
+          </tbody>
+        </table>
+        <div class="fig" role="img" aria-label="Recta y igual a mx más b. Desde el corte con el eje y se aplica sube sobre avanza.">
+          <svg viewBox="0 0 220 96" width="100%" height="92">
+            <line x1="16" y1="82" x2="210" y2="82" stroke="#94a3b8" stroke-width="1.4"/>
+            <line x1="36" y1="10" x2="36" y2="88" stroke="#94a3b8" stroke-width="1.4"/>
+            <line x1="20" y1="74" x2="200" y2="18" stroke="#c2410c" stroke-width="2.2"/>
+            <circle cx="36" cy="68" r="3.5" fill="#c2410c"/>
+            <text x="42" y="64" font-size="11" font-weight="800">(0, b)</text>
+            <path d="M36 68 V42 H92" fill="none" stroke="#1d4ed8" stroke-width="1.6"/>
+            <text x="14" y="56" font-size="9" font-weight="800" fill="#1d4ed8">sube</text>
+            <text x="50" y="54" font-size="9" font-weight="800" fill="#1d4ed8">avanza</text>
+            <text x="118" y="32" font-size="12" font-weight="800">y = mx + b</text>
+          </svg>
+        </div>
+      </div>
+      <p style="margin:5px 0 0;font-size:.76rem;">Del enunciado: arranque → <b>b</b> · “por cada…” → <b>m</b> · “se vacía” → m negativa. Perp. de 2 es −1/2 · de −3/4 es 4/3.</p>
+    </section>
+
+    <section class="block g5">
+      <h2 class="g5"><i>5</i> Funciones <span style="font-weight:700;color:var(--soft);font-size:.75rem;">/20 pts · ítems 17–18</span></h2>
+      <div class="cols">
+        <table>
+          <thead><tr><th>#</th><th>Regla</th></tr></thead>
+          <tbody>
+            <tr><td><span class="n">17</span></td><td>Racional: <span class="eq">x ≠</span> lo que anula el denom · radical par: interior <span class="eq">≥ 0</span></td></tr>
+            <tr><td><span class="n">18</span></td><td>Recta vertical: si toca 2 puntos → <b>no</b> es función</td></tr>
+          </tbody>
+        </table>
+        <div class="fig" role="img" aria-label="Parábola sí es función. Círculo no es función porque la vertical toca dos puntos.">
+          <svg viewBox="0 0 260 86" width="100%" height="86">
+            <text x="56" y="14" text-anchor="middle" font-size="11" font-weight="800" fill="#15803d">SÍ</text>
+            <path d="M16 74 Q56 10 96 74" fill="none" stroke="#6d28d9" stroke-width="2.2"/>
+            <line x1="56" y1="16" x2="56" y2="80" stroke="#94a3b8" stroke-dasharray="3 3"/>
+            <circle cx="56" cy="36" r="3.5" fill="#15803d"/>
+            <text x="190" y="14" text-anchor="middle" font-size="11" font-weight="800" fill="#991b1b">NO</text>
+            <circle cx="190" cy="50" r="28" fill="none" stroke="#6d28d9" stroke-width="2.2"/>
+            <line x1="204" y1="12" x2="204" y2="80" stroke="#94a3b8" stroke-dasharray="3 3"/>
+            <circle cx="204" cy="28" r="3.5" fill="#991b1b"/>
+            <circle cx="204" cy="72" r="3.5" fill="#991b1b"/>
+          </svg>
+        </div>
+      </div>
+      <p style="margin:5px 0 0;font-size:.76rem;">Al evaluar: <span class="eq">(−n)² = +n²</span> · | | ≥ 0 · si denom = 0 o √negativo → no existe. Por trozos: usa <b>solo</b> la fórmula del intervalo donde cae c.</p>
+    </section>
+
+    <section class="block" style="background:#fff;">
+      <h2><i style="background:#0f172a;">★</i> Recita las 18 (cúbrelas con la mano)</h2>
+      <div class="recite">
+        <div>
+          <p><span class="n">1</span> 90° · 180° · triángulo 180°</p>
+          <p><span class="n">2</span> correspondientes = · alternos = · mismo lado 180°</p>
+          <p><span class="n">3</span> a² + b² = c² · 3-4-5, 5-12-13, 8-15-17</p>
+          <p><span class="n">4</span> SOH-CAH-TOA · sen 30° = cos 60° = 1/2 · tan 45° = 1</p>
+          <p><span class="n">5</span> a, a, a√2 · a, a√3, 2a</p>
+          <p><span class="n">6</span> a² − b² = (a+b)(a−b) · a² + b² no</p>
+          <p><span class="n">7</span> cubos SOAP · último +b² siempre</p>
+          <p><span class="n">8</span> TCP = (a ± b)²</p>
+          <p><span class="n">9</span> p+q=b, p·q=c</p>
+        </div>
+        <div>
+          <p><span class="n">10</span> &gt; ( · ≥ [ · ∞ nunca cerrado</p>
+          <p><span class="n">11</span> × negativo → invierte</p>
+          <p><span class="n">12</span> |X|&lt;a entre · |X|&gt;a afuera</p>
+          <p><span class="n">13</span> denom = 0 nunca se incluye</p>
+          <p><span class="n">14</span> d = √(Δx²+Δy²) · M = promedios</p>
+          <p><span class="n">15</span> m = Δy/Δx · y = mx + b</p>
+          <p><span class="n">16</span> paralelas: misma m · perp. m₂ = −1/m₁</p>
+          <p><span class="n">17</span> racional x ≠ denom 0 · √ interior ≥ 0</p>
+          <p><span class="n">18</span> vertical toca 2 puntos → no es función</p>
+        </div>
+      </div>
+    </section>
+    <div class="foot"><span>Matemática IV · Hoja exprés 2026</span><span>2 / 2 · el día del examen va en la cabeza</span></div>
+  </section>
+</main>
+</section>
+
+<footer class="kit-foot">
+  <p>Esta es una <b>herramienta de refuerzo</b>. No se garantizan resultados sin el compromiso del alumno.</p>
+  <p>Desarrollada por <a href="https://focampo.com" target="_blank" rel="noopener noreferrer">Francisco Ocampo</a>.</p>
+</footer>
+</div>
+
+<nav class="kit-tabs" aria-label="Secciones del kit">
+  <button type="button" data-vista="inicio" onclick="irA('inicio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/></svg> Inicio</button>
+  <button type="button" data-vista="practica" onclick="irA('practica')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg> Practicar</button>
+  <button type="button" data-vista="formulas" onclick="irA('formulas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg> Fórmulas</button>
+  <button type="button" data-vista="expres" onclick="irA('expres')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Exprés</button>
+</nav>
+
+<div class="dialog hidden" id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+  <div class="dialogbox">
+    <h3 id="dialogTitle">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span id="dialogTitleText">¿Salir de la práctica?</span>
+    </h3>
+    <p id="dialogMsg">Conservarás los puntos ya ganados, pero la práctica se termina aquí.</p>
+    <div class="btnrow">
+      <button class="btn secondary" id="dialogCancel">Seguir practicando</button>
+      <button class="btn danger" id="dialogOk">Sí, salir</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+
+"use strict";
+/* ============================================================
+   UTILIDADES
+============================================================ */
+function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+function sgn(n){return n<0?"−":"+";}
+function fmt(n){const r=Math.round(n*100)/100;return Object.is(r,-0)?0:r;}
+function sq(n){return n*n;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&','<':'<','>':'>','"':'"'}[c]));}
+const reduceMotion=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let state={pts:0,streak:0,hit:0,tot:0,ach:{},block:{},seen:false}; // block -> {ok,total}
+
+const ACH=[
+  {id:'first',n:'Primeros pasos',d:'Resuelve tu primer ejercicio'},
+  {id:'five',n:'Racha de 5',d:'5 correctas seguidas'},
+  {id:'half',n:'Precisión',d:'10 o más ejercicios con ≥80% de acierto'},
+  {id:'points',n:'Centenar',d:'Alcanza 100 puntos totales'},
+  {id:'all',n:'Completo',d:'Practica los 5 bloques al menos una vez'},
+];
+const ACH_ICON={
+  first:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg>',
+  five:'<svg width="17" height="17" viewBox="0 0 24 24" fill="#fb923c"><path d="M13 2L4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg>',
+  half:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>',
+  points:'<svg width="17" height="17" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>',
+  all:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 3v18M6 3l12 18"/></svg>'
+};
+function save(){try{localStorage.setItem('mat4',JSON.stringify(state));}catch(e){}}
+function load(){try{const s=localStorage.getItem('mat4');if(s){const o=JSON.parse(s);if(o&&o.pts!==undefined){state=o;if(!state.block)state.block={};if(state.seen===undefined)state.seen=false;}}}catch(e){}}
+load();
+
+/* ============================================================
+   GENERADORES DE PREGUNTAS POR BLOQUE
+   Cada generador devuelve: {cat,prompt,type:'mc'|'num',
+     opts(para mc), correct(texto|índice), answer(para num),
+     tol(para num), hint, explain, block, tag}
+============================================================ */
+
+const G1=[]; // Geometría y Trigonometría
+(function(){
+  // Complementarios (suman 90°) y suplementarios (suman 180°) con razón entera
+  // (uno mide r veces el otro). Se eligen razones con suma exacta para que el
+  // ángulo menor sea entero y la pregunta siempre sea consistente.
+  const compR=[2,4,5,8];   // 90 divisible entre r+1
+  const supR=[2,3,5,9];    // 180 divisible entre r+1
+  for(const {r,sum} of [...compR.map(r=>({r,sum:90})), ...supR.map(r=>({r,sum:180}))]){
+    const menor=sum/(r+1); const mayor=menor*r;
+    const esComp=sum===90;
+    const clase=esComp?'complementarios (suman 90°)':'suplementarios (suman 180°)';
+    // Pregunta por el ángulo más pequeño
+    G1.push({cat:esComp?'Ángulos complementarios':'Ángulos suplementarios',type:'num',
+      answer:menor,tol:0.01,
+      prompt:'Dos ángulos son '+clase+' y uno mide '+r+' veces el otro. ¿Cuánto mide el ángulo MÁS PEQUEÑO? (en grados)',
+      hint:'Llamemos x al pequeño. Entonces x + '+r+'x = '+sum+', es decir '+(r+1)+'x = '+sum+'.',
+      explain:'x + '+r+'x = '+sum+' → '+(r+1)+'x = '+sum+' → x = '+menor+'°. (El mayor mide '+mayor+'°.)',tag:'b1'});
+    // Algunas variantes preguntan por el mayor (buena práctica de despeje)
+    if(r===2||r===5){
+      G1.push({cat:esComp?'Ángulos complementarios':'Ángulos suplementarios',type:'num',
+        answer:mayor,tol:0.01,
+        prompt:'Dos ángulos son '+(esComp?'complementarios':'suplementarios')+' y uno mide '+r+' veces el otro. ¿Cuánto mide el ángulo MAYOR? (en grados)',
+        hint:'El pequeño vale x = '+sum+'/'+(r+1)+' = '+menor+'. El mayor es '+r+' veces ese valor.',
+        explain:'Menor = '+menor+'° → mayor = '+r+' × '+menor+' = '+mayor+'°. Verifica: '+menor+' + '+mayor+' = '+sum+'°.',tag:'b1'});
+    }
+  }
+  // Suma de ángulos del triángulo: ángulos en proporción a·x, b·x y c·x, con x
+  // incógnita real. Se eligen coeficientes cuya suma divida 180 para que x sea
+  // entero: (a+b+c)·x = 180 → x = 180/(a+b+c).
+  const tri2=[[1,2,3],[2,3,4],[3,4,5],[2,3,5],[4,5,6],[5,6,7],[1,3,5],
+              [1,4,4],[2,5,5],[3,4,8],[2,3,7],[3,5,7],[4,5,9],[2,7,9]];
+  for(const [a,b,c] of tri2){
+    const s=a+b+c; const x=180/s;
+    const coef=[a,b,c]; const idxMayor=coef.indexOf(Math.max(a,b,c));
+    const cfMayor=coef[idxMayor]; const mayor=cfMayor*x;
+    const ang=[a*x,b*x,c*x];
+    G1.push({cat:'Suma de ángulos del triángulo',type:'num',answer:mayor,tol:0.01,
+      prompt:'En un triángulo, los ángulos miden '+a+'x, '+b+'x y '+c+'x, donde x es un número desconocido. ¿Cuánto mide el ángulo MAYOR? (en grados)',
+      hint:'La suma de los ángulos internos es 180°: ('+a+' + '+b+' + '+c+')x = 180 → x = 180/'+s+' = '+x+'. Luego multiplica por '+cfMayor+'.',
+      explain:'('+a+'+'+b+'+'+c+')x = 180 → '+s+'x = 180 → x = '+x+'. El ángulo mayor ('+cfMayor+'x) = '+cfMayor+' × '+x+' = '+mayor+'°. Verifica: '+ang[0]+'+'+ang[1]+'+'+ang[2]+' = 180.',tag:'b1'});
+  }
+  // Pitágoras: tríos comunes como [cateto1, cateto2, hipotenusa]. La hipotenusa
+  // (c) siempre es el tercer elemento: aquí solo se baraja el orden en que se
+  // muestran los DOS catetos (son intercambiables), nunca se toca la hipotenusa,
+  // para que el enunciado y la respuesta siempre sean consistentes.
+  const trip=[[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17],[7,24,25],[12,16,20],[10,24,26],[15,20,25]];
+  for(const [c1,c2,c] of trip){
+    const [a,b] = Math.random()<0.5 ? [c1,c2] : [c2,c1];
+    G1.push({cat:'Teorema de Pitágoras',type:'num',answer:c,tol:0.01,
+      prompt:'Un triángulo rectángulo tiene dos lados (catetos) que miden '+a+' y '+b+'. Si el tercer lado es la HIPOTENUSA, ¿cuánto mide?',
+      hint:'a² + b² = c². Calcula c = √('+a+'² + '+b+'²) = √('+(sq(a)+sq(b))+').',
+      explain:'c = √('+a+'² + '+b+'²) = √('+(sq(a)+sq(b))+') = '+c+'. (Verifica: '+a+'² + '+b+'² = '+(sq(a)+sq(b))+' = '+c+'².)',tag:'b1'});
+    // encontrar el cateto que falta
+    G1.push({cat:'Teorema de Pitágoras (cateto)',type:'num',answer:b,tol:0.01,
+      prompt:'La hipotenusa de un triángulo rectángulo mide '+c+' y un cateto mide '+a+'. ¿Cuánto mide el otro cateto?',
+      hint:'a² + b² = c² → b² = c² − a² = '+c+'² − '+a+'² = '+(sq(c)-sq(a))+'.',
+      explain:'b = √('+c+'² − '+a+'²) = √('+(sq(c)-sq(a))+') = '+b+'. (Verifica: '+a+'² + '+b+'² = '+(sq(a)+sq(b))+' = '+c+'².)',tag:'b1'});
+  }
+  // Trigonometría (triángulo 6-8-10) razones
+  G1.push({cat:'Razones trigonométricas',type:'num',answer:6/8,tol:0.01,
+    prompt:'En un triángulo rectángulo (catetos 6 y 8, hipotenusa 10), el ángulo θ tiene cateto opuesto 6 y adyacente 8. ¿Cuánto vale tan θ?',
+    hint:'tan θ = opuesto / adyacente.',
+    explain:'tan θ = 6/8 = 0.75.',tag:'b1'});
+  G1.push({cat:'Razones trigonométricas',type:'num',answer:0.5,tol:0.01,
+    prompt:'¿Cuánto vale sen 30°? (recuerda la tabla de valores notables)',
+    hint:'sen 30° = 1/2.',
+    explain:'sen 30° = 0.5 (y cos 60° también vale 0.5).',tag:'b1'});
+  // problema de aplicación tangente 45
+  const app=rnd(10,40);
+  G1.push({cat:'Problema de aplicación',type:'num',answer:app,tol:0.01,
+    prompt:'Un observador mira la punta de un árbol con ángulo de elevación de 45° y está a '+app+' m de la base. ¿Qué altura tiene el árbol? (en metros)',
+    hint:'tan 45° = altura / distancia. Como tan 45° = 1, la altura es igual a la distancia.',
+    explain:'tan 45° = h / '+app+' → 1 = h / '+app+' → h = '+app+' m.',tag:'b1'});
+})();
+
+const G2=[]; // Factorización (mc)
+(function(){
+  const optsPool=[
+    {q:'x² − 25',o:['(x+5)(x−5)','(x+25)(x−1)','(x−5)²','(x+5)²'],c:0},
+    {q:'x² − 81',o:['(x+9)(x−9)','(x+81)(x−1)','(x−9)²','(x+9)²'],c:0},
+    {q:'y² − 49',o:['(y+7)(y−7)','(y−7)²','(y+49)(y−1)','(y+7)²'],c:0},
+    {q:'16x² − 25',o:['(4x+5)(4x−5)','(4x−5)²','(2x+5)(8x−5)','(16x+25)(x−1)'],c:0},
+    {q:'x² + 10x + 25',o:['(x+5)²','(x+5)(x−5)','(x+25)(x+1)','(x−5)²'],c:0},
+    {q:'x² − 12x + 36',o:['(x−6)²','(x+6)²','(x−6)(x+6)','(x−12)(x+3)'],c:0},
+    {q:'x² + 14x + 49',o:['(x+7)²','(x−7)²','(x+7)(x−7)','(x+49)(x+1)'],c:0},
+    {q:'9x² − 24x + 16',o:['(3x−4)²','(3x+4)²','(9x−16)(x−1)','(3x−4)(3x+4)'],c:0},
+    {q:'x² + 7x + 12',o:['(x+3)(x+4)','(x+6)(x+2)','(x−3)(x−4)','(x+12)(x+1)'],c:0},
+    {q:'x² − 5x + 6',o:['(x−2)(x−3)','(x+2)(x+3)','(x−1)(x−6)','(x−5)(x+6)'],c:0},
+    {q:'x² + 2x − 15',o:['(x+5)(x−3)','(x+15)(x−1)','(x−5)(x+3)','(x+5)(x+3)'],c:0},
+    {q:'2x² + 7x + 3',o:['(2x+1)(x+3)','(2x+3)(x+1)','(2x−1)(x−3)','(x+1)(2x+7)'],c:0},
+    {q:'3x² + 10x + 8',o:['(3x+4)(x+2)','(3x+2)(x+4)','(3x−4)(x−2)','(x+8)(3x+1)'],c:0},
+    {q:'2x² − x − 6',o:['(2x+3)(x−2)','(2x−3)(x+2)','(2x+2)(x−3)','(x−2)(2x−6)'],c:0},
+    {q:'x³ − 8',o:['(x−2)(x²+2x+4)','(x+2)(x²−2x+4)','(x−2)³','(x−2)(x²−2x+4)'],c:0},
+    {q:'x³ + 27',o:['(x+3)(x²−3x+9)','(x−3)(x²+3x+9)','(x+3)³','(x+3)(x²+3x+9)'],c:0},
+    {q:'8x³ − 1',o:['(2x−1)(4x²+2x+1)','(2x+1)(4x²−2x+1)','(2x−1)³','(2x−1)(4x²−2x+1)'],c:0},
+    {q:'12a³ − 18a²',o:['6a²(2a−3)','6a(2a−3)','2a²(6a−9)','6a²(2a+3)'],c:0},
+    {q:'x² + xy − 3x − 3y',o:['(x−3)(x+y)','(x+3)(x+y)','(x−3)(x−y)','(x+y)(x+y)'],c:0},
+    {q:'3x² − 27',o:['3(x+3)(x−3)','3(x−9)','(3x+9)(x−3)','3(x+3)²'],c:0},
+  ];
+  for(const it of optsPool){
+    G2.push({cat:'Factorización',type:'mc',prompt:'Factoriza completamente: '+it.q,
+      opts:it.o.slice(),correct:it.c,
+      hint:'Identifica el caso: factor común, diferencia de cuadrados, TCP o trinomio, y verifica multiplicando tu respuesta.',
+      explain:'La forma factorizada correcta es <b>'+it.o[it.c]+'</b>. Multiplica para comprobarlo.',
+      tag:'b2'});
+  }
+})();
+
+const G3=[]; // Desigualdades
+(function(){
+  // lineales simples
+  const lin=[
+    {q:'Resuelve: 2x − 5 < 4x + 1',ans:'x > −3',sol:'(−3, ∞)',s:['x > −3','x < −3','x > 2','x < 2']},
+    {q:'Resuelve: 5 − 2x ≥ 11',ans:'x ≤ −3',sol:'(−∞, −3]',s:['x ≤ −3','x ≥ −3','x ≤ 3','x ≥ 3']},
+    {q:'Resuelve: 7 − 3x < 2 − 5x + 6',ans:'x < 1/2',sol:'(−∞, 1/2)',s:['x < 1/2','x > 1/2','x < 2','x > 2']},
+    {q:'Resuelve: 2x + 7 > x + 10',ans:'x > 3',sol:'(3, ∞)',s:['x > 3','x > 1','x < 3','x ≥ 3']},
+  ];
+  for(const it of lin){
+    G3.push({cat:'Desigualdad lineal',type:'mc',prompt:it.q,
+      opts:['<b>'+it.s[0]+'</b> → '+it.sol, '<b>'+it.s[1]+'</b>', '<b>'+it.s[2]+'</b>', '<b>'+it.s[3]+'</b>'],
+      correct:0, blockAns:it.ans,
+      hint:'Despeja x como en una ecuación, pero recuerda: al dividir entre un NEGATIVO se invierte la desigualdad.',
+      explain:'La solución correcta es <b>'+it.ans+'</b> → '+it.sol+'.',
+      tag:'b3'});
+  }
+  // con agrupación / múltiples x (num respuesta como símbolo simplificado)
+  G3.push({cat:'Desigualdad con signos de agrupación',type:'num',answer:19/7,tol:0.0001,
+    prompt:'Resuelve: 3(2x − 4) > x + 7 − 2x. Escribe la solución para x como número: ¿x es MAYOR que qué valor? (fracción = 19/7 ≈ 2.714)',
+    hint:'Distribuye: 6x − 12 > −x + 7 → 7x > 19 → divide entre 7 (positivo, no invierte).',
+    explain:'7x > 19 → x > 19/7 ≈ 2.714.',tag:'b3'});
+  // valor absoluto menor que
+  G3.push({cat:'Valor absoluto (caso menor que)',type:'num',answer:8,tol:0.01,
+    prompt:'Resuelve: |x − 3| ≤ 5. ¿Cuál es el extremo SUPERIOR del intervalo solución?',
+    hint:'|x − 3| ≤ 5 → −5 ≤ x − 3 ≤ 5. Suma 3 a los tres lados.',
+    explain:'−5 ≤ x − 3 ≤ 5 → −2 ≤ x ≤ 8. El extremo superior es 8 → intervalo [−2, 8].',tag:'b3'});
+  G3.push({cat:'Valor absoluto (caso mayor que)',type:'mc',
+    prompt:'Resuelve: |2x + 1| > 7. ¿Cuál es la solución correcta?',
+    opts:['<b>x < −4</b> o <b>x > 3</b> → (−∞,−4) ∪ (3,∞)',
+          '<b>x > 3</b> → (3,∞)',
+          '<b>−4 < x < 3</b> → (−4,3)',
+          '<b>x < −3</b> o <b>x > 4</b>'],
+    correct:0,
+    hint:'Como es "mayor que", se separa en dos casos: 2x+1 < −7 O 2x+1 > 7.',
+    explain:'Caso A: 2x+1 < −7 → x < −4. Caso B: 2x+1 > 7 → x > 3. Solución: (−∞,−4) ∪ (3,∞).',tag:'b3'});
+  // polinómicas
+  const poly=[
+    {q:'Resuelve: (x − 2)(x + 1) > 0',a:'(−∞, −1) ∪ (2, ∞)',o:['(−∞, −1) ∪ (2, ∞)','(−1, 2)','(−2, 1) ∪ ...','(2, ∞)']},
+    {q:'Resuelve: (x + 1)(x − 4) < 0',a:'(−1, 4)',o:['(−1, 4)','(−∞,−1) ∪ (4,∞)','(−4, 1)','(1, 4)']},
+    {q:'Resuelve: x² − 9 ≥ 0',a:'(−∞, −3] ∪ [3, ∞)',o:['(−∞, −3] ∪ [3, ∞)','[−3, 3]','(−3, 3)','(−∞, 3]']},
+  ];
+  for(const it of poly){
+    G3.push({cat:'Desigualdad polinómica',type:'mc',prompt:it.q,
+      opts:it.o.slice(),correct:0,
+      hint:'Factoriza, halla las raíces, divide la recta en intervalos y prueba un número en cada uno.',
+      explain:'La solución es <b>'+it.a+'</b>. Usa el método de los puntos de prueba (tabla de signos).',tag:'b3'});
+  }
+  // racionales
+  G3.push({cat:'Desigualdad racional',type:'mc',
+    prompt:'Resuelve: (x − 1) / (x + 2) > 0',
+    opts:['(−∞, −2) ∪ (1, ∞)','(−2, 1)','(−∞, −2)','(1, ∞)'],
+    correct:0,
+    hint:'Raíces: numerador en 1 y denominador en −2 (este NUNCA se incluye). Prueba signos en cada intervalo.',
+    explain:'El denominador x+2 no puede ser 0 → excluye −2. Signos: (−)/(−)=+ en (−∞,−2) y (+)/(+)=+ en (1,∞).',tag:'b3'});
+  G3.push({cat:'Desigualdad racional (con ≤)',type:'mc',
+    prompt:'Resuelve: (x + 3) / (x − 1) ≤ 0',
+    opts:['[−3, 1)','(−3, 1)','[−3, 1]','(−∞, −3] ∪ (1, ∞)'],
+    correct:0,
+    hint:'Numerador 0 en −3 (se incluye por el ≤), denominador 0 en 1 (se excluye siempre).',
+    explain:'El intervalo donde el cociente es negativo es (−3, 1); incluye −3 (numerador) pero no 1 (denominador) → [−3, 1).',tag:'b3'});
+})();
+
+const G4=[]; // Ecuación de la recta
+(function(){
+  const pairs=[[1,2,4,6],[2,3,5,9],[0,3,2,7],[1,4,3,10],[-1,0,1,4],[2,1,6,3]];
+  for(const [x1,y1,x2,y2] of pairs){
+    const m=(y2-y1)/(x2-x1);
+    G4.push({cat:'Pendiente',type:'num',answer:m,tol:0.0001,
+      prompt:'Halla la pendiente de la recta que pasa por ('+x1+', '+y1+') y ('+x2+', '+y2+').',
+      hint:'m = (y₂ − y₁) / (x₂ − x₁) = ('+y2+' − '+y1+') / ('+x2+' − '+x1+').',
+      explain:'m = ('+y2+'−'+y1+')/('+x2+'−'+x1+') = '+(y2-y1)+'/'+(x2-x1)+' = '+fmt(m)+'.',tag:'b4'});
+  }
+  // distancias (trios pitagóricos → entero)
+  const dist=[[1,2,4,6,5],[0,0,3,4,5],[1,1,9,7,10],[2,3,8,11,10],[-2,3,3,7,Math.sqrt(41)]];
+  for(const [x1,y1,x2,y2,ans] of dist){
+    G4.push({cat:'Distancia entre dos puntos',type:'num',answer:Math.round(ans*100)/100,tol:0.01,
+      prompt:'Halla la distancia entre ('+x1+', '+y1+') y ('+x2+', '+y2+').',
+      hint:'d = √[(x₂−x₁)² + (y₂−y₁)²] = √[('+x2+'−('+x1+'))² + ('+y2+'−('+y1+'))²].',
+      explain:'d = √(('+(x2-x1)+')² + ('+(y2-y1)+')²) = '+fmt(Math.round(ans*100)/100)+'.',tag:'b4'});
+    G4.push({cat:'Punto medio',type:'num',answer:Math.round(((x1+x2)/2)*100)/100,tol:0.01,
+      prompt:'Halla la coordenada x del PUNTO MEDIO entre ('+x1+', '+y1+') y ('+x2+', '+y2+').',
+      hint:'x del punto medio = (x₁ + x₂)/2 = ('+x1+' + '+x2+')/2.',
+      explain:'(x₁+x₂)/2 = ('+x1+'+'+x2+')/2 = '+fmt(Math.round(((x1+x2)/2)*100)/100)+'.',tag:'b4'});
+  }
+  // ecuación de la recta por 2 puntos (mc con pendiente-intersección)
+  const lineEq=[[1,2,3,8,'y = 3x − 1'],[0,3,2,7,'y = 2x + 3'],[1,1,2,3,'y = 2x − 1'],[2,3,4,7,'y = 2x − 1'],[0,0,1,2,'y = 2x']];
+  for(const [x1,y1,x2,y2,corr] of lineEq){
+    const m=(y2-y1)/(x2-x1); const b=y1-m*x1;
+    const wrong=[];
+    // generar opciones incorrectas plausibles
+    const cand=[corr,'y = '+fmt(m)+'x + '+(y1+x1),'y = '+fmt((x2-x1)/(y2-y1)||1)+'x + '+b,'y = '+fmt(m+1)+'x + '+b,'y = '+fmt(m)+'x − '+b];
+    const uniq=[corr]; for(const c of cand){if(!uniq.includes(c)) uniq.push(c);}
+    const opts=shuffle(uniq.slice(0,4));
+    G4.push({cat:'Ecuación de la recta',type:'mc',prompt:'Halla la ecuación (pendiente-intersección y = mx + b) de la recta que pasa por ('+x1+', '+y1+') y ('+x2+', '+y2+').',
+      opts:opts.map(o=>'<b>'+esc(o)+'</b>'),correct:opts.indexOf(corr),
+      hint:'Primero m = (y₂−y₁)/(x₂−x₁), luego sustituye un punto para hallar b.',
+      explain:'m = '+fmt(m)+' y usando ('+x1+','+y1+'): '+y1+' = '+fmt(m)+'·('+x1+') + b → b = '+fmt(b)+'. La ecuación es <b>'+corr+'</b>.',tag:'b4'});
+  }
+  // paralelas y perpendiculares
+  G4.push({cat:'Paralelas y perpendiculares',type:'num',answer:3,tol:0.0001,
+    prompt:'¿Cuál es la pendiente de una recta PARALELA a y = 3x − 2?',
+    hint:'Las rectas paralelas tienen la misma pendiente.',
+    explain:'Paralela → misma pendiente m = 3.',tag:'b4'});
+  G4.push({cat:'Paralelas y perpendiculares',type:'num',answer:-1/3,tol:0.0001,
+    prompt:'¿Cuál es la pendiente de una recta PERPENDICULAR a y = 3x − 2?',
+    hint:'Perpendicular → recíproco negativo: m₂ = −1/m₁ = −1/3.',
+    explain:'m₂ = −1/3 (se cumple que 3 · (−1/3) = −1).',tag:'b4'});
+  G4.push({cat:'Paralelas y perpendiculares',type:'num',answer:2,tol:0.0001,
+    prompt:'¿Cuál es la pendiente de una recta PARALELA a y = 2x + 5?',
+    hint:'Misma pendiente que la recta dada.',
+    explain:'m = 2.',tag:'b4'});
+  G4.push({cat:'Paralelas y perpendiculares',type:'num',answer:-0.5,tol:0.0001,
+    prompt:'¿Cuál es la pendiente de una recta PERPENDICULAR a y = 2x + 5?',
+    hint:'Recíproco negativo de 2 → −1/2.',
+    explain:'m₂ = −1/2 = −0.5.',tag:'b4'});
+  G4.push({cat:'Paralelas y perpendiculares',type:'mc',
+    prompt:'¿Cómo son las rectas y = 2x + 1 y y = −½x + 3?',
+    opts:['Perpendiculares','Paralelas','Son la misma recta','Se cruzan pero no son perpendiculares'],
+    correct:0,
+    hint:'Multiplica sus pendientes: 2 × (−1/2) = ?',
+    explain:'2 × (−1/2) = −1 → sus pendientes son recíprocas negativas → son perpendiculares.',tag:'b4'});
+  // modelado real
+  G4.push({cat:'Modelado de situación real',type:'num',answer:25,tol:0.01,
+    prompt:'Un taxi cobra Q5 de arranque más Q2.50 por kilómetro (y = 2.5x + 5). ¿Cuánto cuesta un viaje de 8 km?',
+    hint:'Sustituye x = 8 en y = 2.5x + 5.',
+    explain:'y = 2.5·8 + 5 = 20 + 5 = 25 quetzales.',tag:'b4'});
+  G4.push({cat:'Modelado de situación real',type:'num',answer:30,tol:0.01,
+    prompt:'Una planta mide 12 cm y crece 3 cm por semana (y = 3x + 12). ¿Cuánto medirá a las 6 semanas?',
+    hint:'Sustituye x = 6 en y = 3x + 12.',
+    explain:'y = 3·6 + 12 = 18 + 12 = 30 cm.',tag:'b4'});
+})();
+
+const G5=[]; // Funciones
+(function(){
+  // evaluación lineal
+  const ev=[
+    {f:'f(x) = 2x + 5',x:3,ans:11},{f:'f(x) = 3x − 7',x:4,ans:5},
+    {f:'f(x) = x² − 4',x:-2,ans:0},{f:'f(x) = x² + 2x',x:-1,ans:-1},
+    {f:'f(x) = |x − 7|',x:2,ans:5},{f:'f(x) = |5 − 2x|',x:6,ans:7},
+    {f:'f(x) = 2x − 3',x:5,ans:7},{f:'f(x) = x² + 1',x:4,ans:17},
+  ];
+  for(const it of ev){
+    G5.push({cat:'Evaluación de funciones',type:'num',answer:it.ans,tol:0.0001,
+      prompt:'Si '+it.f+', calcula f('+it.x+').',
+      hint:'Sustituye cada x por '+it.x+' y simplifica.',
+      explain:'f('+it.x+') = '+it.ans+'.',tag:'b5'});
+  }
+  // evaluación radical y racional
+  G5.push({cat:'Evaluación de funciones',type:'num',answer:3,tol:0.0001,
+    prompt:'Si f(x) = √(x + 6), calcula f(3).',
+    hint:'√(3 + 6) = √9.',
+    explain:'f(3) = √(3+6) = √9 = 3.',tag:'b5'});
+  G5.push({cat:'Evaluación de funciones',type:'num',answer:1,tol:0.0001,
+    prompt:'Si f(x) = 3/(x − 1), calcula f(4).',
+    hint:'3/(4 − 1) = 3/3.',
+    explain:'f(4) = 3/(4−1) = 3/3 = 1.',tag:'b5'});
+  G5.push({cat:'Evaluación de funciones',type:'mc',
+    prompt:'Si f(x) = 3/(x − 1), ¿para qué valor de x NO existe f(x)?',
+    opts:['x = 1','x = 0','x = −1','x = 3'],
+    correct:0,
+    hint:'El denominador no puede ser 0. ¿Cuándo vale x − 1 = 0?',
+    explain:'x − 1 = 0 → x = 1. Dividir entre 0 no está definido.',tag:'b5'});
+  // prueba recta vertical
+  G5.push({cat:'Prueba de la recta vertical',type:'mc',
+    prompt:'¿La ecuación x = y² representa una función?',
+    opts:['No, falla la prueba de la recta vertical (cada x > 0 tiene dos y)','Sí, es una función','Sí, porque despeja y','No, porque no tiene x'],
+    correct:0,
+    hint:'Dibuja x = y²: es una parábola horizontal. Una recta vertical la cruza en 2 puntos.',
+    explain:'Para x = 4 hay y = 2 y y = −2. Una entrada x produce dos salidas → NO es función.',tag:'b5'});
+  G5.push({cat:'Prueba de la recta vertical',type:'mc',
+    prompt:'¿Cuál de las siguientes SÍ es la gráfica de una función?',
+    opts:['y = |x| (una "V")','x = 3 (recta vertical)','x² + y² = 25 (círculo)','x = y² − 1'],
+    correct:0,
+    hint:'Aplica la recta vertical: cada x debe tener como máximo una y.',
+    explain:'y = |x| pasa la prueba de la recta vertical. Las otras opciones fallan (una entrada x da dos salidas y).',tag:'b5'});
+  // dominio
+  G5.push({cat:'Dominio de funciones',type:'num',answer:7,tol:0.0001,
+    prompt:'¿Cuál es el dominio de f(x) = 5/(x − 7)? Escribe el número que NO puede tomar x.',
+    hint:'El denominador no puede ser 0: x − 7 ≠ 0.',
+    explain:'Dominio: todos los reales menos x = 7 (ℝ − {7}).',tag:'b5'});
+  G5.push({cat:'Dominio de funciones',type:'num',answer:4,tol:0.0001,
+    prompt:'¿Cuál es el valor mínimo de x en el dominio de f(x) = √(x − 4)? (el radicando debe ser ≥ 0)',
+    hint:'x − 4 ≥ 0.',
+    explain:'x − 4 ≥ 0 → x ≥ 4 → dominio [4, ∞). El mínimo es 4.',tag:'b5'});
+  G5.push({cat:'Dominio desde pares ordenados',type:'mc',
+    prompt:'Dados los pares { (1,5), (2,7), (3,5), (4,9) }, ¿es una función? ¿cuál es su dominio?',
+    opts:['Sí es función; dominio {1, 2, 3, 4}','No es función; dominio {1,2,3,4}','Sí es función; dominio {5,7,9}','No, porque el 5 se repite'],
+    correct:0,
+    hint:'¿Cada x aparece una sola vez? El dominio son las x, el rango las y.',
+    explain:'Cada x (1,2,3,4) tiene una sola salida → es función. Dominio = {1,2,3,4}.',tag:'b5'});
+  G5.push({cat:'Dominio desde pares ordenados',type:'mc',
+    prompt:'Dados los pares { (0,1), (2,3), (0,5) }, ¿es una función?',
+    opts:['No, porque la entrada 0 tiene dos salidas (1 y 5)','Sí, porque cada y es distinta','Sí, porque tiene 3 pares','No, porque le faltan pares'],
+    correct:0,
+    hint:'Una misma entrada x no puede tener dos salidas diferentes.',
+    explain:'La entrada x = 0 produce y = 1 y también y = 5 → viola la definición de función → NO es función.',tag:'b5'});
+  // función por trozos
+  G5.push({cat:'Función por trozos',type:'num',answer:-1,tol:0.0001,
+    prompt:'Sea f(x) = 2x + 1 si x < 0; f(x) = x² si 0 ≤ x ≤ 3; f(x) = 5 si x > 3. Calcula f(−1).',
+    hint:'−1 cae en el primer trozo (x < 0): usa 2x + 1.',
+    explain:'f(−1) = 2(−1) + 1 = −2 + 1 = −1.',tag:'b5'});
+  G5.push({cat:'Función por trozos',type:'num',answer:4,tol:0.0001,
+    prompt:'Con la misma función por trozos, calcula f(2).',
+    hint:'2 cae en 0 ≤ x ≤ 3: usa x².',
+    explain:'f(2) = 2² = 4.',tag:'b5'});
+  G5.push({cat:'Función por trozos',type:'num',answer:5,tol:0.0001,
+    prompt:'Con la misma función por trozos, calcula f(5).',
+    hint:'5 cae en x > 3: la función vale 5 (constante).',
+    explain:'f(5) = 5 (tercer trozo).',tag:'b5'});
+  // rango desde gráfica
+  G5.push({cat:'Dominio y rango desde la gráfica',type:'mc',
+    prompt:'Una parábola abre hacia arriba con vértice en (0, −4) y se extiende sobre toda la recta x. ¿Cuál es su RANGO?',
+    opts:['[−4, ∞)','(−∞, −4]','Todos los reales','[−4, 4]'],
+    correct:0,
+    hint:'El punto más bajo es el vértice en y = −4 y desde ahí crece sin límite.',
+    explain:'Los valores de y van desde −4 (mínimo) hacia arriba → rango [−4, ∞).',tag:'b5'});
+})();
+
+const BLOCKS=[
+  {id:'b1',name:'Geometría y Trigonometría',pts:'/20 puntos',color:'b1',bank:G1,
+   topics:['Ángulos complementarios y suplementarios','Suma de ángulos internos del triángulo','Teorema de Pitágoras','Razones trigonométricas y aplicaciones']},
+  {id:'b2',name:'Factorización',pts:'/10 puntos',color:'b2',bank:G2,
+   topics:['Factor común','Diferencia de cuadrados','Trinomio cuadrado perfecto','Trinomios generales','Cubos y factorización por agrupación']},
+  {id:'b3',name:'Desigualdades',pts:'/25 puntos',color:'b3',bank:G3,
+   topics:['Desigualdades lineales','Con signos de agrupación','Valor absoluto','Desigualdades polinómicas y racionales']},
+  {id:'b4',name:'Ecuación de la recta',pts:'/25 puntos',color:'b4',bank:G4,
+   topics:['Pendiente, distancia y punto medio','Ecuación de la recta','Rectas paralelas y perpendiculares','Modelado de situaciones reales']},
+  {id:'b5',name:'Introducción a las funciones',pts:'/20 puntos',color:'b5',bank:G5,
+   topics:['Evaluación de funciones','Prueba de la recta vertical','Dominio y rango','Función por trozos']},
+];
+const SESSION_LEN=8;
+
+/* ============================================================
+   PRUEBA COMPLETA (simulacro del examen de admisión)
+   Cada bloque aporta preguntas según su peso y cada acierto vale
+   lo mismo (5 pts), así el total siempre queda sobre 100.
+============================================================ */
+const FULL_PLAN=[
+  {id:'b1',count:4},  // Geometría y Trigonometría · 20 pts (4 × 5)
+  {id:'b2',count:2},  // Factorización            · 10 pts (2 × 5)
+  {id:'b3',count:5},  // Desigualdades            · 25 pts (5 × 5)
+  {id:'b4',count:5},  // Ecuación de la recta     · 25 pts (5 × 5)
+  {id:'b5',count:4},  // Funciones                · 20 pts (4 × 5)
+];
+const FULL_LEN=FULL_PLAN.reduce((s,p)=>s+p.count,0); // 20 preguntas
+const FULL_PTS_PER=5;                                 // puntos por acierto
+const FULL_MAX=100;                                   // nota máxima
+
+/* ============================================================
+   NAVEGACIÓN (mapa de pantallas) y UI
+============================================================ */
+// view: 'home' | 'intro' | 'introFull' | 'game' | 'result'
+let view='home';
+let current={mode:'block',block:null,blockIdx:-1,used:[],q:null,qBlock:null,answered:false,
+             okCount:0,earned:0,usedHint:false,questionIndex:0,sessionLen:SESSION_LEN,
+             list:[],pos:0,blockRes:{},fStreak:0};
+let exitCb=null; // callback del diálogo de confirmación
+
+const NAV_ORDER=['home','intro','game','result'];
+const NAV_LABEL={home:'Inicio',intro:'Bloque',introFull:'Simulacro',game:'Práctica',result:'Resultado'};
+const ICON={
+  check:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+};
+function $id(id){return document.getElementById(id);}
+
+/* --- Barra de progreso de práctica (relleno + puntitos) --- */
+function renderProgress(){
+  // Usa la longitud de la sesión actual (8 en práctica, 20 en el simulacro).
+  const len=current.sessionLen||SESSION_LEN;
+  // Antes de responder la pregunta k (0-based) ya resolvimos 'questionIndex'.
+  const done=current.questionIndex + (current.answered?1:0);
+  const pct=Math.max(0,Math.min(100,Math.round(done/len*100)));
+  $id('progFill').style.width=pct+'%';
+  $id('progTxt').textContent=pct+' %';
+  const dots=$id('progDots'); dots.innerHTML='';
+  for(let i=0;i<len;i++){
+    const d=document.createElement('span'); d.className='dot'+(i<done?' on':'')+(i===done?' cur':'');
+    dots.appendChild(d);
+  }
+}
+
+/* --- Mapa de navegación superior: resalta la pantalla activa --- */
+function updateNav(active){
+  view=active;
+  // La intro del simulacro ocupa el mismo paso del mapa que la intro de bloque.
+  const idx=NAV_ORDER.indexOf(active==='introFull'?'intro':active);
+  document.querySelectorAll('nav.steps .step').forEach((el,i)=>{
+    el.classList.remove('active','done','upcoming');
+    el.setAttribute('aria-current',i===idx?'step':'false');
+    if(i===idx){el.classList.add('active');}
+    else if(i<idx){el.classList.add('done');}
+    else{el.classList.add('upcoming');}
+  });
+  // El paso 2 se llama "Bloque" (práctica) o "Simulacro" (prueba completa)
+  const s2=$id('navStep2Txt');
+  if(s2)s2.textContent=(current.mode==='full')?'Simulacro':'Bloque';
+}
+function showSection(id){
+  ['home','intro','introFull','game','result'].forEach(s=>$id(s).classList.toggle('hidden',s!==id));
+  // Reinicia la animación de entrada
+  const sec=$id(id);
+  if(sec){sec.classList.remove('screen');void sec.offsetWidth;sec.classList.add('screen');}
+  window.scrollTo({top:0,behavior:reduceMotion()?'auto':'smooth'});
+}
+
+/* --- Diálogo de confirmación --- */
+function openDialog(title,msg,okText,cb,cancelText){
+  $id('dialogTitleText').textContent=title;
+  $id('dialogMsg').textContent=msg;
+  $id('dialogOk').textContent=okText;
+  $id('dialogCancel').textContent=cancelText||'Seguir practicando';
+  exitCb=cb;
+  $id('dialog').classList.remove('hidden');
+  $id('dialogOk').focus();
+}
+function closeDialog(){$id('dialog').classList.add('hidden');exitCb=null;}
+$id('dialogCancel').addEventListener('click',closeDialog);
+$id('dialogOk').addEventListener('click',()=>{const cb=exitCb;closeDialog();if(cb)cb();});
+$id('dialog').addEventListener('click',e=>{if(e.target===$id('dialog'))closeDialog();});
+
+/* --- Estadísticas y logros --- */
+function renderStats(){
+  $id('statPts').textContent=state.pts;
+  $id('statStreak').textContent=state.streak;
+  $id('statHit').textContent=state.hit;
+  $id('statTot').textContent=state.tot;
+}
+function renderAch(){
+  const home=$id('achHome'); let html='';
+  ACH.forEach(a=>{
+    const on=state.ach[a.id];
+    html+='<span class="ach '+(on?'unlocked'+(a.id==='first'?' glow':'') :'')+'" title="'+esc(a.d)+'" aria-label="'+esc(a.n)+': '+esc(a.d)+'">'
+      +'<span class="ico" aria-hidden="true">'+(on?ACH_ICON[a.id]:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>')+'</span>'
+      +esc(a.n)+'</span>';
+  });
+  home.innerHTML=html;
+}
+function awardAch(id){
+  if(!state.ach[id]){state.ach[id]=true;showToast('🏆 ¡Logro desbloqueado! '+ACH.find(a=>a.id===id).n);renderAch();save();}
+}
+function showToast(msg){
+  const t=$id('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+/* ============================================================
+   PANTALLA 1 — INICIO (grilla de bloques)
+============================================================ */
+function renderHome(){
+  current.mode='block'; // al volver al inicio, el mapa muestra "Bloque"
+  showSection('home');
+  updateNav('home');
+  $id('btnOpenFull').onclick=openFull;
+  $id('btnResetStudent').onclick=confirmReset;
+  const grid=$id('blocksGrid'); let html='';
+  BLOCKS.forEach((b,i)=>{
+    const st=state.block[b.id]||{ok:0,total:0};
+    const pct=st.total?Math.round(st.ok/st.total*100):0;
+    const done=st.total>0;
+    html+='<button class="block bb'+b.color+'" onclick="openBlock('+i+')" aria-label="Bloque '+(i+1)+': '+esc(b.name)+'. '+esc(b.bank[0].cat)+' y más">'
+      +'<span class="top"><span class="chip ch'+(i+1)+'">Bloque '+(i+1)+'</span>'
+      +(done?'<span class="chip" style="background:rgba(52,211,153,.2);color:#6ee7b7">✔ Practicado</span>':'')
+      +'</span>'
+      +'<h3 class="bc'+b.color+'">'+esc(b.name)+'</h3>'
+      +'<p class="desc">'+esc(b.bank[0].cat)+' y más · 8 ejercicios</p>'
+      +'<span class="pts">'+b.pts+' en el examen</span>'
+      +'<div class="bar"><i style="width:'+pct+'%;background:var(--'+b.color+')"></i></div>'
+      +'<div class="barlbl"><span>'+(done?pct+'% de acierto':'Sin practicar aún')+'</span><span>'+(done?st.ok+'/'+st.total+' correctas':'')+'</span></div>'
+      +'<span class="go" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>'
+      +'</button>';
+  });
+  grid.innerHTML=html;
+  renderStats(); renderAch(); save();
+}
+function goHome(){renderHome();}
+
+/* --- Nuevo alumno: borra TODO el progreso guardado en este equipo --- */
+function defaultState(){return {pts:0,streak:0,hit:0,tot:0,ach:{},block:{},seen:false};}
+function confirmReset(){
+  openDialog('¿Empezar como nuevo alumno?',
+    'Se borrarán TODOS los puntos, rachas, logros y el avance por bloque guardados en este equipo. '+
+    'Esta acción no se puede deshacer. Úsala cuando otro alumno vaya a practicar aquí.',
+    'Sí, borrar todo', doReset, 'Cancelar');
+}
+function doReset(){
+  state=defaultState();
+  try{localStorage.removeItem('mat4');}catch(e){}
+  save();
+  // Deja la pantalla como una primera visita: vuelve a mostrar "¿Cómo funciona?"
+  $id('guideCard').classList.remove('hidden');
+  renderHome();
+  showToast('🧼 Listo. Progreso borrado: empieza un alumno nuevo.');
+}
+
+/* ============================================================
+   PANTALLA 2 — INTRO DE BLOQUE (qué vas a practicar)
+============================================================ */
+function openBlock(idx){
+  const b=BLOCKS[idx];
+  current.mode='block';
+  current.block=b; current.blockIdx=idx;
+  showSection('intro'); updateNav('intro');
+
+  const st=state.block[b.id]||{ok:0,total:0};
+  $id('introBadge').className='big ch'+(idx+1);
+  $id('introBadge').innerHTML='<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+BLOCK_ICON[b.id]+'</svg>';
+  $id('introEyebrow').textContent='BLOQUE '+(idx+1);
+  $id('introTitle').textContent=b.name;
+  $id('introTitle').className='bc'+b.color;
+  $id('introPts').textContent='Vale '+b.pts+' en el examen de admisión · 8 ejercicios aleatorios por práctica.';
+
+  const topics=$id('introTopics'); topics.innerHTML='';
+  b.topics.forEach(t=>{
+    const li=document.createElement('li');
+    li.innerHTML='<span aria-hidden="true">'+ICON.check+'</span><span>'+esc(t)+'</span>';
+    topics.appendChild(li);
+  });
+
+  const mine=st.total?Math.round(st.ok/st.total*100):0;
+  $id('introPct').textContent=st.total?(mine+' %'):'0 %';
+  $id('introSolved').textContent=st.total?(st.total+' · '+st.ok+' correctas'):'0';
+  $id('introBarFill').style.width=(mine||0)+'%';
+
+  $id('btnStartPractice').onclick=()=>startBlock(idx);
+  $id('btnIntroBack').onclick=()=>goHome();
+}
+
+/* ============================================================
+   PANTALLA 2b — INTRO DE PRUEBA COMPLETA (simulacro)
+============================================================ */
+function openFull(){
+  current.mode='full';
+  showSection('introFull'); updateNav('introFull');
+  $id('introFullPts').textContent=FULL_LEN+' preguntas mezcladas · nota sobre '+FULL_MAX+'.';
+  const list=$id('introFullList'); list.innerHTML='';
+  FULL_PLAN.forEach((p,i)=>{
+    const b=BLOCKS.find(x=>x.id===p.id);
+    const pts=p.count*FULL_PTS_PER;
+    const li=document.createElement('li');
+    li.innerHTML='<span class="chip ch'+(i+1)+'" aria-hidden="true" style="width:22px;height:22px;display:grid;place-items:center;border-radius:7px;font-size:.7rem">'+(i+1)+'</span>'
+      +'<span><b>'+esc(b.name)+'</b> · '+p.count+' preguntas · <b style="color:var(--accent)">/'+pts+' pts</b></span>';
+    list.appendChild(li);
+  });
+  $id('btnStartFull').onclick=startFull;
+  $id('btnFullBack').onclick=()=>goHome();
+}
+
+/* ============================================================
+   PANTALLA 3 — PRÁCTICA
+============================================================ */
+function startBlock(idx){
+  const b=BLOCKS[idx];
+  current.mode='block';
+  current.block=b; current.blockIdx=idx;
+  current.used=[]; current.okCount=0; current.earned=0; current.questionIndex=0;
+  current.sessionLen=SESSION_LEN;
+  showSection('game'); updateNav('game');
+  renderProgress();
+  showQuestion();
+}
+
+// Construye la lista de 20 preguntas repartidas por peso y arranca el simulacro.
+function startFull(){
+  current.mode='full';
+  current.block=null; current.blockIdx=-1;
+  current.used=[]; current.okCount=0; current.earned=0; current.questionIndex=0;
+  current.sessionLen=FULL_LEN;
+  current.fStreak=0; // racha del simulacro (aparte de la práctica guardada)
+  current.blockRes={}; // id -> {ok,total}
+  const list=[];
+  FULL_PLAN.forEach(p=>{
+    const b=BLOCKS.find(x=>x.id===p.id);
+    current.blockRes[p.id]={ok:0,total:0,name:b.name,color:b.color,pts:p.count*FULL_PTS_PER};
+    // Toma 'count' preguntas distintas del banco de ese bloque
+    shuffle(b.bank).slice(0,p.count).forEach(q=>list.push({q,blockId:p.id,color:b.color}));
+  });
+  current.list=shuffle(list); // mezcla el orden final
+  current.pos=0;
+  showSection('game'); updateNav('game');
+  renderProgress();
+  showQuestion();
+}
+
+function showQuestion(){
+  const isFull=current.mode==='full';
+  const tag=$id('gameTag');
+  const btnHint=$id('btnHint');
+  let q,b;
+
+  if(isFull){
+    // Modo simulacro: recorremos la lista ya mezclada de los 5 bloques.
+    const item=current.list[current.pos];
+    b=BLOCKS.find(x=>x.id===item.blockId);
+    q=item.q;
+    current.qBlock=b;
+    tag.textContent='Bloque '+BLOCKS.indexOf(b)+' · '+b.name;
+  } else {
+    b=current.block;
+    current.qBlock=b;
+    // Toma una pregunta aún no usada en esta sesión; si ya se agotaron todas
+    // (ronda larga), reinicia la lista y vuelve a barajar el banco completo.
+    let bank=b.bank.filter(x=>!current.used.includes(x));
+    if(bank.length===0){ current.used=[]; bank=b.bank.slice(); }
+    q=pick(bank);
+    current.used.push(q);
+    tag.textContent='Bloque '+BLOCKS.indexOf(b)+' · '+b.name;
+  }
+
+  current.q=q;
+  current.answered=false; current.usedHint=false;
+
+  tag.className='tag '+b.color;
+  $id('qNow').textContent=current.questionIndex+1;
+  $id('qTotal').textContent=current.sessionLen||SESSION_LEN;
+  $id('qCat').textContent=q.cat;
+  $id('gamePrompt').innerHTML=esc(q.prompt);
+
+  const area=$id('qArea'); area.innerHTML='';
+  const fb=$id('qFeedback'); fb.classList.add('hidden'); fb.innerHTML='';
+  const hint=$id('qHint'); hint.classList.add('hidden'); hint.innerHTML='';
+  // En simulacro no hay pistas: como en el examen real.
+  btnHint.disabled=false;
+  btnHint.style.visibility=isFull?'hidden':'visible';
+  $id('nextArea').innerHTML='';
+  renderProgress();
+
+  if(q.type==='mc'){
+    const div=document.createElement('div'); div.className='opts';
+    q.opts.forEach((o,i)=>{
+      const btn=document.createElement('button'); btn.className='opt'; btn.type='button';
+      btn.innerHTML='<span class="key" aria-hidden="true">'+(i+1)+'</span><span>'+o+'</span>';
+      btn.setAttribute('aria-label','Opción '+(i+1)+': '+(o.replace(/<[^>]*>/g,' ')));
+      btn.onclick=()=>answerMC(i,btn);
+      div.appendChild(btn);
+    });
+    area.appendChild(div);
+  } else {
+    const wrap=document.createElement('div'); wrap.className='numwrap';
+    const field=document.createElement('div'); field.className='field';
+    const lab=document.createElement('label'); lab.setAttribute('for','numIn'); lab.textContent='Escribe tu respuesta:';
+    field.appendChild(lab);
+    const nf=document.createElement('div'); nf.className='numfield';
+    const inp=document.createElement('input'); inp.type='text'; inp.id='numIn'; inp.name='numIn'; inp.inputMode='decimal'; inp.autocomplete='off';
+    inp.setAttribute('aria-describedby','numHelper');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkNum();});
+    nf.appendChild(inp);
+    const unit=document.createElement('span'); unit.className='unit'; unit.textContent=q.unit||'';
+    if(q.unit)nf.appendChild(unit);
+    field.appendChild(nf);
+    const helper=document.createElement('span'); helper.id='numHelper'; helper.className='helper';
+    helper.textContent='Puedes usar punto o coma (ej. 12.5). Pulsa Enter o el botón Comprobar.';
+    field.appendChild(helper);
+    const btn=document.createElement('button'); btn.type='button'; btn.className='btn'; btn.textContent='Comprobar ✓';
+    btn.onclick=checkNum;
+    wrap.appendChild(field);
+    wrap.appendChild(btn);
+    area.appendChild(wrap);
+    setTimeout(()=>{inp.focus();inp.select();},80);
+  }
+}
+
+function showHint(){
+  if(current.mode==='full') return; // el simulacro no tiene pistas
+  if(current.answered||current.usedHint) return;
+  current.usedHint=true;
+  const btnHint=$id('btnHint'); btnHint.disabled=true;
+  const h=$id('qHint'); h.innerHTML='<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg> Pista: '+current.q.hint;
+  h.classList.remove('hidden');
+}
+
+function giveFeedback(ok,html){
+  const fb=$id('qFeedback');
+  const gain=(current.mode==='full')?FULL_PTS_PER:10;
+  fb.className='feedback '+(ok?'ok':'bad');
+  fb.innerHTML='<div class="hd">'+(ok?'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ¡Correcto! +'+gain+' pts'
+              :'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg> Incorrecto')+'</div>'+html;
+  fb.classList.remove('hidden');
+  $id('qHint').classList.add('hidden');
+}
+
+function finishQuestion(ok){
+  const b=current.qBlock||current.block;
+  if(current.mode==='full'){
+    // Simulacro: puntuación de examen. NO altera puntos, rachas ni logros
+    // de la práctica por bloques (así el progreso del alumno no se ensucia).
+    const r=current.blockRes[b.id];
+    if(r){ r.total++; if(ok)r.ok++; }
+    if(ok){ current.earned+=FULL_PTS_PER; current.fStreak++; }
+    else { current.fStreak=0; }
+    current.okCount+=ok?1:0;
+    return; // sin renderStats/save: el simulacro no toca las estadísticas de práctica
+  }
+  const blk=state.block[b.id]=state.block[b.id]||{ok:0,total:0};
+  blk.total++; state.tot++;
+  if(ok){blk.ok++; state.hit++; state.streak++; state.pts+=10; current.earned+=10;
+    if(current.usedHint){state.pts-=1; current.earned-=1;}
+    if(state.streak>=5)awardAch('five');
+  }else{state.streak=0;}
+  current.okCount+=ok?1:0;
+  if(!state.ach.first){state.ach.first=true;showToast('🌟 ¡Primeros pasos! Logro desbloqueado');}
+  if(!state.ach.all && Object.keys(state.block).length>=5){state.ach.all=true;showToast('🏆 ¡Practicaste los 5 bloques!');}
+  const pct=state.tot>=10?Math.round(state.hit/state.tot*100):0;
+  if(!state.ach.half && state.tot>=10 && pct>=80)awardAch('half');
+  if(state.pts>=100&&!state.ach.points)awardAch('points');
+  renderAch(); renderStats(); save();
+}
+
+function checkNum(){
+  if(current.answered) return;
+  const inp=$id('numIn'); const raw=(inp.value||'').replace(',','.').trim();
+  if(raw==='')return;
+  const val=parseFloat(raw);
+  if(isNaN(val)){showToast('⚠️ Escribe un número válido');return;}
+  const ok=Math.abs(val-current.q.answer)<=current.q.tol;
+  current.answered=true;
+  giveFeedback(ok,current.q.explain);
+  finishQuestion(ok);
+  scheduleNext();
+}
+
+function answerMC(idx,btn){
+  if(current.answered) return;
+  current.answered=true;
+  const q=current.q; const ok=(idx===q.correct);
+  const opts=document.querySelectorAll('.opt');
+  opts.forEach(o=>o.disabled=true);
+  opts[q.correct].classList.add('correct');
+  if(!ok)btn.classList.add('wrong');
+  giveFeedback(ok,q.explain);
+  finishQuestion(ok);
+  scheduleNext();
+}
+
+function scheduleNext(){
+  const len=current.sessionLen||SESSION_LEN;
+  if(current.questionIndex+1>=len){
+    setTimeout(showResult,1500);
+  } else {
+    $id('btnHint').style.visibility='hidden';
+    const area=$id('nextArea');
+    const btn=document.createElement('button'); btn.type='button'; btn.className='btn'; btn.textContent='Siguiente ➜';
+    btn.style.marginTop='0';
+    btn.onclick=()=>{
+      current.questionIndex++;
+      if(current.mode==='full')current.pos++;
+      $id('btnHint').style.visibility=(current.mode==='full')?'hidden':'visible';
+      btn.remove();
+      showQuestion();
+    };
+    area.appendChild(btn);
+    btn.focus();
+  }
+}
+
+/* ============================================================
+   PANTALLA 4 — RESULTADO
+============================================================ */
+function showResult(){
+  if(current.mode==='full')return showResultFull();
+  const b=current.block;
+  const n=current.okCount;
+  showSection('result'); updateNav('result');
+  const pct=Math.round(n/SESSION_LEN*100);
+
+  $id('resEyebrow').textContent='RESULTADO DEL BLOQUE';
+  $id('resTitle').textContent='Resultado — '+b.name;
+  $id('resSub').textContent='Acertaste '+n+' de '+SESSION_LEN+' preguntas';
+  $id('resPill1Lbl').textContent='Puntos de la práctica';
+  $id('resPill2Lbl').textContent='Racha máxima';
+  $id('resBreakdown').classList.add('hidden');
+  $id('btnRetryTxt').textContent='Practicar otra vez';
+  $id('resScore').innerHTML=n+'<small> / '+SESSION_LEN+'</small>';
+  $id('resPts').textContent='+'+current.earned;
+  $id('resStreak').textContent=Math.max(state.streak,0);
+  $id('resMedal').className='resmedal';
+  $id('resMedal').style.background=pct===100?'linear-gradient(135deg,#fde047,#f59e0b)'
+    :pct>=75?'linear-gradient(135deg,#34d399,#22c55e)'
+    :pct>=50?'linear-gradient(135deg,#38bdf8,#6366f1)'
+    :'linear-gradient(135deg,#475569,#334155)';
+  let msg='';
+  if(pct===100)msg='🎉 ¡Perfecto! Dominas este bloque. Prueba el siguiente o repítelo para subir tu precisión.';
+  else if(pct>=75)msg='🌟 ¡Muy bien! Revisa en la guía solo los ejercicios que fallaste.';
+  else if(pct>=50)msg='💪 Vas bien. Vuelve al bloque en la guía (Enseño → Ejemplo) y repite los ejemplos antes de intentar de nuevo.';
+  else msg='📚 Este bloque necesita repaso. Lee el tema y el ejemplo en la guía, luego regresa a practicar.';
+  $id('resMsg').textContent=msg;
+  confetti(pct>=75?50:0);
+  $id('btnRetry').onclick=()=>startBlock(BLOCKS.indexOf(b));
+  $id('btnHomeResult').onclick=()=>goHome();
+  $id('btnHomeResult').focus();
+  renderStats(); renderAch();
+}
+
+/* Resultado del SIMULACRO: nota global sobre 100 con desglose por bloque */
+function showResultFull(){
+  const n=current.okCount;
+  const score=current.earned;
+  showSection('result'); updateNav('result');
+  const pct=Math.round(score/FULL_MAX*100);
+
+  $id('resEyebrow').textContent='RESULTADO DEL SIMULACRO';
+  $id('resTitle').textContent='Resultado — Simulacro completo';
+  $id('btnRetryTxt').textContent='Repetir simulacro';
+  $id('resSub').textContent='Acertaste '+n+' de '+FULL_LEN+' preguntas';
+  $id('resScore').innerHTML=score+'<small> / '+FULL_MAX+'</small>';
+  $id('resPill1Lbl').textContent='Puntaje del simulacro';
+  $id('resPill2Lbl').textContent='Equivalente';
+  $id('resPts').textContent=score+' / '+FULL_MAX;
+  $id('resStreak').textContent=current.fStreak+' seguidos';
+  $id('resMedal').className='resmedal';
+  $id('resMedal').style.background=pct===100?'linear-gradient(135deg,#fde047,#f59e0b)'
+    :pct>=75?'linear-gradient(135deg,#34d399,#22c55e)'
+    :pct>=50?'linear-gradient(135deg,#38bdf8,#6366f1)'
+    :'linear-gradient(135deg,#475569,#334155)';
+  let msg='';
+  if(pct>=90)msg='🎉 Nota equivalente a Excelente. Estás listo para el examen de admisión.';
+  else if(pct>=75)msg='🌟 Muy buen resultado. Refuerza en la guía solo los bloques que marcaste por debajo.';
+  else if(pct>=60)msg='💪 Vas por buen camino. Repasa los bloques débiles (Enseño → Ejemplo) y repite el simulacro.';
+  else msg='📚 Conviene un repaso general. Lee la guía por bloques y practica cada uno antes de reintentar el simulacro.';
+  $id('resMsg').textContent=msg;
+
+  // Desglose por bloque según el peso real del examen
+  const bd=$id('resBreakdown');
+  bd.innerHTML='';
+  FULL_PLAN.forEach(p=>{
+    const r=current.blockRes[p.id]; if(!r)return;
+    const got=r.ok*FULL_PTS_PER;
+    const line=document.createElement('div'); line.className='bkline';
+    line.innerHTML='<div class="t"><b>'+r.name+'</b><span class="meta">'+r.ok+'/'+r.total+' correctas · vale '+r.pts+' pts</span></div>'+
+      '<div class="sc">'+got+' <small>/ '+r.pts+'</small></div>'+
+      '<div class="bar"><i style="width:'+(r.pts?Math.round(got/r.pts*100):0)+'%;background:'+r.color+'"></i></div>';
+    bd.appendChild(line);
+  });
+  bd.classList.remove('hidden');
+
+  confetti(pct>=75?70:0);
+  $id('btnRetry').onclick=()=>startFull();
+  $id('btnHomeResult').onclick=()=>goHome();
+  $id('btnHomeResult').focus();
+  renderStats(); renderAch();
+}
+
+/* ============================================================
+   SALIDA y utilidades
+============================================================ */
+function confirmExitGame(){
+  openDialog('¿Salir de la práctica?',
+    'Conservarás los puntos ya ganados, pero la práctica se termina aquí.',
+    'Sí, salir', goHome);
+}
+$id('btnExitGame').addEventListener('click',confirmExitGame);
+
+// Clic en el mapa de navegación
+document.querySelectorAll('nav.steps .step').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const s=el.getAttribute('data-step');
+    if(s===view)return;
+    if(s==='home'){ if(view==='game')confirmExitGame(); else goHome(); }
+    else if(s==='intro' && (view==='intro'||view==='game')){
+      if(view==='game'){ confirmExitGame(); return; }
+      if(current.mode==='full')openFull(); else openBlock(current.blockIdx);
+    }
+    // 'game' y 'result' solo se marcan como ubicación (no son destino clicable)
+  });
+});
+
+// Ocultar el banner "¿Cómo funciona?" (queda marcado en el navegador)
+$id('btnGuideOk').addEventListener('click',()=>{
+  state.seen=true; save();
+  $id('guideCard').classList.add('hidden');
+});
+
+$id('btnHome').addEventListener('click',goHome);
+
+function confetti(n){
+  if(!n||reduceMotion())return;
+  const colors=['#f59e0b','#34d399','#38bdf8','#fb7185','#a78bfa','#fb923c'];
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    const s=6+Math.random()*6;
+    c.style.width=s+'px'; c.style.height=s*1.4+'px';
+    c.style.borderRadius=Math.random()<.5?'50%':'2px';
+    c.style.animationDuration=(1.6+Math.random()*1.6)+'s';
+    c.style.animationDelay=(Math.random()*.5)+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3400);
+  }
+}
+
+// Teclado: Escape cierra el diálogo
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDialog();});
+
+/* Iconos de bloque (para la insignia de la intro) */
+const BLOCK_ICON={
+  b1:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  b2:'<path d="M4 4h16M4 12h16M10 20h10"/><circle cx="6" cy="20" r="1.6"/>',
+  b3:'<path d="M7 17 17 7M7 7h10v10"/>',
+  b4:'<path d="M3 21 21 3M5 21h4v-6H5zM13 21h6v-9h-6z"/>',
+  b5:'<path d="M3 3v18h18"/><path d="M7 15c2.5-5 5-9 10-4v4"/>'
+};
+
+/* Arranque */
+$id('btnHint').onclick=showHint;
+
+if(state.seen){$id('guideCard').classList.add('hidden');}
+
+renderHome();
+
+
+/* ============================================================
+   KIT UNIFICADO — vistas, hash, recitar
+============================================================ */
+(function(){
+  const VISTAS=["inicio","practica","formulas","expres"];
+
+  function enJuego(){
+    return document.body.dataset.vista==="practica" && typeof view==="string" && view==="game";
+  }
+
+  window.actualizarInicio=function(){
+    const pts=document.getElementById("homePts");
+    const hit=document.getElementById("homeHit");
+    if(pts) pts.textContent=state.pts;
+    if(hit) hit.textContent=state.hit+"/"+state.tot;
+  };
+
+  function aplicarVista(nombre, ancla){
+    if(!VISTAS.includes(nombre)) nombre="inicio";
+    document.body.dataset.vista=nombre;
+    document.body.classList.toggle("sheet-mode", nombre==="formulas"||nombre==="expres");
+    document.querySelectorAll(".app-view").forEach(el=>{
+      el.classList.toggle("activa", el.id==="view-"+nombre);
+    });
+    document.querySelectorAll("[data-vista]").forEach(el=>{
+      const on=el.getAttribute("data-vista")===nombre;
+      el.classList.toggle("on", on);
+      if(el.tagName==="BUTTON") el.setAttribute("aria-current", on?"page":"false");
+    });
+    const hash=ancla ? "#"+ancla : "#"+nombre;
+    if(location.hash!==hash){
+      try{history.replaceState(null,"",hash);}catch(e){location.hash=hash;}
+    }
+    if(nombre==="practica"){ renderStats(); }
+    if(nombre==="inicio") actualizarInicio();
+    const tema=document.querySelector('meta[name="theme-color"]');
+    if(tema) tema.setAttribute("content", (nombre==="formulas"||nombre==="expres")?"#dfe6f2":"#0b1220");
+    if(!ancla) window.scrollTo({top:0,behavior:reduceMotion()?"auto":"smooth"});
+    if(ancla){
+      const t=document.getElementById(ancla);
+      if(t) setTimeout(()=>t.scrollIntoView({behavior:reduceMotion()?"auto":"smooth",block:"start"}),40);
+    }
+  }
+
+  window.irA=function(nombre, ancla){
+    if(enJuego() && nombre!=="practica"){
+      openDialog("¿Salir de la práctica?",
+        "Si cambias de sección ahora, se termina esta práctica. Conservarás los puntos ya ganados.",
+        "Sí, salir",
+        function(){ goHome(); aplicarVista(nombre, ancla); },
+        "Seguir practicando");
+      return;
+    }
+    aplicarVista(nombre, ancla);
+  };
+
+  function leerHash(){
+    const h=(location.hash||"#inicio").replace(/^#/,"");
+    if(h.startsWith("f-")) return {vista:"formulas", ancla:h};
+    if(VISTAS.includes(h)) return {vista:h};
+    if(h==="home"||h==="") return {vista:"inicio"};
+    return {vista:"inicio"};
+  }
+
+  window.addEventListener("hashchange", function(){
+    const {vista, ancla}=leerHash();
+    if(enJuego() && vista!=="practica"){
+      try{history.replaceState(null,"","#practica");}catch(e){}
+      irA(vista, ancla);
+      return;
+    }
+    aplicarVista(vista, ancla);
+  });
+
+  const btnF=document.getElementById("btnIntroFormulas");
+  if(btnF) btnF.addEventListener("click", function(){
+    const id=current.block ? "f-"+current.block.id : "f-b1";
+    irA("formulas", id);
+  });
+  const btnFF=document.getElementById("btnFullFormulas");
+  if(btnFF) btnFF.addEventListener("click", function(){ irA("formulas"); });
+  const btnRF=document.getElementById("btnResFormulas");
+  if(btnRF) btnRF.addEventListener("click", function(){
+    const id=current.block ? "f-"+current.block.id : "f-b1";
+    irA("formulas", current.mode==="full"?undefined:id);
+  });
+
+  const btnRec=document.getElementById("btnRecitar");
+  const viewEx=document.getElementById("view-expres");
+  const banner=document.getElementById("reciteBanner");
+  if(btnRec && viewEx){
+    btnRec.addEventListener("click", function(){
+      const on=viewEx.classList.toggle("recitando");
+      btnRec.textContent=on?"Dejar de recitar":"Modo recitar";
+      btnRec.setAttribute("aria-pressed", on?"true":"false");
+      if(banner) banner.classList.toggle("hidden", !on);
+    });
+  }
+
+  (function observarBloques(){
+    const chips=document.querySelectorAll("#subFormulas .chip-nav a");
+    if(!chips.length || !("IntersectionObserver" in window)) return;
+    const map={};
+    chips.forEach(function(a){
+      const id=(a.getAttribute("href")||"").replace("#","");
+      map[id]=a;
+    });
+    const io=new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(!en.isIntersecting) return;
+        chips.forEach(function(c){ c.classList.remove("on"); });
+        if(map[en.target.id]) map[en.target.id].classList.add("on");
+      });
+    },{rootMargin:"-25% 0px -55% 0px", threshold:0});
+    ["f-b1","f-b2","f-b3","f-b4","f-b5","f-expres"].forEach(function(id){
+      const el=document.getElementById(id);
+      if(el) io.observe(el);
+    });
+  })();
+
+  const _rh=renderHome;
+  renderHome=function(){ _rh(); actualizarInicio(); };
+
+  const arr=leerHash();
+  aplicarVista(arr.vista, arr.ancla);
+  actualizarInicio();
+})();
+
+</script>
+</body>
+</html>

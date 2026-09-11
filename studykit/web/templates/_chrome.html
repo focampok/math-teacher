@@ -1,0 +1,21 @@
+<a class="skip" href="#main">Saltar al contenido</a>
+<header>
+  <a class="brand" href="/">
+    <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="#D97706"/>
+      <path d="M8 22V10M8 22h16" fill="none" stroke="#0F172A" stroke-width="2.4" stroke-linecap="round"/>
+    </svg>
+    <span>
+      <strong>Studykit</strong>
+      <small>De un temario a un kit para practicar</small>
+    </span>
+  </a>
+  <ol class="steps" aria-label="Pasos del pipeline">
+    {% for step in steps %}
+    <li class="{% if step.n < current_step %}is-done{% elif step.n == current_step %}is-current{% endif %}">
+      <span class="dot" aria-hidden="true">{{ step.n }}</span>
+      <span class="lbl">{{ step.label }}</span>
+    </li>
+    {% endfor %}
+  </ol>
+</header>

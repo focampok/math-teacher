@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Práctica Interactiva — Matemática IV Bachillerato</title>
+<style>
+  :root{
+    /* Tono base (oscuro / apto para lectura larga) */
+    --bg:#0b1220; --bg2:#0f172a; --panel:#152237; --panel2:#1e2f4d; --panel3:#26395c;
+    --text:#eef2ff; --muted:#a9b8d6; --line:#2b3f63;
+    /* Semántica */
+    --ok:#34d399; --ok-bg:rgba(52,211,153,.15); --ok-line:#34d399;
+    --bad:#fb7185; --bad-bg:rgba(251,113,133,.14); --bad-line:#fb7185;
+    --accent:#f59e0b; --accent-ink:#111;
+    --info:#38bdf8; --ring:#7dd3fc;
+    /* Identidad por bloque */
+    --b1:#3b82f6; --b2:#22c55e; --b3:#eab308; --b4:#fb923c; --b5:#a78bfa;
+    --radius:18px;
+    --ease:cubic-bezier(.22,.8,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:
+        radial-gradient(1100px 480px at 85% -12%, rgba(99,102,241,.20), transparent 60%),
+        radial-gradient(900px 420px at -10% 12%, rgba(56,189,248,.13), transparent 55%),
+        var(--bg);
+        color:var(--text);
+        font-family:'Baloo 2','Fredoka','Nunito','Segoe UI',system-ui,Roboto,Arial,sans-serif;
+        line-height:1.55; min-height:100dvh; -webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;}
+  input{font-family:inherit;}
+  a.skip{position:fixed;left:-999px;top:8px;z-index:2000;background:var(--accent);color:var(--accent-ink);
+         font-weight:800;padding:12px 18px;border-radius:12px;}
+  a.skip:focus{left:10px;color:var(--accent-ink);}
+  :focus-visible{outline:3px solid var(--ring);outline-offset:2px;}
+  ::selection{background:var(--accent);color:var(--accent-ink);}
+  .hidden{display:none!important;}
+
+  /* ---------- Cabecera: marca + mapa de navegación ---------- */
+  header{position:sticky;top:0;z-index:40;background:rgba(11,18,32,.9);
+         backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .hrow{max-width:980px;margin:0 auto;padding:10px 14px 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:10px;background:none;border:none;color:var(--text);
+         cursor:pointer;text-align:left;padding:4px 6px;border-radius:12px;transition:background .18s;}
+  .brand:hover{background:rgba(255,255,255,.06);}
+  .brand .logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none;
+               background:linear-gradient(135deg,var(--accent),#fb923c);box-shadow:0 4px 14px rgba(245,158,11,.35);}
+  .brand h1{font-size:1.05rem;line-height:1.2;font-weight:800;}
+  .brand h1 small{display:block;font-weight:600;color:var(--muted);font-size:.72rem;letter-spacing:.3px;}
+  .stats{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+  .stat{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);
+        padding:5px 12px;border-radius:999px;font-size:.84rem;font-weight:700;min-height:40px;white-space:nowrap;}
+  .stat svg{flex:none;}
+  .stat b{color:var(--accent);font-variant-numeric:tabular-nums;}
+
+  /* Mapa de navegación (pasos 1→4) */
+  nav.steps{max-width:980px;margin:0 auto;padding:4px 12px 10px;display:flex;gap:0;overflow-x:auto;scrollbar-width:thin;}
+  .step{display:inline-flex;align-items:center;gap:7px;border:none;background:transparent;cursor:default;
+        color:var(--muted);font-weight:700;font-size:.82rem;padding:7px 10px;border-radius:999px;
+        white-space:nowrap;transition:color .2s,background .2s;}
+  .step .lbl{display:inline-flex;align-items:center;gap:6px;}
+  .step .mode-dot{width:9px;height:9px;border-radius:50%;flex:none;background:transparent;box-shadow:inset 0 0 0 2px var(--muted);}
+  .step.active .mode-dot,.step.done .mode-dot{background:#8b5cf6;box-shadow:none;}
+  .step:not([data-step="intro"]) .mode-dot{display:none;}
+  .step .num{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.74rem;flex:none;
+             background:var(--panel2);color:var(--muted);border:1px solid var(--line);font-variant-numeric:tabular-nums;}
+  .step.done{color:var(--text);cursor:pointer;}
+  .step.done:hover{background:rgba(255,255,255,.07);}
+  .step.done .num{background:rgba(52,211,153,.16);color:#6ee7b7;border-color:rgba(52,211,153,.55);}
+  .step.active{color:#fff;}
+  .step.active .num{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 0 0 4px rgba(245,158,11,.2);}
+  .step.upcoming{opacity:.55;}
+  .step.arrow{color:var(--line);padding:0 2px;font-size:1rem;flex:none;}
+
+  main{max-width:980px;margin:0 auto;padding:20px 14px 90px;}
+  .screen{animation:rise .32s var(--ease) both;}
+  @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+        border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:0 8px 26px rgba(0,0,0,.28);}
+  .center{text-align:center;}
+  h2{font-size:1.4rem;line-height:1.25;margin-bottom:8px;}
+  h3{font-size:1.08rem;margin-bottom:6px;}
+  .muted{color:var(--muted);}
+  .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:.78rem;font-weight:800;letter-spacing:1.1px;
+           text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .eyebrow svg{opacity:.9;}
+
+  /* ---------- Inicio ---------- */
+  .how{background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--line);}
+  .how h2{font-size:1.15rem;display:flex;align-items:center;gap:8px;}
+  .howsteps{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0 6px;}
+  .howstep{display:flex;gap:10px;align-items:flex-start;background:var(--bg2);border:1px solid var(--line);
+           padding:12px;border-radius:14px;text-align:left;}
+  .howstep .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:none;
+                color:#111;background:var(--panel3);}
+  .howstep .ico.s1{background:var(--info);}
+  .howstep .ico.s2{background:var(--accent);}
+  .howstep .ico.s3{background:var(--ok);}
+  .howstep b{display:block;font-size:.95rem;}
+  .howstep span{font-size:.8rem;color:var(--muted);line-height:1.35;}
+  .dismissrow{display:flex;justify-content:flex-end;margin-top:6px;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;}
+  .block{position:relative;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--info);
+         border-radius:var(--radius);padding:18px;cursor:pointer;text-align:left;color:var(--text);
+         overflow:hidden;transition:transform .18s var(--ease),box-shadow .18s var(--ease),border-color .18s;}
+  .block:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.4);}
+  .block:active{transform:translateY(0) scale(.99);}
+  .block .top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+  .block .chip{font-size:.68rem;font-weight:800;letter-spacing:.4px;padding:3px 9px;border-radius:999px;color:#111;
+               background:var(--line);text-transform:uppercase;}
+  .block h3{font-size:1.12rem;line-height:1.3;}
+  .block .desc{font-size:.82rem;color:var(--muted);margin:2px 0 10px;line-height:1.4;}
+  .block .pts{display:inline-block;background:var(--panel2);border:1px solid var(--line);padding:3px 11px;
+              border-radius:999px;font-size:.76rem;color:var(--muted);font-weight:700;margin-bottom:8px;}
+  .bar{height:8px;background:var(--bg2);border-radius:999px;overflow:hidden;}
+  .bar i{display:block;height:100%;width:0;border-radius:999px;transition:width .4s var(--ease);}
+  .barlbl{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-top:5px;}
+  .go{position:absolute;right:16px;bottom:16px;width:34px;height:34px;border-radius:50%;display:grid;
+      place-items:center;background:var(--panel2);border:1px solid var(--line);color:var(--text);opacity:0;
+      transform:translateX(-6px);transition:.2s var(--ease);}
+  .block:hover .go{opacity:1;transform:none;}
+  .bb1{border-left-color:var(--b1);}.bc1{color:var(--b1)!important;}
+  .bb2{border-left-color:var(--b2);}.bc2{color:var(--b2)!important;}
+  .bb3{border-left-color:var(--b3);}.bc3{color:var(--b3)!important;}
+  .bb4{border-left-color:var(--b4);}.bc4{color:var(--b4)!important;}
+  .bb5{border-left-color:var(--b5);}.bc5{color:var(--b5)!important;}
+  .ch1{background:var(--b1);}.ch2{background:var(--b2);}.ch3{background:var(--b3);}
+  .ch4{background:var(--b4);}.ch5{background:var(--b5);}
+
+  /* ---------- Prueba completa (simulacro del examen) ---------- */
+  .fullcard{display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,rgba(99,102,241,.20),var(--panel));
+    border:1px solid rgba(129,140,248,.5);border-radius:var(--radius);padding:18px 20px;
+    margin:18px 0 4px;box-shadow:0 8px 26px rgba(0,0,0,.28);}
+  .fullcard::before{content:'';position:absolute;right:-80px;top:-80px;width:220px;height:220px;pointer-events:none;
+    background:radial-gradient(circle,rgba(167,139,250,.35),transparent 70%);}
+  .fullcard .big{width:58px;height:58px;border-radius:17px;flex:none;display:grid;place-items:center;color:#111;
+    background:linear-gradient(135deg,#a78bfa,#6366f1);box-shadow:0 8px 22px rgba(99,102,241,.4);}
+  .fullcard .txt{flex:1 1 300px;min-width:230px;}
+  .fullcard h3{font-size:1.15rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 0;}
+  .fullcard .desc{font-size:.88rem;color:var(--muted);margin:4px 0 0;line-height:1.5;}
+  .fullcard .desc b{color:#fff;}
+  .fullcard .pts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+  .fullcard .pt{background:rgba(15,23,42,.55);border:1px solid var(--line);border-radius:999px;
+    padding:3px 10px;font-size:.74rem;font-weight:700;color:var(--text);}
+  .fullcard .pt b{color:#c4b5fd;}
+  .fullbadge{display:inline-flex;align-items:center;gap:6px;color:#c4b5fd;font-size:.72rem;font-weight:800;
+    letter-spacing:.9px;text-transform:uppercase;}
+  .btn.full{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;}
+  .btn.full:hover{filter:brightness(1.12);box-shadow:0 8px 20px rgba(99,102,241,.45);}
+
+  /* Zona "Nuevo alumno" (perfil por equipo / reinicio total) */
+  .resetrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    margin:20px 0 0;padding-top:14px;border-top:1px dashed var(--line);}
+  .resetrow .rtxt{font-size:.86rem;color:var(--muted);max-width:480px;line-height:1.5;}
+  .resetrow .rtxt b{color:#fff;}
+  .btn.ghost-danger{background:transparent;border:1px solid rgba(251,113,133,.5);color:#fecdd3;}
+  .btn.ghost-danger:hover{background:rgba(251,113,133,.14);filter:none;box-shadow:none;}
+  .btn .ico{width:20px;height:20px;}
+
+  /* ---------- Intro de bloque ---------- */
+  .introhead{display:flex;align-items:center;gap:14px;margin-bottom:6px;flex-wrap:wrap;}
+  .introhead .big{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;color:#111;flex:none;}
+  .introhead h2{margin:0;font-size:1.5rem;}
+  .topics{list-style:none;margin:10px 0 4px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;}
+  .topics li{display:flex;gap:9px;align-items:flex-start;background:var(--bg2);border:1px solid var(--line);
+             padding:9px 12px;border-radius:12px;font-size:.9rem;}
+  .topics li svg{flex:none;margin-top:2px;color:var(--ok);}
+  .scorebox{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0 6px;}
+  .scoremini{flex:1 1 150px;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px;}
+  .scoremini .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:800;}
+  .scoremini .val{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums;}
+  .method{display:flex;gap:8px;align-items:center;background:rgba(56,189,248,.08);border:1px dashed var(--info);
+          padding:10px 14px;border-radius:12px;font-size:.9rem;color:#cdeffd;margin:6px 0 0;}
+  .method b{color:#fff;}
+  .method .m-arrow{color:var(--info);font-weight:900;}
+
+  /* ---------- Botones ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);
+       color:var(--accent-ink);border:none;cursor:pointer;font-weight:800;font-size:1rem;
+       padding:13px 22px;border-radius:14px;min-height:48px;transition:transform .12s var(--ease),filter .15s,box-shadow .18s;}
+  .btn:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 8px 20px rgba(245,158,11,.25);}
+  .btn:active{transform:scale(.97);}
+  .btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line);}
+  .btn.secondary:hover{filter:brightness(1.15);box-shadow:none;}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);}
+  .btn.danger{background:rgba(251,113,133,.15);color:#fecdd3;border:1px solid var(--bad-line);}
+  .btn.big{font-size:1.15rem;padding:16px 30px;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;filter:grayscale(.3);box-shadow:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+  .btnrow.right{justify-content:flex-end;}
+  .btnrow.center{justify-content:center;}
+  .btn .ico{width:20px;height:20px;}
+
+  /* ---------- Pantalla de práctica ---------- */
+  .qtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .tag{padding:5px 12px;border-radius:999px;font-size:.78rem;font-weight:800;color:#111;letter-spacing:.2px;
+       display:inline-flex;align-items:center;gap:6px;}
+  .qcount{display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--line);
+          padding:5px 13px;border-radius:999px;font-size:.85rem;font-weight:700;}
+  .qcount b{font-variant-numeric:tabular-nums;color:var(--accent);}
+  .spacer{flex:1;}
+  .exitbtn{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);
+           color:var(--muted);font-weight:700;font-size:.85rem;padding:8px 13px;border-radius:999px;cursor:pointer;
+           min-height:42px;transition:.15s;}
+  .exitbtn:hover{color:#fff;border-color:var(--bad-line);background:rgba(251,113,133,.12);}
+  .exitbtn .ico{width:17px;height:17px;}
+
+  .progwrap{margin-bottom:16px;}
+  .proglbl{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);font-weight:700;margin-bottom:6px;}
+  .track{height:10px;background:var(--bg2);border-radius:999px;overflow:hidden;border:1px solid var(--line);}
+  .fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--b4));
+        transition:width .35s var(--ease);}
+  .dots{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--panel3);border:1px solid var(--line);
+       transition:.2s;}
+  .dot.on{background:var(--ok);border-color:var(--ok);}
+  .dot.cur{box-shadow:0 0 0 4px rgba(245,158,11,.25);background:var(--accent);border-color:var(--accent);
+           animation:pulse 1.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+
+  .prompt{background:var(--bg2);border:1px solid var(--line);border-left:4px solid var(--info);
+          padding:16px 18px;border-radius:14px;}
+  .prompt .cat{font-size:.8rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);}
+  .prompt .math{display:block;font-size:1.22rem;font-weight:700;margin-top:6px;color:#fff;line-height:1.45;
+                word-break:break-word;}
+
+  .opts{display:grid;gap:10px;margin-top:16px;}
+  .opt{background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:14px 16px;min-height:54px;
+       text-align:left;cursor:pointer;font-size:1rem;color:var(--text);transition:border-color .15s,transform .1s,background .15s;}
+  .opt:hover:not(:disabled){border-color:var(--info);}
+  .opt:active:not(:disabled){transform:scale(.995);}
+  .opt .key{display:inline-flex;width:26px;height:26px;border-radius:8px;align-items:center;justify-content:center;
+            background:var(--bg2);border:1px solid var(--line);font-size:.8rem;font-weight:800;margin-right:10px;
+            color:var(--muted);font-variant-numeric:tabular-nums;}
+  .opt.correct{background:var(--ok-bg);border-color:var(--ok-line);}
+  .opt.correct .key{background:var(--ok);color:var(--accent-ink);border-color:var(--ok);}
+  .opt.wrong{background:var(--bad-bg);border-color:var(--bad-line);}
+  .opt.wrong .key{background:var(--bad);color:#fff;border-color:var(--bad);}
+  .opt:disabled{cursor:default;}
+
+  .numwrap{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;align-items:flex-end;}
+  .field{flex:1 1 220px;display:flex;flex-direction:column;gap:6px;}
+  .field label{font-weight:700;font-size:.9rem;}
+  .field .helper{font-size:.78rem;color:var(--muted);}
+  .numfield{display:flex;align-items:center;gap:10px;background:var(--panel2);border:2px solid var(--line);
+            border-radius:14px;padding:6px 8px 6px 16px;}
+  #numIn{background:transparent;border:none;color:var(--text);font-size:1.4rem;font-weight:700;width:100%;
+         min-width:0;padding:8px 0;outline:none;font-variant-numeric:tabular-nums;}
+  #numIn::placeholder{color:var(--muted);font-weight:500;font-size:1rem;}
+  .numfield:focus-within{border-color:var(--ring);box-shadow:0 0 0 3px rgba(125,211,252,.22);}
+  .numfield .unit{color:var(--muted);font-size:.95rem;font-weight:700;padding-right:10px;}
+
+  .feedback{margin-top:14px;padding:14px 16px;border-radius:14px;font-size:.98rem;line-height:1.5;
+            animation:rise .25s var(--ease) both;}
+  .feedback.ok{background:var(--ok-bg);border:1px solid var(--ok-line);}
+  .feedback.bad{background:var(--bad-bg);border:1px solid var(--bad-line);}
+  .feedback .hd{display:flex;align-items:center;gap:8px;font-weight:800;margin-bottom:6px;}
+  .feedback.ok .hd{color:#a7f3d0;}
+  .feedback.bad .hd{color:#fecdd3;}
+  .feedback code,.prompt .math,.ml{font-family:'Cambria Math','Times New Roman',serif;}
+  .hint{margin-top:10px;color:var(--info);font-size:.9rem;font-style:italic;background:rgba(56,189,248,.07);
+        border-left:3px solid var(--info);padding:9px 12px;border-radius:10px;}
+  .hint .ico{width:15px;height:15px;vertical-align:-2px;margin-right:4px;}
+  .actions{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap;}
+
+  /* ---------- Resultado ---------- */
+  .result{text-align:center;}
+  .resmedal{width:92px;height:92px;border-radius:26px;margin:0 auto 12px;display:grid;place-items:center;color:#111;
+            box-shadow:0 12px 30px rgba(245,158,11,.3);}
+  .result h2{font-size:1.7rem;}
+  .big-num{font-size:3.2rem;font-weight:800;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums;}
+  .big-num small{font-size:1.3rem;color:var(--muted);font-weight:700;}
+  .pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0 2px;}
+  .pill{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px 16px;font-size:.85rem;font-weight:700;}
+  .pill b{color:var(--accent);font-variant-numeric:tabular-nums;}
+
+  /* ---------- Resultado de Prueba completa (desglose) ---------- */
+  .breakdown{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;
+    margin:16px 0 2px;text-align:left;}
+  .bkline{background:var(--bg2);border:1px solid var(--line);border-left:5px solid var(--info);
+    border-radius:12px;padding:11px 13px;}
+  .bkline .t{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;font-size:.8rem;}
+  .bkline .t b{color:#fff;font-size:.88rem;display:block;}
+  .bkline .meta{color:var(--muted);font-size:.72rem;}
+  .bkline .sc{font-size:1.15rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--accent);white-space:nowrap;}
+  .bkline .sc small{font-size:.7rem;color:var(--muted);font-weight:700;}
+  .bkline .bar{height:6px;margin-top:8px;}
+
+  /* ---------- Logros ---------- */
+  .achrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;}
+  .ach{display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--line);
+       border-radius:12px;padding:7px 12px;font-size:.82rem;font-weight:700;opacity:.5;filter:grayscale(.4);}
+  .ach.unlocked{opacity:1;filter:none;border-color:var(--accent);box-shadow:0 4px 14px rgba(245,158,11,.18);}
+  .ach.glow{animation:pop .5s var(--ease);}
+  @keyframes pop{0%{transform:scale(.6);}55%{transform:scale(1.18);}100%{transform:scale(1);}}
+  .ach .ico{width:17px;height:17px;color:var(--accent);}
+
+  /* ---------- Diálogo de confirmación ---------- */
+  .dialog{position:fixed;inset:0;background:rgba(2,6,23,.66);backdrop-filter:blur(3px);z-index:120;
+          display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .2s both;}
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
+  .dialogbox{background:var(--panel2);border:1px solid var(--line);border-radius:20px;max-width:400px;width:100%;
+             padding:22px;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:pop2 .24s var(--ease) both;}
+  @keyframes pop2{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:none;}}
+  .dialogbox h3{display:flex;align-items:center;gap:9px;font-size:1.15rem;}
+  .dialogbox p{margin:8px 0 4px;color:var(--muted);font-size:.94rem;}
+  .dialogbox .btnrow{margin-top:18px;justify-content:flex-end;}
+  .dialogbox .btnrow .btn{margin:0;}
+
+  /* ---------- Toast ---------- */
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel3);
+         color:#fff;padding:13px 24px;border-radius:999px;font-weight:700;box-shadow:0 10px 28px rgba(0,0,0,.45);
+         opacity:0;transition:.3s var(--ease);z-index:150;pointer-events:none;max-width:min(92vw,480px);text-align:center;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ---------- Confeti ---------- */
+  .confetti{position:fixed;top:-14px;z-index:160;pointer-events:none;animation:confetti linear forwards;}
+  @keyframes confetti{0%{transform:translateY(0) rotate(0);opacity:1;}
+                      100%{transform:translateY(105vh) rotate(720deg);opacity:0;}}
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important;scroll-behavior:auto!important;}
+    .block:hover{transform:none;}
+  }
+  @media (max-width:560px){
+    .stat{font-size:.78rem;padding:4px 10px;min-height:36px;}
+    .step{font-size:.76rem;padding:6px 8px;}
+    .step .num{width:21px;height:21px;font-size:.68rem;}
+    h2{font-size:1.22rem;}
+    .brand h1{font-size:.95rem;}
+    .opt{padding:13px 12px;}
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido</a>
+
+<header>
+  <div class="hrow">
+    <button class="brand" id="btnHome" onclick="goHome()" aria-label="Volver al inicio">
+      <span class="logo" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M4 19l4-6 3 3 5-7 4 4"/></svg>
+      </span>
+      <span><h1>Matemática IV <small>Práctica interactiva · Admisión</small></h1></span>
+    </button>
+    <div class="stats" aria-label="Tus estadísticas">
+      <span class="stat" title="Puntos totales">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+        <b id="statPts">0</b>
+      </span>
+      <span class="stat" title="Racha de aciertos">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="#fb923c"><path d="M13 2L4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg>
+        <b id="statStreak">0</b>
+      </span>
+      <span class="stat" title="Ejercicios acertados">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg>
+        <b id="statHit">0</b>/<span id="statTot">0</span>
+      </span>
+    </div>
+  </div>
+  <!-- Mapa de navegación: siempre visible, la pantalla activa queda resaltada -->
+  <nav class="steps" aria-label="Mapa de navegación">
+    <button class="step" data-step="home" type="button"><span class="num">1</span><span class="lbl">Inicio</span></button>
+    <span class="step arrow" aria-hidden="true">›</span>
+    <button class="step" data-step="intro" type="button"><span class="num">2</span><span class="lbl"><span class="mode-dot" aria-hidden="true"></span><span id="navStep2Txt">Bloque</span></span></button>
+    <span class="step arrow" aria-hidden="true">›</span>
+    <button class="step" data-step="game" type="button"><span class="num">3</span><span class="lbl">Práctica</span></button>
+    <span class="step arrow" aria-hidden="true">›</span>
+    <button class="step" data-step="result" type="button"><span class="num">4</span><span class="lbl">Resultado</span></button>
+  </nav>
+</header>
+
+<main id="main">
+  <!-- ==================== 1. INICIO ==================== -->
+  <section id="home" class="screen" aria-labelledby="homeTitle">
+    <div class="card how" id="guideCard">
+      <h2 id="homeTitle">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg>
+        ¿Cómo funciona?
+      </h2>
+      <p class="muted" style="font-size:.93rem">Cada práctica dura 8 ejercicios y sigue la misma ruta de la guía:
+         primero <b style="color:#fff">leen el tema</b>, miran <b style="color:#fff">el ejemplo</b> y luego
+         <b style="color:#fff">practican aquí</b> con pistas, puntos y rachas.</p>
+      <div class="howsteps">
+        <div class="howstep">
+          <span class="ico s1" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </span>
+          <span><b>Elige bloque</b><span>Toca una tarjeta. Puedes hacerlos en el orden que quieras.</span></span>
+        </div>
+        <div class="howstep">
+          <span class="ico s2" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+          </span>
+          <span><b>Resuelve 8 retos</b><span>Respuesta inmediata, pista si te atascas. Sumas puntos y racha.</span></span>
+        </div>
+        <div class="howstep">
+          <span class="ico s3" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+          </span>
+          <span><b>Mira tu resultado</b><span>Qué dominas y qué conviene repasar en la guía de estudio.</span></span>
+        </div>
+      </div>
+      <div class="dismissrow">
+        <button class="btn secondary" id="btnGuideOk" style="padding:8px 16px;min-height:40px">Entendido ✓</button>
+      </div>
+    </div>
+
+    <div class="card center">
+      <div class="eyebrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6-6 6 6M6 15l6 6 6-6"/></svg>
+        TUS LOGROS
+      </div>
+      <div class="achrow" id="achHome" aria-label="Logros desbloqueados"></div>
+    </div>
+
+    <!-- Tarjeta Prueba completa: simulacro con el peso real del examen -->
+    <div class="fullcard">
+      <span class="big" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 3-5"/></svg>
+      </span>
+      <div class="txt">
+        <div class="fullbadge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
+          Prueba completa · Simulacro del examen
+        </div>
+        <h3>Mezcla los 5 bloques con el peso real del examen</h3>
+        <p class="desc">20 ejercicios mezclados y repartidos según lo que vale cada bloque en la prueba de admisión:
+          <b>Geometría 20 · Factorización 10 · Desigualdades 25 · Recta 25 · Funciones 20</b>.
+          Sin pistas, como en el examen. Al final verás tu nota <b>/100</b> con el desglose por bloque.</p>
+        <div class="pts">
+          <span class="pt"><b>20</b> preguntas</span>
+          <span class="pt">Puntaje <b>/100</b></span>
+          <span class="pt">Sin pistas</span>
+        </div>
+      </div>
+      <button class="btn big full" id="btnOpenFull" type="button">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg>
+        Iniciar simulacro
+      </button>
+    </div>
+
+    <h2 style="font-size:1.15rem;margin:4px 2px 12px">
+      Elige un bloque para practicar
+    </h2>
+    <div class="grid" id="blocksGrid"></div>
+
+    <!-- Zona "Nuevo alumno": varios alumnos comparten este equipo -->
+    <div class="resetrow">
+      <div class="rtxt"><b>¿Otro alumno va a usar este equipo?</b>
+        Borra todo el progreso guardado (puntos, rachas, logros y avance por bloque) y empieza desde cero.</div>
+      <button class="btn ghost-danger" id="btnResetStudent" type="button">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>
+        Nuevo alumno · borrar todo
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== 2. INTRO DE BLOQUE ==================== -->
+  <section id="intro" class="screen hidden" aria-labelledby="introTitle">
+    <div class="card">
+      <div class="introhead">
+        <span class="big" id="introBadge" aria-hidden="true"></span>
+        <span>
+          <div class="eyebrow" id="introEyebrow">BLOQUE</div>
+          <h2 id="introTitle">Bloque</h2>
+          <p class="muted" id="introPts" style="font-size:.9rem"></p>
+        </span>
+      </div>
+
+      <ul class="topics" id="introTopics" aria-label="Temas que incluye este bloque"></ul>
+
+      <div class="method" id="introMethod">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
+        <span><b>Enseño → Ejemplo → Practico.</b> Antes de empezar, revisa este tema en la guía de estudio:
+        <b style="color:#7dd3fc">Enseño → Ejemplo → ¡Practico!</b></span>
+      </div>
+
+      <div class="scorebox">
+        <div class="scoremini">
+          <div class="lbl">Tu precisión</div>
+          <div class="val" id="introPct">—</div>
+          <div class="bar" style="margin-top:8px"><i id="introBarFill" style="width:0;background:var(--accent)"></i></div>
+        </div>
+        <div class="scoremini">
+          <div class="lbl">Ejercicios resueltos</div>
+          <div class="val" id="introSolved">—</div>
+          <p class="muted" style="font-size:.74rem;margin-top:4px">Se guarda automáticamente</p>
+        </div>
+      </div>
+
+      <div class="btnrow">
+        <button class="btn big" id="btnStartPractice">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg>
+          Comenzar práctica
+        </button>
+        <button class="btn secondary" id="btnIntroBack">Volver al inicio</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2b. INTRO DE PRUEBA COMPLETA (simulacro) ============ -->
+  <section id="introFull" class="screen hidden" aria-labelledby="introFullTitle">
+    <div class="card">
+      <div class="introhead">
+        <span class="big" id="introFullBadge" aria-hidden="true"
+          style="background:linear-gradient(135deg,#a78bfa,#6366f1);color:#111">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 3-5"/></svg>
+        </span>
+        <span>
+          <div class="eyebrow" style="color:#c4b5fd">PRUEBA COMPLETA · SIMULACRO</div>
+          <h2 id="introFullTitle" style="color:#ddd6fe;font-size:1.5rem;margin:0">Examen completo</h2>
+          <p class="muted" id="introFullPts" style="font-size:.9rem">20 preguntas mezcladas, igual que en la prueba de admisión.</p>
+        </span>
+      </div>
+
+      <ul class="topics" id="introFullList" aria-label="Reparto de preguntas por bloque"></ul>
+
+      <div class="method" id="introFullMethod"
+        style="background:rgba(139,92,246,.10);border-color:#8b5cf6;color:#e4d9ff;align-items:flex-start">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        <span><b style="color:#fff">Como en el examen real: sin pistas ni puntos extra.</b>
+          Cada acierto suma <b style="color:#c4b5fd">5 puntos</b> según el peso del bloque (20 · 10 · 25 · 25 · 20 = 100).
+          Al terminar verás tu nota <b style="color:#fff">sobre 100</b> y el desglose por bloque.
+          Este simulacro no altera tus puntos ni logros de práctica.</span>
+      </div>
+
+      <div class="btnrow">
+        <button class="btn big full" id="btnStartFull">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg>
+          Comenzar simulacro
+        </button>
+        <button class="btn secondary" id="btnFullBack">Volver al inicio</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. PRÁCTICA ==================== -->
+  <section id="game" class="screen hidden" aria-labelledby="gamePrompt">
+    <div class="card">
+      <div class="qtop">
+        <span class="tag" id="gameTag">Bloque</span>
+        <span class="qcount" id="qCountPill">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Pregunta <b id="qNow">1</b> / <span id="qTotal">8</span>
+        </span>
+        <span class="spacer"></span>
+        <button class="exitbtn" id="btnExitGame" aria-label="Salir de la práctica">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          Salir
+        </button>
+      </div>
+
+      <div class="progwrap">
+        <div class="proglbl"><span>Tu avance</span><span id="progTxt">0 %</span></div>
+        <div class="track"><div class="fill" id="progFill"></div></div>
+        <div class="dots" id="progDots" aria-hidden="true"></div>
+      </div>
+
+      <div class="prompt">
+        <span class="cat" id="qCat"></span>
+        <span class="math" id="gamePrompt"></span>
+      </div>
+
+      <div id="qArea"></div>
+      <div class="feedback hidden" id="qFeedback" role="status"></div>
+      <div class="hint hidden" id="qHint"></div>
+
+      <div class="actions" id="qActions">
+        <button class="btn secondary" id="btnHint" type="button">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg>
+          Pista (−1 pt)
+        </button>
+        <span class="spacer"></span>
+        <div id="nextArea"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. RESULTADO ==================== -->
+  <section id="result" class="screen hidden" aria-labelledby="resTitle">
+    <div class="card result">
+      <div class="resmedal" id="resMedal" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M8.5 13 7 22l5-3 5 3-1.5-9"/></svg>
+      </div>
+      <div class="eyebrow" id="resEyebrow" style="justify-content:center">RESULTADO DEL BLOQUE</div>
+      <h2 id="resTitle">Resultado</h2>
+      <p class="muted" id="resSub"></p>
+      <div class="big-num" id="resScore" role="status">0</div>
+      <p class="muted" id="resMsg" style="max-width:520px;margin:8px auto 0"></p>
+      <div class="pills">
+        <span class="pill" id="resPill1"><span id="resPill1Lbl">Puntos de la práctica</span> <b id="resPts">+0</b></span>
+        <span class="pill" id="resPill2"><span id="resPill2Lbl">Racha máxima</span> <b id="resStreak">0</b></span>
+      </div>
+      <div class="breakdown hidden" id="resBreakdown" aria-label="Resultado por bloque"></div>
+      <div class="btnrow center">
+        <button class="btn big" id="btnRetry">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg>
+          <span id="btnRetryTxt">Practicar otra vez</span>
+        </button>
+        <button class="btn secondary" id="btnHomeResult">Volver a bloques</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Diálogo de confirmación (salir a mitad de la práctica) -->
+<div class="dialog hidden" id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+  <div class="dialogbox">
+    <h3 id="dialogTitle">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span id="dialogTitleText">¿Salir de la práctica?</span>
+    </h3>
+    <p id="dialogMsg">Conservarás los puntos ya ganados, pero la práctica se termina aquí.</p>
+    <div class="btnrow">
+      <button class="btn secondary" id="dialogCancel">Seguir practicando</button>
+      <button class="btn danger" id="dialogOk">Sí, salir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   UTILIDADES
+============================================================ */
+function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+function sgn(n){return n<0?"−":"+";}
+function fmt(n){const r=Math.round(n*100)/100;return Object.is(r,-0)?0:r;}
+function sq(n){return n*n;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&','<':'<','>':'>','"':'"'}[c]));}
+const reduceMotion=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let state={pts:0,streak:0,hit:0,tot:0,ach:{},block:{},seen:false}; // block -> {ok,total}
+
+const ACH=[
+  {id:'first',n:'Primeros pasos',d:'Resuelve tu primer ejercicio'},
+  {id:'five',n:'Racha de 5',d:'5 correctas seguidas'},
+  {id:'half',n:'Precisión',d:'10 o más ejercicios con ≥80% de acierto'},
+  {id:'points',n:'Centenar',d:'Alcanza 100 puntos totales'},
+  {id:'all',n:'Completo',d:'Practica los 5 bloques al menos una vez'},
+];
+const ACH_ICON={
+  first:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg>',
+  five:'<svg width="17" height="17" viewBox="0 0 24 24" fill="#fb923c"><path d="M13 2L4.5 13.5H11L9.5 22 19 9.5h-6.5z"/></svg>',
+  half:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>',
+  points:'<svg width="17" height="17" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>',
+  all:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 3v18M6 3l12 18"/></svg>'
+};
+function save(){try{localStorage.setItem('mat4',JSON.stringify(state));}catch(e){}}
+function load(){try{const s=localStorage.getItem('mat4');if(s){const o=JSON.parse(s);if(o&&o.pts!==undefined){state=o;if(!state.block)state.block={};if(state.seen===undefined)state.seen=false;}}}catch(e){}}
+load();
+
+/* ============================================================
+   GENERADORES DE PREGUNTAS POR BLOQUE
+   Cada generador devuelve: {cat,prompt,type:'mc'|'num',
+     opts(para mc), correct(texto|índice), answer(para num),
+     tol(para num), hint, explain, block, tag}
+============================================================ */
+
+const G1=[]; // Geometría y Trigonometría
+(function(){
+  // Complementarios (suman 90°) y suplementarios (suman 180°) con razón entera
+  // (uno mide r veces el otro). Se eligen razones con suma exacta para que el
+  // ángulo menor sea entero y la pregunta siempre sea consistente.
+  const compR=[2,4,5,8];   // 90 divisible entre r+1
+  const supR=[2,3,5,9];    // 180 divisible entre r+1
+  for(const {r,sum} of [...compR.map(r=>({r,sum:90})), ...supR.map(r=>({r,sum:180}))]){
+    const menor=sum/(r+1); const mayor=menor*r;
+    const esComp=sum===90;
+    const clase=esComp?'complementarios (suman 90°)':'suplementarios (suman 180°)';
+    // Pregunta por el ángulo más pequeño
+    G1.push({cat:esComp?'Ángulos complementarios':'Ángulos suplementarios',type:'num',
+      answer:menor,tol:0.01,
+      prompt:'Dos ángulos son '+clase+' y uno mide '+r+' veces el otro. ¿Cuánto mide el ángulo MÁS PEQUEÑO? (en grados)',
+      hint:'Llamemos x al pequeño. Entonces x + '+r+'x = '+sum+', es decir '+(r+1)+'x = '+sum+'.',
+      explain:'x + '+r+'x = '+sum+' → '+(r+1)+'x = '+sum+' → x = '+menor+'°. (El mayor mide '+mayor+'°.)',tag:'b1'});
+    // Algunas variantes preguntan por el mayor (buena práctica de despeje)
+    if(r===2||r===5){
+      G1.push({cat:esComp?'Ángulos complementarios':'Ángulos suplementarios',type:'num',
+        answer:mayor,tol:0.01,
+        prompt:'Dos ángulos son '+(esComp?'complementarios':'suplementarios')+' y uno mide '+r+' veces el otro. ¿Cuánto mide el ángulo MAYOR? (en grados)',
+        hint:'El pequeño vale x = '+sum+'/'+(r+1)+' = '+menor+'. El mayor es '+r+' veces ese valor.',
+        explain:'Menor = '+menor+'° → mayor = '+r+' × '+menor+' = '+mayor+'°. Verifica: '+menor+' + '+mayor+' = '+sum+'°.',tag:'b1'});
+    }
+  }
+  // Suma de ángulos del triángulo: ángulos en proporción a·x, b·x y c·x, con x
+  // incógnita real. Se eligen coeficientes cuya suma divida 180 para que x sea
+  // entero: (a+b+c)·x = 180 → x = 180/(a+b+c).
+  const tri2=[[1,2,3],[2,3,4],[3,4,5],[2,3,5],[4,5,6],[5,6,7],[1,3,5],
+              [1,4,4],[2,5,5],[3,4,8],[2,3,7],[3,5,7],[4,5,9],[2,7,9]];
+  for(const [a,b,c] of tri2){
+    const s=a+b+c; const x=180/s;
+    const coef=[a,b,c]; const idxMayor=coef.indexOf(Math.max(a,b,c));
+    const cfMayor=coef[idxMayor]; const mayor=cfMayor*x;
+    const ang=[a*x,b*x,c*x];
+    G1.push({cat:'Suma de ángulos del triángulo',type:'num',answer:mayor,tol:0.01,
+      prompt:'En un triángulo, los ángulos miden '+a+'x, '+b+'x y '+c+'x, donde x es un número desconocido. ¿Cuánto mide el ángulo MAYOR? (en grados)',
+      hint:'La suma de los ángulos internos es 180°: ('+a+' + '+b+' + '+c+')x = 180 → x = 180/'+s+' = '+x+'. Luego multiplica por '+cfMayor+'.',
+      explain:'('+a+'+'+b+'+'+c+')x = 180 → '+s+'x = 180 → x = '+x+'. El ángulo mayor ('+cfMayor+'x) = '+cfMayor+' × '+x+' = '+mayor+'°. Verifica: '+ang[0]+'+'+ang[1]+'+'+ang[2]+' = 180.',tag:'b1'});
+  }
+  // Pitágoras: tríos comunes como [cateto1, cateto2, hipotenusa]. La hipotenusa
+  // (c) siempre es el tercer elemento: aquí solo se baraja el orden en que se
+  // muestran los DOS catetos (son intercambiables), nunca se toca la hipotenusa,
+  // para que el enunciado y la respuesta siempre sean consistentes.
+  const trip=[[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17],[7,24,25],[12,16,20],[10,24,26],[15,20,25]];
+  for(const [c1,c2,c] of trip){
+    const [a,b] = Math.random()<0.5 ? [c1,c2] : [c2,c1];
+    G1.push({cat:'Teorema de Pitágoras',type:'num',answer:c,tol:0.01,
+      prompt:'Un triángulo rectángulo tiene dos lados (catetos) que miden '+a+' y '+b+'. Si el tercer lado es la HIPOTENUSA, ¿cuánto mide?',
+      hint:'a² + b² = c². Calcula c = √('+a+'² + '+b+'²) = √('+(sq(a)+sq(b))+').',
+      explain:'c = √('+a+'² + '+b+'²) = √('+(sq(a)+sq(b))+') = '+c+'. (Verifica: '+a+'² + '+b+'² = '+(sq(a)+sq(b))+' = '+c+'².)',tag:'b1'});
+    // encontrar el cateto que falta
+    G1.push({cat:'Teorema de Pitágoras (cateto)',type:'num',answer:b,tol:0.01,
+      prompt:'La hipotenusa de un triángulo rectángulo mide '+c+' y un cateto mide '+a+'. ¿Cuánto mide el otro cateto?',
+      hint:'a² + b² = c² → b² = c² − a² = '+c+'² − '+a+'² = '+(sq(c)-sq(a))+'.',
+      explain:'b = √('+c+'² − '+a+'²) = √('+(sq(c)-sq(a))+') = '+b+'. (Verifica: '+a+'² + '+b+'² = '+(sq(a)+sq(b))+' = '+c+'².)',tag:'b1'});
+  }
+  // Trigonometría (triángulo 6-8-10) razones
+  G1.push({cat:'Razones trigonométricas',type:'num',answer:6/8,tol:0.01,
+    prompt:'En un triángulo rectángulo (catetos 6 y 8, hipotenusa 10), el ángulo θ tiene cateto opuesto 6 y adyacente 8. ¿Cuánto vale tan θ?',
+    hint:'tan θ = opuesto / adyacente.',
+    explain:'tan θ = 6/8 = 0.75.',tag:'b1'});
+  G1.push({cat:'Razones trigonométricas',type:'num',answer:0.5,tol:0.01,
+    prompt:'¿Cuánto vale sen 30°? (recuerda la tabla de valores notables)',
+    hint:'sen 30° = 1/2.',
+    explain:'sen 30° = 0.5 (y cos 60° también vale 0.5).',tag:'b1'});
+  // problema de aplicación tangente 45
+  const app=rnd(10,40);
+  G1.push({cat:'Problema de aplicación',type:'num',answer:app,tol:0.01,
+    prompt:'Un observador mira la punta de un árbol con ángulo de elevación de 45° y está a '+app+' m de la base. ¿Qué altura tiene el árbol? (en metros)',
+    hint:'tan 45° = altura / distancia. Como tan 45° = 1, la altura es igual a la distancia.',
+    explain:'tan 45° = h / '+app+' → 1 = h / '+app+' → h = '+app+' m.',tag:'b1'});
+})();
+
+const G2=[]; // Factorización (mc)
+(function(){
+  const optsPool=[
+    {q:'x² − 25',o:['(x+5)(x−5)','(x+25)(x−1)','(x−5)²','(x+5)²'],c:0},
+    {q:'x² − 81',o:['(x+9)(x−9)','(x+81)(x−1)','(x−9)²','(x+9)²'],c:0},
+    {q:'y² − 49',o:['(y+7)(y−7)','(y−7)²','(y+49)(y−1)','(y+7)²'],c:0},
+    {q:'16x² − 25',o:['(4x+5)(4x−5)','(4x−5)²','(2x+5)(8x−5)','(16x+25)(x−1)'],c:0},
+    {q:'x² + 10x + 25',o:['(x+5)²','(x+5)(x−5)','(x+25)(x+1)','(x−5)²'],c:0},
+    {q:'x² − 12x + 36',o:['(x−6)²','(x+6)²','(x−6)(x+6)','(x−12)(x+3)'],c:0},
+    {q:'x² + 14x + 49',o:['(x+7)²','(x−7)²','(x+7)(x−7)','(x+49)(x+1)'],c:0},
+    {q:'9x² − 24x + 16',o:['(3x−4)²','(3x+4)²','(9x−16)(x−1)','(3x−4)(3x+4)'],c:0},
+    {q:'x² + 7x + 12',o:['(x+3)(x+4)','(x+6)(x+2)','(x−3)(x−4)','(x+12)(x+1)'],c:0},
+    {q:'x² − 5x + 6',o:['(x−2)(x−3)','(x+2)(x+3)','(x−1)(x−6)','(x−5)(x+6)'],c:0},
+    {q:'x² + 2x − 15',o:['(x+5)(x−3)','(x+15)(x−1)','(x−5)(x+3)','(x+5)(x+3)'],c:0},
+    {q:'2x² + 7x + 3',o:['(2x+1)(x+3)','(2x+3)(x+1)','(2x−1)(x−3)','(x+1)(2x+7)'],c:0},
+    {q:'3x² + 10x + 8',o:['(3x+4)(x+2)','(3x+2)(x+4)','(3x−4)(x−2)','(x+8)(3x+1)'],c:0},
+    {q:'2x² − x − 6',o:['(2x+3)(x−2)','(2x−3)(x+2)','(2x+2)(x−3)','(x−2)(2x−6)'],c:0},
+    {q:'x³ − 8',o:['(x−2)(x²+2x+4)','(x+2)(x²−2x+4)','(x−2)³','(x−2)(x²−2x+4)'],c:0},
+    {q:'x³ + 27',o:['(x+3)(x²−3x+9)','(x−3)(x²+3x+9)','(x+3)³','(x+3)(x²+3x+9)'],c:0},
+    {q:'8x³ − 1',o:['(2x−1)(4x²+2x+1)','(2x+1)(4x²−2x+1)','(2x−1)³','(2x−1)(4x²−2x+1)'],c:0},
+    {q:'12a³ − 18a²',o:['6a²(2a−3)','6a(2a−3)','2a²(6a−9)','6a²(2a+3)'],c:0},
+    {q:'x² + xy − 3x − 3y',o:['(x−3)(x+y)','(x+3)(x+y)','(x−3)(x−y)','(x+y)(x+y)'],c:0},
+    {q:'3x² − 27',o:['3(x+3)(x−3)','3(x−9)','(3x+9)(x−3)','3(x+3)²'],c:0},
+  ];
+  for(const it of optsPool){
+    G2.push({cat:'Factorización',type:'mc',prompt:'Factoriza completamente: '+it.q,
+      opts:it.o.slice(),correct:it.c,
+      hint:'Identifica el caso: factor común, diferencia de cuadrados, TCP o trinomio, y verifica multiplicando tu respuesta.',
+      explain:'La forma factorizada correcta es <b>'+it.o[it.c]+'</b>. Multiplica para comprobarlo.',
+      tag:'b2'});
+  }
+})();
+
+const G3=[]; // Desigualdades
+(function(){
+  // lineales simples
+  const lin=[
+    {q:'Resuelve: 2x − 5 < 4x + 1',ans:'x > −3',sol:'(−3, ∞)',s:['x > −3','x < −3','x > 2','x < 2']},
+    {q:'Resuelve: 5 − 2x ≥ 11',ans:'x ≤ −3',sol:'(−∞, −3]',s:['x ≤ −3','x ≥ −3','x ≤ 3','x ≥ 3']},
+    {q:'Resuelve: 7 − 3x < 2 − 5x + 6',ans:'x < 1/2',sol:'(−∞, 1/2)',s:['x < 1/2','x > 1/2','x < 2','x > 2']},
+    {q:'Resuelve: 2x + 7 > x + 10',ans:'x > 3',sol:'(3, ∞)',s:['x > 3','x > 1','x < 3','x ≥ 3']},
+  ];
+  for(const it of lin){
+    G3.push({cat:'Desigualdad lineal',type:'mc',prompt:it.q,
+      opts:['<b>'+it.s[0]+'</b> → '+it.sol, '<b>'+it.s[1]+'</b>', '<b>'+it.s[2]+'</b>', '<b>'+it.s[3]+'</b>'],
+      correct:0, blockAns:it.ans,
+      hint:'Despeja x como en una ecuación, pero recuerda: al dividir entre un NEGATIVO se invierte la desigualdad.',
+      explain:'La solución correcta es <b>'+it.ans+'</b> → '+it.sol+'.',
+      tag:'b3'});
+  }
+  // con agrupación / múltiples x (num respuesta como símbolo simplificado)
+  G3.push({cat:'Desigualdad con signos de agrupación',type:'num',answer:19/7,tol:0.0001,
+    prompt:'Resuelve: 3(2x − 4) > x + 7 − 2x. Escribe la solución para x como número: ¿x es MAYOR que qué valor? (fracción = 19/7 ≈ 2.714)',
+    hint:'Distribuye: 6x − 12 > −x + 7 → 7x > 19 → divide entre 7 (positivo, no invierte).',
+    explain:'7x > 19 → x > 19/7 ≈ 2.714.',tag:'b3'});
+  // valor absoluto menor que
+  G3.push({cat:'Valor absoluto (caso menor que)',type:'num',answer:8,tol:0.01,
+    prompt:'Resuelve: |x − 3| ≤ 5. ¿Cuál es el extremo SUPERIOR del intervalo solución?',
+    hint:'|x − 3| ≤ 5 → −5 ≤ x − 3 ≤ 5. Suma 3 a los tres lados.',
+    explain:'−5 ≤ x − 3 ≤ 5 → −2 ≤ x ≤ 8. El extremo superior es 8 → intervalo [−2, 8].',tag:'b3'});
+  G3.push({cat:'Valor absoluto (caso mayor que)',type:'mc',
+    prompt:'Resuelve: |2x + 1| > 7. ¿Cuál es la solución correcta?',
+    opts:['<b>x < −4</b> o <b>x > 3</b> → (−∞,−4) ∪ (3,∞)',
+          '<b>x > 3</b> → (3,∞)',
+          '<b>−4 < x < 3</b> → (−4,3)',
+          '<b>x < −3</b> o <b>x > 4</b>'],
+    correct:0,
+    hint:'Como es "mayor que", se separa en dos casos: 2x+1 < −7 O 2x+1 > 7.',
+    explain:'Caso A: 2x+1 < −7 → x < −4. Caso B: 2x+1 > 7 → x > 3. Solución: (−∞,−4) ∪ (3,∞).',tag:'b3'});
+  // polinómicas
+  const poly=[
+    {q:'Resuelve: (x − 2)(x + 1) > 0',a:'(−∞, −1) ∪ (2, ∞)',o:['(−∞, −1) ∪ (2, ∞)','(−1, 2)','(−2, 1) ∪ ...','(2, ∞)']},
+    {q:'Resuelve: (x + 1)(x − 4) < 0',a:'(−1, 4)',o:['(−1, 4)','(−∞,−1) ∪ (4,∞)','(−4, 1)','(1, 4)']},
+    {q:'Resuelve: x² − 9 ≥ 0',a:'(−∞, −3] ∪ [3, ∞)',o:['(−∞, −3] ∪ [3, ∞)','[−3, 3]','(−3, 3)','(−∞, 3]']},
+  ];
+  for(const it of poly){
+    G3.push({cat:'Desigualdad polinómica',type:'mc',prompt:it.q,
+      opts:it.o.slice(),correct:0,
+      hint:'Factoriza, halla las raíces, divide la recta en intervalos y prueba un número en cada uno.',
+      explain:'La solución es <b>'+it.a+'</b>. Usa el método de los puntos de prueba (tabla de signos).',tag:'b3'});
+  }
+  // racionales
+  G3.push({cat:'Desigualdad racional',type:'mc',
+    prompt:'Resuelve: (x − 1) / (x + 2) > 0',
+    opts:['(−∞, −2) ∪ (1, ∞)','(−2, 1)','(−∞, −2)','(1, ∞)'],
+    correct:0,
+    hint:'Raíces: numerador en 1 y denominador en −2 (este NUNCA se incluye). Prueba signos en cada intervalo.',
+    explain:'El denominador x+2 no puede ser 0 → excluye −2. Signos: (−)/(−)=+ en (−∞,−2) y (+)/(+)=+ en (1,∞).',tag:'b3'});
+  G3.push({cat:'Desigualdad racional (con ≤)',type:'mc',
+    prompt:'Resuelve: (x + 3) / (x − 1) ≤ 0',
+    opts:['[−3, 1)','(−3, 1)','[−3, 1]','(−∞, −3] ∪ (1, ∞)'],
+    correct:0,
+    hint:'Numerador 0 en −3 (se incluye por el ≤), denominador 0 en 1 (se excluye siempre).',
+    explain:'El intervalo donde el cociente es negativo es (−3, 1); incluye −3 (numerador) pero no 1 (denominador) → [−3, 1).',tag:'b3'});
+})();
+
+const G4=[]; // Ecuación de la recta
+(function(){
+  const pairs=[[1,2,4,6],[2,3,5,9],[0,3,2,7],[1,4,3,10],[-1,0,1,4],[2,1,6,3]];
+  for(const [x1,y1,x2,y2] of pairs){
+    const m=(y2-y1)/(x2-x1);
+    G4.push({cat:'Pendiente',type:'num',answer:m,tol:0.0001,
+      prompt:'Halla la pendiente de la recta que pasa por ('+x1+', '+y1+') y ('+x2+', '+y2+').',
+      hint:'m = (y₂ − y₁) / (x₂ − x₁) = ('+y2+' − '+y1+') / ('+x2+' − '+x1+').',
+      explain:'m = ('+y2+'−'+y1+')/('+x2+'−'+x1+') = '+(y2-y1)+'/'+(x2-x1)+' = '+fmt(m)+'.',tag:'b4'});
+  }
+  // distancias (trios pitagóricos → entero)
+  const dist=[[1,2,4,6,5],[0,0,3,4,5],[1,1,9,7,10],[2,3,8,11,10],[-2,3,3,7,Math.sqrt(41)]];
+  for(const [x1,y1,x2,y2,ans] of dist){
+    G4.push({cat:'Distancia entre dos puntos',type:'num',answer:Math.round(ans*100)/100,tol:0.01,
+      prompt:'Halla la distancia entre ('+x1+', '+y1+') y ('+x2+', '+y2+').',
+      hint:'d = √[(x₂−x₁)² + (y₂−y₁)²] = √[('+x2+'−('+x1+'))² + ('+y2+'−('+y1+'))²].',
+      explain:'d = √(('+(x2-x1)+')² + ('+(y2-y1)+')²) = '+fmt(Math.round(ans*100)/100)+'.',tag:'b4'});
+    G4.push({cat:'Punto medio',type:'num',answer:Math.round(((x1+x2)/2)*100)/100,tol:0.01,
+      prompt:'Halla la coordenada x del PUNTO MEDIO entre ('+x1+', '+y1+') y ('+x2+', '+y2+').',
+      hint:'x del punto medio = (x₁ + x₂)/2 = ('+x1+' + '+x2+')/2.',
+      explain:'(x₁+x₂)/2 = ('+x1+'+'+x2+')/2 = '+fmt(Math.round(((x1+x2)/2)*100)/100)+'.',tag:'b4'});
+  }
+  // ecuación de la recta por 2 puntos (mc con pendiente-intersección)
+  const lineEq=[[1,2,3,8,'y = 3x − 1'],[0,3,2,7,'y = 2x + 3'],[1,1,2,3,'y = 2x − 1'],[2,3,4,7,'y = 2x − 1'],[0,0,1,2,'y = 2x']];
+  for(const [x1,y1,x2,y2,corr] of lineEq){
+    const m=(y2-y1)/(x2-x1); const b=y1-m*x1;
+    const wrong=[];
+    // generar opciones incorrectas plausibles
+    const cand=[corr,'y = '+fmt(m)+'x + '+(y1+x1),'y = '+fmt((x2-x1)/(y2-y1)||1)+'x + '+b,'y = '+fmt(m+1)+'x + '+b,'y = '+fmt(m)+'x − '+b];
+    const uniq=[corr]; for(const c of cand){if(!uniq.includes(c)) uniq.push(c);}
+    const opts=shuffle(uniq.slice(0,4));
+    G4.push({cat:'Ecuación de la recta',type:'mc',prompt:'Halla la ecuación (pendiente-intersección y = mx + b) de la recta que pasa por ('+x1+', '+y1+') y ('+x2+', '+y2+').',
+      opts:opts.map(o=>'<b>'+esc(o)+'</b>'),correct:opts.indexOf(corr),
+      hint:'Primero m = (y₂−y₁)/(x₂−x₁), luego sustituye un punto para hallar b.',
+      explain:'m = '+fmt(m)+' y usando ('+x1+','+y1+'): '+y1+' = '+fmt(m)+'·('+x1+') + b → b = '+fmt(b)+'. La ecuación es <b>'+corr+'</b>.',tag:'b4'});
+  }
+  // paralelas y perpendiculares
+  G4.push({cat:'Paralelas y perpendiculares',type:'num',answer:3,tol:0.0001,
+    prompt:'¿Cuál es la pendiente de una recta PARALELA a y = 3x − 2?',
+    hint:'Las rectas paralelas tienen la misma pendiente.',
+    explain:'Paralela → misma pendiente m = 3.',tag:'b4'});
+  G4.push({cat:'Paralelas y perpendiculares',type:'num',answer:-1/3,tol:0.0001,
+    prompt:'¿Cuál es la pendiente de una recta PERPENDICULAR a y = 3x − 2?',
+    hint:'Perpendicular → recíproco negativo: m₂ = −1/m₁ = −1/3.',
+    explain:'m₂ = −1/3 (se cumple que 3 · (−1/3) = −1).',tag:'b4'});
+  G4.push({cat:'Paralelas y perpendiculares',type:'num',answer:2,tol:0.0001,
+    prompt:'¿Cuál es la pendiente de una recta PARALELA a y = 2x + 5?',
+    hint:'Misma pendiente que la recta dada.',
+    explain:'m = 2.',tag:'b4'});
+  G4.push({cat:'Paralelas y perpendiculares',type:'num',answer:-0.5,tol:0.0001,
+    prompt:'¿Cuál es la pendiente de una recta PERPENDICULAR a y = 2x + 5?',
+    hint:'Recíproco negativo de 2 → −1/2.',
+    explain:'m₂ = −1/2 = −0.5.',tag:'b4'});
+  G4.push({cat:'Paralelas y perpendiculares',type:'mc',
+    prompt:'¿Cómo son las rectas y = 2x + 1 y y = −½x + 3?',
+    opts:['Perpendiculares','Paralelas','Son la misma recta','Se cruzan pero no son perpendiculares'],
+    correct:0,
+    hint:'Multiplica sus pendientes: 2 × (−1/2) = ?',
+    explain:'2 × (−1/2) = −1 → sus pendientes son recíprocas negativas → son perpendiculares.',tag:'b4'});
+  // modelado real
+  G4.push({cat:'Modelado de situación real',type:'num',answer:25,tol:0.01,
+    prompt:'Un taxi cobra Q5 de arranque más Q2.50 por kilómetro (y = 2.5x + 5). ¿Cuánto cuesta un viaje de 8 km?',
+    hint:'Sustituye x = 8 en y = 2.5x + 5.',
+    explain:'y = 2.5·8 + 5 = 20 + 5 = 25 quetzales.',tag:'b4'});
+  G4.push({cat:'Modelado de situación real',type:'num',answer:30,tol:0.01,
+    prompt:'Una planta mide 12 cm y crece 3 cm por semana (y = 3x + 12). ¿Cuánto medirá a las 6 semanas?',
+    hint:'Sustituye x = 6 en y = 3x + 12.',
+    explain:'y = 3·6 + 12 = 18 + 12 = 30 cm.',tag:'b4'});
+})();
+
+const G5=[]; // Funciones
+(function(){
+  // evaluación lineal
+  const ev=[
+    {f:'f(x) = 2x + 5',x:3,ans:11},{f:'f(x) = 3x − 7',x:4,ans:5},
+    {f:'f(x) = x² − 4',x:-2,ans:0},{f:'f(x) = x² + 2x',x:-1,ans:-1},
+    {f:'f(x) = |x − 7|',x:2,ans:5},{f:'f(x) = |5 − 2x|',x:6,ans:7},
+    {f:'f(x) = 2x − 3',x:5,ans:7},{f:'f(x) = x² + 1',x:4,ans:17},
+  ];
+  for(const it of ev){
+    G5.push({cat:'Evaluación de funciones',type:'num',answer:it.ans,tol:0.0001,
+      prompt:'Si '+it.f+', calcula f('+it.x+').',
+      hint:'Sustituye cada x por '+it.x+' y simplifica.',
+      explain:'f('+it.x+') = '+it.ans+'.',tag:'b5'});
+  }
+  // evaluación radical y racional
+  G5.push({cat:'Evaluación de funciones',type:'num',answer:3,tol:0.0001,
+    prompt:'Si f(x) = √(x + 6), calcula f(3).',
+    hint:'√(3 + 6) = √9.',
+    explain:'f(3) = √(3+6) = √9 = 3.',tag:'b5'});
+  G5.push({cat:'Evaluación de funciones',type:'num',answer:1,tol:0.0001,
+    prompt:'Si f(x) = 3/(x − 1), calcula f(4).',
+    hint:'3/(4 − 1) = 3/3.',
+    explain:'f(4) = 3/(4−1) = 3/3 = 1.',tag:'b5'});
+  G5.push({cat:'Evaluación de funciones',type:'mc',
+    prompt:'Si f(x) = 3/(x − 1), ¿para qué valor de x NO existe f(x)?',
+    opts:['x = 1','x = 0','x = −1','x = 3'],
+    correct:0,
+    hint:'El denominador no puede ser 0. ¿Cuándo vale x − 1 = 0?',
+    explain:'x − 1 = 0 → x = 1. Dividir entre 0 no está definido.',tag:'b5'});
+  // prueba recta vertical
+  G5.push({cat:'Prueba de la recta vertical',type:'mc',
+    prompt:'¿La ecuación x = y² representa una función?',
+    opts:['No, falla la prueba de la recta vertical (cada x > 0 tiene dos y)','Sí, es una función','Sí, porque despeja y','No, porque no tiene x'],
+    correct:0,
+    hint:'Dibuja x = y²: es una parábola horizontal. Una recta vertical la cruza en 2 puntos.',
+    explain:'Para x = 4 hay y = 2 y y = −2. Una entrada x produce dos salidas → NO es función.',tag:'b5'});
+  G5.push({cat:'Prueba de la recta vertical',type:'mc',
+    prompt:'¿Cuál de las siguientes SÍ es la gráfica de una función?',
+    opts:['y = |x| (una "V")','x = 3 (recta vertical)','x² + y² = 25 (círculo)','x = y² − 1'],
+    correct:0,
+    hint:'Aplica la recta vertical: cada x debe tener como máximo una y.',
+    explain:'y = |x| pasa la prueba de la recta vertical. Las otras opciones fallan (una entrada x da dos salidas y).',tag:'b5'});
+  // dominio
+  G5.push({cat:'Dominio de funciones',type:'num',answer:7,tol:0.0001,
+    prompt:'¿Cuál es el dominio de f(x) = 5/(x − 7)? Escribe el número que NO puede tomar x.',
+    hint:'El denominador no puede ser 0: x − 7 ≠ 0.',
+    explain:'Dominio: todos los reales menos x = 7 (ℝ − {7}).',tag:'b5'});
+  G5.push({cat:'Dominio de funciones',type:'num',answer:4,tol:0.0001,
+    prompt:'¿Cuál es el valor mínimo de x en el dominio de f(x) = √(x − 4)? (el radicando debe ser ≥ 0)',
+    hint:'x − 4 ≥ 0.',
+    explain:'x − 4 ≥ 0 → x ≥ 4 → dominio [4, ∞). El mínimo es 4.',tag:'b5'});
+  G5.push({cat:'Dominio desde pares ordenados',type:'mc',
+    prompt:'Dados los pares { (1,5), (2,7), (3,5), (4,9) }, ¿es una función? ¿cuál es su dominio?',
+    opts:['Sí es función; dominio {1, 2, 3, 4}','No es función; dominio {1,2,3,4}','Sí es función; dominio {5,7,9}','No, porque el 5 se repite'],
+    correct:0,
+    hint:'¿Cada x aparece una sola vez? El dominio son las x, el rango las y.',
+    explain:'Cada x (1,2,3,4) tiene una sola salida → es función. Dominio = {1,2,3,4}.',tag:'b5'});
+  G5.push({cat:'Dominio desde pares ordenados',type:'mc',
+    prompt:'Dados los pares { (0,1), (2,3), (0,5) }, ¿es una función?',
+    opts:['No, porque la entrada 0 tiene dos salidas (1 y 5)','Sí, porque cada y es distinta','Sí, porque tiene 3 pares','No, porque le faltan pares'],
+    correct:0,
+    hint:'Una misma entrada x no puede tener dos salidas diferentes.',
+    explain:'La entrada x = 0 produce y = 1 y también y = 5 → viola la definición de función → NO es función.',tag:'b5'});
+  // función por trozos
+  G5.push({cat:'Función por trozos',type:'num',answer:-1,tol:0.0001,
+    prompt:'Sea f(x) = 2x + 1 si x < 0; f(x) = x² si 0 ≤ x ≤ 3; f(x) = 5 si x > 3. Calcula f(−1).',
+    hint:'−1 cae en el primer trozo (x < 0): usa 2x + 1.',
+    explain:'f(−1) = 2(−1) + 1 = −2 + 1 = −1.',tag:'b5'});
+  G5.push({cat:'Función por trozos',type:'num',answer:4,tol:0.0001,
+    prompt:'Con la misma función por trozos, calcula f(2).',
+    hint:'2 cae en 0 ≤ x ≤ 3: usa x².',
+    explain:'f(2) = 2² = 4.',tag:'b5'});
+  G5.push({cat:'Función por trozos',type:'num',answer:5,tol:0.0001,
+    prompt:'Con la misma función por trozos, calcula f(5).',
+    hint:'5 cae en x > 3: la función vale 5 (constante).',
+    explain:'f(5) = 5 (tercer trozo).',tag:'b5'});
+  // rango desde gráfica
+  G5.push({cat:'Dominio y rango desde la gráfica',type:'mc',
+    prompt:'Una parábola abre hacia arriba con vértice en (0, −4) y se extiende sobre toda la recta x. ¿Cuál es su RANGO?',
+    opts:['[−4, ∞)','(−∞, −4]','Todos los reales','[−4, 4]'],
+    correct:0,
+    hint:'El punto más bajo es el vértice en y = −4 y desde ahí crece sin límite.',
+    explain:'Los valores de y van desde −4 (mínimo) hacia arriba → rango [−4, ∞).',tag:'b5'});
+})();
+
+const BLOCKS=[
+  {id:'b1',name:'Geometría y Trigonometría',pts:'/20 puntos',color:'b1',bank:G1,
+   topics:['Ángulos complementarios y suplementarios','Suma de ángulos internos del triángulo','Teorema de Pitágoras','Razones trigonométricas y aplicaciones']},
+  {id:'b2',name:'Factorización',pts:'/10 puntos',color:'b2',bank:G2,
+   topics:['Factor común','Diferencia de cuadrados','Trinomio cuadrado perfecto','Trinomios generales','Cubos y factorización por agrupación']},
+  {id:'b3',name:'Desigualdades',pts:'/25 puntos',color:'b3',bank:G3,
+   topics:['Desigualdades lineales','Con signos de agrupación','Valor absoluto','Desigualdades polinómicas y racionales']},
+  {id:'b4',name:'Ecuación de la recta',pts:'/25 puntos',color:'b4',bank:G4,
+   topics:['Pendiente, distancia y punto medio','Ecuación de la recta','Rectas paralelas y perpendiculares','Modelado de situaciones reales']},
+  {id:'b5',name:'Introducción a las funciones',pts:'/20 puntos',color:'b5',bank:G5,
+   topics:['Evaluación de funciones','Prueba de la recta vertical','Dominio y rango','Función por trozos']},
+];
+const SESSION_LEN=8;
+
+/* ============================================================
+   PRUEBA COMPLETA (simulacro del examen de admisión)
+   Cada bloque aporta preguntas según su peso y cada acierto vale
+   lo mismo (5 pts), así el total siempre queda sobre 100.
+============================================================ */
+const FULL_PLAN=[
+  {id:'b1',count:4},  // Geometría y Trigonometría · 20 pts (4 × 5)
+  {id:'b2',count:2},  // Factorización            · 10 pts (2 × 5)
+  {id:'b3',count:5},  // Desigualdades            · 25 pts (5 × 5)
+  {id:'b4',count:5},  // Ecuación de la recta     · 25 pts (5 × 5)
+  {id:'b5',count:4},  // Funciones                · 20 pts (4 × 5)
+];
+const FULL_LEN=FULL_PLAN.reduce((s,p)=>s+p.count,0); // 20 preguntas
+const FULL_PTS_PER=5;                                 // puntos por acierto
+const FULL_MAX=100;                                   // nota máxima
+
+/* ============================================================
+   NAVEGACIÓN (mapa de pantallas) y UI
+============================================================ */
+// view: 'home' | 'intro' | 'introFull' | 'game' | 'result'
+let view='home';
+let current={mode:'block',block:null,blockIdx:-1,used:[],q:null,qBlock:null,answered:false,
+             okCount:0,earned:0,usedHint:false,questionIndex:0,sessionLen:SESSION_LEN,
+             list:[],pos:0,blockRes:{},fStreak:0};
+let exitCb=null; // callback del diálogo de confirmación
+
+const NAV_ORDER=['home','intro','game','result'];
+const NAV_LABEL={home:'Inicio',intro:'Bloque',introFull:'Simulacro',game:'Práctica',result:'Resultado'};
+const ICON={
+  check:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+};
+function $id(id){return document.getElementById(id);}
+
+/* --- Barra de progreso de práctica (relleno + puntitos) --- */
+function renderProgress(){
+  // Usa la longitud de la sesión actual (8 en práctica, 20 en el simulacro).
+  const len=current.sessionLen||SESSION_LEN;
+  // Antes de responder la pregunta k (0-based) ya resolvimos 'questionIndex'.
+  const done=current.questionIndex + (current.answered?1:0);
+  const pct=Math.max(0,Math.min(100,Math.round(done/len*100)));
+  $id('progFill').style.width=pct+'%';
+  $id('progTxt').textContent=pct+' %';
+  const dots=$id('progDots'); dots.innerHTML='';
+  for(let i=0;i<len;i++){
+    const d=document.createElement('span'); d.className='dot'+(i<done?' on':'')+(i===done?' cur':'');
+    dots.appendChild(d);
+  }
+}
+
+/* --- Mapa de navegación superior: resalta la pantalla activa --- */
+function updateNav(active){
+  view=active;
+  // La intro del simulacro ocupa el mismo paso del mapa que la intro de bloque.
+  const idx=NAV_ORDER.indexOf(active==='introFull'?'intro':active);
+  document.querySelectorAll('nav.steps .step').forEach((el,i)=>{
+    el.classList.remove('active','done','upcoming');
+    el.setAttribute('aria-current',i===idx?'step':'false');
+    if(i===idx){el.classList.add('active');}
+    else if(i<idx){el.classList.add('done');}
+    else{el.classList.add('upcoming');}
+  });
+  // El paso 2 se llama "Bloque" (práctica) o "Simulacro" (prueba completa)
+  const s2=$id('navStep2Txt');
+  if(s2)s2.textContent=(current.mode==='full')?'Simulacro':'Bloque';
+}
+function showSection(id){
+  ['home','intro','introFull','game','result'].forEach(s=>$id(s).classList.toggle('hidden',s!==id));
+  // Reinicia la animación de entrada
+  const sec=$id(id);
+  if(sec){sec.classList.remove('screen');void sec.offsetWidth;sec.classList.add('screen');}
+  window.scrollTo({top:0,behavior:reduceMotion()?'auto':'smooth'});
+}
+
+/* --- Diálogo de confirmación --- */
+function openDialog(title,msg,okText,cb,cancelText){
+  $id('dialogTitleText').textContent=title;
+  $id('dialogMsg').textContent=msg;
+  $id('dialogOk').textContent=okText;
+  $id('dialogCancel').textContent=cancelText||'Seguir practicando';
+  exitCb=cb;
+  $id('dialog').classList.remove('hidden');
+  $id('dialogOk').focus();
+}
+function closeDialog(){$id('dialog').classList.add('hidden');exitCb=null;}
+$id('dialogCancel').addEventListener('click',closeDialog);
+$id('dialogOk').addEventListener('click',()=>{const cb=exitCb;closeDialog();if(cb)cb();});
+$id('dialog').addEventListener('click',e=>{if(e.target===$id('dialog'))closeDialog();});
+
+/* --- Estadísticas y logros --- */
+function renderStats(){
+  $id('statPts').textContent=state.pts;
+  $id('statStreak').textContent=state.streak;
+  $id('statHit').textContent=state.hit;
+  $id('statTot').textContent=state.tot;
+}
+function renderAch(){
+  const home=$id('achHome'); let html='';
+  ACH.forEach(a=>{
+    const on=state.ach[a.id];
+    html+='<span class="ach '+(on?'unlocked'+(a.id==='first'?' glow':'') :'')+'" title="'+esc(a.d)+'" aria-label="'+esc(a.n)+': '+esc(a.d)+'">'
+      +'<span class="ico" aria-hidden="true">'+(on?ACH_ICON[a.id]:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>')+'</span>'
+      +esc(a.n)+'</span>';
+  });
+  home.innerHTML=html;
+}
+function awardAch(id){
+  if(!state.ach[id]){state.ach[id]=true;showToast('🏆 ¡Logro desbloqueado! '+ACH.find(a=>a.id===id).n);renderAch();save();}
+}
+function showToast(msg){
+  const t=$id('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+/* ============================================================
+   PANTALLA 1 — INICIO (grilla de bloques)
+============================================================ */
+function renderHome(){
+  current.mode='block'; // al volver al inicio, el mapa muestra "Bloque"
+  showSection('home');
+  updateNav('home');
+  $id('btnOpenFull').onclick=openFull;
+  $id('btnResetStudent').onclick=confirmReset;
+  const grid=$id('blocksGrid'); let html='';
+  BLOCKS.forEach((b,i)=>{
+    const st=state.block[b.id]||{ok:0,total:0};
+    const pct=st.total?Math.round(st.ok/st.total*100):0;
+    const done=st.total>0;
+    html+='<button class="block bb'+b.color+'" onclick="openBlock('+i+')" aria-label="Bloque '+(i+1)+': '+esc(b.name)+'. '+esc(b.bank[0].cat)+' y más">'
+      +'<span class="top"><span class="chip ch'+(i+1)+'">Bloque '+(i+1)+'</span>'
+      +(done?'<span class="chip" style="background:rgba(52,211,153,.2);color:#6ee7b7">✔ Practicado</span>':'')
+      +'</span>'
+      +'<h3 class="bc'+b.color+'">'+esc(b.name)+'</h3>'
+      +'<p class="desc">'+esc(b.bank[0].cat)+' y más · 8 ejercicios</p>'
+      +'<span class="pts">'+b.pts+' en el examen</span>'
+      +'<div class="bar"><i style="width:'+pct+'%;background:var(--'+b.color+')"></i></div>'
+      +'<div class="barlbl"><span>'+(done?pct+'% de acierto':'Sin practicar aún')+'</span><span>'+(done?st.ok+'/'+st.total+' correctas':'')+'</span></div>'
+      +'<span class="go" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>'
+      +'</button>';
+  });
+  grid.innerHTML=html;
+  renderStats(); renderAch(); save();
+}
+function goHome(){renderHome();}
+
+/* --- Nuevo alumno: borra TODO el progreso guardado en este equipo --- */
+function defaultState(){return {pts:0,streak:0,hit:0,tot:0,ach:{},block:{},seen:false};}
+function confirmReset(){
+  openDialog('¿Empezar como nuevo alumno?',
+    'Se borrarán TODOS los puntos, rachas, logros y el avance por bloque guardados en este equipo. '+
+    'Esta acción no se puede deshacer. Úsala cuando otro alumno vaya a practicar aquí.',
+    'Sí, borrar todo', doReset, 'Cancelar');
+}
+function doReset(){
+  state=defaultState();
+  try{localStorage.removeItem('mat4');}catch(e){}
+  save();
+  // Deja la pantalla como una primera visita: vuelve a mostrar "¿Cómo funciona?"
+  $id('guideCard').classList.remove('hidden');
+  renderHome();
+  showToast('🧼 Listo. Progreso borrado: empieza un alumno nuevo.');
+}
+
+/* ============================================================
+   PANTALLA 2 — INTRO DE BLOQUE (qué vas a practicar)
+============================================================ */
+function openBlock(idx){
+  const b=BLOCKS[idx];
+  current.mode='block';
+  current.block=b; current.blockIdx=idx;
+  showSection('intro'); updateNav('intro');
+
+  const st=state.block[b.id]||{ok:0,total:0};
+  $id('introBadge').className='big ch'+(idx+1);
+  $id('introBadge').innerHTML='<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+BLOCK_ICON[b.id]+'</svg>';
+  $id('introEyebrow').textContent='BLOQUE '+(idx+1);
+  $id('introTitle').textContent=b.name;
+  $id('introTitle').className='bc'+b.color;
+  $id('introPts').textContent='Vale '+b.pts+' en el examen de admisión · 8 ejercicios aleatorios por práctica.';
+
+  const topics=$id('introTopics'); topics.innerHTML='';
+  b.topics.forEach(t=>{
+    const li=document.createElement('li');
+    li.innerHTML='<span aria-hidden="true">'+ICON.check+'</span><span>'+esc(t)+'</span>';
+    topics.appendChild(li);
+  });
+
+  const mine=st.total?Math.round(st.ok/st.total*100):0;
+  $id('introPct').textContent=st.total?(mine+' %'):'0 %';
+  $id('introSolved').textContent=st.total?(st.total+' · '+st.ok+' correctas'):'0';
+  $id('introBarFill').style.width=(mine||0)+'%';
+
+  $id('btnStartPractice').onclick=()=>startBlock(idx);
+  $id('btnIntroBack').onclick=()=>goHome();
+}
+
+/* ============================================================
+   PANTALLA 2b — INTRO DE PRUEBA COMPLETA (simulacro)
+============================================================ */
+function openFull(){
+  current.mode='full';
+  showSection('introFull'); updateNav('introFull');
+  $id('introFullPts').textContent=FULL_LEN+' preguntas mezcladas · nota sobre '+FULL_MAX+'.';
+  const list=$id('introFullList'); list.innerHTML='';
+  FULL_PLAN.forEach((p,i)=>{
+    const b=BLOCKS.find(x=>x.id===p.id);
+    const pts=p.count*FULL_PTS_PER;
+    const li=document.createElement('li');
+    li.innerHTML='<span class="chip ch'+(i+1)+'" aria-hidden="true" style="width:22px;height:22px;display:grid;place-items:center;border-radius:7px;font-size:.7rem">'+(i+1)+'</span>'
+      +'<span><b>'+esc(b.name)+'</b> · '+p.count+' preguntas · <b style="color:var(--accent)">/'+pts+' pts</b></span>';
+    list.appendChild(li);
+  });
+  $id('btnStartFull').onclick=startFull;
+  $id('btnFullBack').onclick=()=>goHome();
+}
+
+/* ============================================================
+   PANTALLA 3 — PRÁCTICA
+============================================================ */
+function startBlock(idx){
+  const b=BLOCKS[idx];
+  current.mode='block';
+  current.block=b; current.blockIdx=idx;
+  current.used=[]; current.okCount=0; current.earned=0; current.questionIndex=0;
+  current.sessionLen=SESSION_LEN;
+  showSection('game'); updateNav('game');
+  renderProgress();
+  showQuestion();
+}
+
+// Construye la lista de 20 preguntas repartidas por peso y arranca el simulacro.
+function startFull(){
+  current.mode='full';
+  current.block=null; current.blockIdx=-1;
+  current.used=[]; current.okCount=0; current.earned=0; current.questionIndex=0;
+  current.sessionLen=FULL_LEN;
+  current.fStreak=0; // racha del simulacro (aparte de la práctica guardada)
+  current.blockRes={}; // id -> {ok,total}
+  const list=[];
+  FULL_PLAN.forEach(p=>{
+    const b=BLOCKS.find(x=>x.id===p.id);
+    current.blockRes[p.id]={ok:0,total:0,name:b.name,color:b.color,pts:p.count*FULL_PTS_PER};
+    // Toma 'count' preguntas distintas del banco de ese bloque
+    shuffle(b.bank).slice(0,p.count).forEach(q=>list.push({q,blockId:p.id,color:b.color}));
+  });
+  current.list=shuffle(list); // mezcla el orden final
+  current.pos=0;
+  showSection('game'); updateNav('game');
+  renderProgress();
+  showQuestion();
+}
+
+function showQuestion(){
+  const isFull=current.mode==='full';
+  const tag=$id('gameTag');
+  const btnHint=$id('btnHint');
+  let q,b;
+
+  if(isFull){
+    // Modo simulacro: recorremos la lista ya mezclada de los 5 bloques.
+    const item=current.list[current.pos];
+    b=BLOCKS.find(x=>x.id===item.blockId);
+    q=item.q;
+    current.qBlock=b;
+    tag.textContent='Bloque '+BLOCKS.indexOf(b)+' · '+b.name;
+  } else {
+    b=current.block;
+    current.qBlock=b;
+    // Toma una pregunta aún no usada en esta sesión; si ya se agotaron todas
+    // (ronda larga), reinicia la lista y vuelve a barajar el banco completo.
+    let bank=b.bank.filter(x=>!current.used.includes(x));
+    if(bank.length===0){ current.used=[]; bank=b.bank.slice(); }
+    q=pick(bank);
+    current.used.push(q);
+    tag.textContent='Bloque '+BLOCKS.indexOf(b)+' · '+b.name;
+  }
+
+  current.q=q;
+  current.answered=false; current.usedHint=false;
+
+  tag.className='tag '+b.color;
+  $id('qNow').textContent=current.questionIndex+1;
+  $id('qTotal').textContent=current.sessionLen||SESSION_LEN;
+  $id('qCat').textContent=q.cat;
+  $id('gamePrompt').innerHTML=esc(q.prompt);
+
+  const area=$id('qArea'); area.innerHTML='';
+  const fb=$id('qFeedback'); fb.classList.add('hidden'); fb.innerHTML='';
+  const hint=$id('qHint'); hint.classList.add('hidden'); hint.innerHTML='';
+  // En simulacro no hay pistas: como en el examen real.
+  btnHint.disabled=false;
+  btnHint.style.visibility=isFull?'hidden':'visible';
+  $id('nextArea').innerHTML='';
+  renderProgress();
+
+  if(q.type==='mc'){
+    const div=document.createElement('div'); div.className='opts';
+    q.opts.forEach((o,i)=>{
+      const btn=document.createElement('button'); btn.className='opt'; btn.type='button';
+      btn.innerHTML='<span class="key" aria-hidden="true">'+(i+1)+'</span><span>'+o+'</span>';
+      btn.setAttribute('aria-label','Opción '+(i+1)+': '+(o.replace(/<[^>]*>/g,' ')));
+      btn.onclick=()=>answerMC(i,btn);
+      div.appendChild(btn);
+    });
+    area.appendChild(div);
+  } else {
+    const wrap=document.createElement('div'); wrap.className='numwrap';
+    const field=document.createElement('div'); field.className='field';
+    const lab=document.createElement('label'); lab.setAttribute('for','numIn'); lab.textContent='Escribe tu respuesta:';
+    field.appendChild(lab);
+    const nf=document.createElement('div'); nf.className='numfield';
+    const inp=document.createElement('input'); inp.type='text'; inp.id='numIn'; inp.name='numIn'; inp.inputMode='decimal'; inp.autocomplete='off';
+    inp.setAttribute('aria-describedby','numHelper');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkNum();});
+    nf.appendChild(inp);
+    const unit=document.createElement('span'); unit.className='unit'; unit.textContent=q.unit||'';
+    if(q.unit)nf.appendChild(unit);
+    field.appendChild(nf);
+    const helper=document.createElement('span'); helper.id='numHelper'; helper.className='helper';
+    helper.textContent='Puedes usar punto o coma (ej. 12.5). Pulsa Enter o el botón Comprobar.';
+    field.appendChild(helper);
+    const btn=document.createElement('button'); btn.type='button'; btn.className='btn'; btn.textContent='Comprobar ✓';
+    btn.onclick=checkNum;
+    wrap.appendChild(field);
+    wrap.appendChild(btn);
+    area.appendChild(wrap);
+    setTimeout(()=>{inp.focus();inp.select();},80);
+  }
+}
+
+function showHint(){
+  if(current.mode==='full') return; // el simulacro no tiene pistas
+  if(current.answered||current.usedHint) return;
+  current.usedHint=true;
+  const btnHint=$id('btnHint'); btnHint.disabled=true;
+  const h=$id('qHint'); h.innerHTML='<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg> Pista: '+current.q.hint;
+  h.classList.remove('hidden');
+}
+
+function giveFeedback(ok,html){
+  const fb=$id('qFeedback');
+  const gain=(current.mode==='full')?FULL_PTS_PER:10;
+  fb.className='feedback '+(ok?'ok':'bad');
+  fb.innerHTML='<div class="hd">'+(ok?'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ¡Correcto! +'+gain+' pts'
+              :'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg> Incorrecto')+'</div>'+html;
+  fb.classList.remove('hidden');
+  $id('qHint').classList.add('hidden');
+}
+
+function finishQuestion(ok){
+  const b=current.qBlock||current.block;
+  if(current.mode==='full'){
+    // Simulacro: puntuación de examen. NO altera puntos, rachas ni logros
+    // de la práctica por bloques (así el progreso del alumno no se ensucia).
+    const r=current.blockRes[b.id];
+    if(r){ r.total++; if(ok)r.ok++; }
+    if(ok){ current.earned+=FULL_PTS_PER; current.fStreak++; }
+    else { current.fStreak=0; }
+    current.okCount+=ok?1:0;
+    return; // sin renderStats/save: el simulacro no toca las estadísticas de práctica
+  }
+  const blk=state.block[b.id]=state.block[b.id]||{ok:0,total:0};
+  blk.total++; state.tot++;
+  if(ok){blk.ok++; state.hit++; state.streak++; state.pts+=10; current.earned+=10;
+    if(current.usedHint){state.pts-=1; current.earned-=1;}
+    if(state.streak>=5)awardAch('five');
+  }else{state.streak=0;}
+  current.okCount+=ok?1:0;
+  if(!state.ach.first){state.ach.first=true;showToast('🌟 ¡Primeros pasos! Logro desbloqueado');}
+  if(!state.ach.all && Object.keys(state.block).length>=5){state.ach.all=true;showToast('🏆 ¡Practicaste los 5 bloques!');}
+  const pct=state.tot>=10?Math.round(state.hit/state.tot*100):0;
+  if(!state.ach.half && state.tot>=10 && pct>=80)awardAch('half');
+  if(state.pts>=100&&!state.ach.points)awardAch('points');
+  renderAch(); renderStats(); save();
+}
+
+function checkNum(){
+  if(current.answered) return;
+  const inp=$id('numIn'); const raw=(inp.value||'').replace(',','.').trim();
+  if(raw==='')return;
+  const val=parseFloat(raw);
+  if(isNaN(val)){showToast('⚠️ Escribe un número válido');return;}
+  const ok=Math.abs(val-current.q.answer)<=current.q.tol;
+  current.answered=true;
+  giveFeedback(ok,current.q.explain);
+  finishQuestion(ok);
+  scheduleNext();
+}
+
+function answerMC(idx,btn){
+  if(current.answered) return;
+  current.answered=true;
+  const q=current.q; const ok=(idx===q.correct);
+  const opts=document.querySelectorAll('.opt');
+  opts.forEach(o=>o.disabled=true);
+  opts[q.correct].classList.add('correct');
+  if(!ok)btn.classList.add('wrong');
+  giveFeedback(ok,q.explain);
+  finishQuestion(ok);
+  scheduleNext();
+}
+
+function scheduleNext(){
+  const len=current.sessionLen||SESSION_LEN;
+  if(current.questionIndex+1>=len){
+    setTimeout(showResult,1500);
+  } else {
+    $id('btnHint').style.visibility='hidden';
+    const area=$id('nextArea');
+    const btn=document.createElement('button'); btn.type='button'; btn.className='btn'; btn.textContent='Siguiente ➜';
+    btn.style.marginTop='0';
+    btn.onclick=()=>{
+      current.questionIndex++;
+      if(current.mode==='full')current.pos++;
+      $id('btnHint').style.visibility=(current.mode==='full')?'hidden':'visible';
+      btn.remove();
+      showQuestion();
+    };
+    area.appendChild(btn);
+    btn.focus();
+  }
+}
+
+/* ============================================================
+   PANTALLA 4 — RESULTADO
+============================================================ */
+function showResult(){
+  if(current.mode==='full')return showResultFull();
+  const b=current.block;
+  const n=current.okCount;
+  showSection('result'); updateNav('result');
+  const pct=Math.round(n/SESSION_LEN*100);
+
+  $id('resEyebrow').textContent='RESULTADO DEL BLOQUE';
+  $id('resTitle').textContent='Resultado — '+b.name;
+  $id('resSub').textContent='Acertaste '+n+' de '+SESSION_LEN+' preguntas';
+  $id('resPill1Lbl').textContent='Puntos de la práctica';
+  $id('resPill2Lbl').textContent='Racha máxima';
+  $id('resBreakdown').classList.add('hidden');
+  $id('btnRetryTxt').textContent='Practicar otra vez';
+  $id('resScore').innerHTML=n+'<small> / '+SESSION_LEN+'</small>';
+  $id('resPts').textContent='+'+current.earned;
+  $id('resStreak').textContent=Math.max(state.streak,0);
+  $id('resMedal').className='resmedal';
+  $id('resMedal').style.background=pct===100?'linear-gradient(135deg,#fde047,#f59e0b)'
+    :pct>=75?'linear-gradient(135deg,#34d399,#22c55e)'
+    :pct>=50?'linear-gradient(135deg,#38bdf8,#6366f1)'
+    :'linear-gradient(135deg,#475569,#334155)';
+  let msg='';
+  if(pct===100)msg='🎉 ¡Perfecto! Dominas este bloque. Prueba el siguiente o repítelo para subir tu precisión.';
+  else if(pct>=75)msg='🌟 ¡Muy bien! Revisa en la guía solo los ejercicios que fallaste.';
+  else if(pct>=50)msg='💪 Vas bien. Vuelve al bloque en la guía (Enseño → Ejemplo) y repite los ejemplos antes de intentar de nuevo.';
+  else msg='📚 Este bloque necesita repaso. Lee el tema y el ejemplo en la guía, luego regresa a practicar.';
+  $id('resMsg').textContent=msg;
+  confetti(pct>=75?50:0);
+  $id('btnRetry').onclick=()=>startBlock(BLOCKS.indexOf(b));
+  $id('btnHomeResult').onclick=()=>goHome();
+  $id('btnHomeResult').focus();
+  renderStats(); renderAch();
+}
+
+/* Resultado del SIMULACRO: nota global sobre 100 con desglose por bloque */
+function showResultFull(){
+  const n=current.okCount;
+  const score=current.earned;
+  showSection('result'); updateNav('result');
+  const pct=Math.round(score/FULL_MAX*100);
+
+  $id('resEyebrow').textContent='RESULTADO DEL SIMULACRO';
+  $id('resTitle').textContent='Resultado — Simulacro completo';
+  $id('btnRetryTxt').textContent='Repetir simulacro';
+  $id('resSub').textContent='Acertaste '+n+' de '+FULL_LEN+' preguntas';
+  $id('resScore').innerHTML=score+'<small> / '+FULL_MAX+'</small>';
+  $id('resPill1Lbl').textContent='Puntaje del simulacro';
+  $id('resPill2Lbl').textContent='Equivalente';
+  $id('resPts').textContent=score+' / '+FULL_MAX;
+  $id('resStreak').textContent=current.fStreak+' seguidos';
+  $id('resMedal').className='resmedal';
+  $id('resMedal').style.background=pct===100?'linear-gradient(135deg,#fde047,#f59e0b)'
+    :pct>=75?'linear-gradient(135deg,#34d399,#22c55e)'
+    :pct>=50?'linear-gradient(135deg,#38bdf8,#6366f1)'
+    :'linear-gradient(135deg,#475569,#334155)';
+  let msg='';
+  if(pct>=90)msg='🎉 Nota equivalente a Excelente. Estás listo para el examen de admisión.';
+  else if(pct>=75)msg='🌟 Muy buen resultado. Refuerza en la guía solo los bloques que marcaste por debajo.';
+  else if(pct>=60)msg='💪 Vas por buen camino. Repasa los bloques débiles (Enseño → Ejemplo) y repite el simulacro.';
+  else msg='📚 Conviene un repaso general. Lee la guía por bloques y practica cada uno antes de reintentar el simulacro.';
+  $id('resMsg').textContent=msg;
+
+  // Desglose por bloque según el peso real del examen
+  const bd=$id('resBreakdown');
+  bd.innerHTML='';
+  FULL_PLAN.forEach(p=>{
+    const r=current.blockRes[p.id]; if(!r)return;
+    const got=r.ok*FULL_PTS_PER;
+    const line=document.createElement('div'); line.className='bkline';
+    line.innerHTML='<div class="t"><b>'+r.name+'</b><span class="meta">'+r.ok+'/'+r.total+' correctas · vale '+r.pts+' pts</span></div>'+
+      '<div class="sc">'+got+' <small>/ '+r.pts+'</small></div>'+
+      '<div class="bar"><i style="width:'+(r.pts?Math.round(got/r.pts*100):0)+'%;background:'+r.color+'"></i></div>';
+    bd.appendChild(line);
+  });
+  bd.classList.remove('hidden');
+
+  confetti(pct>=75?70:0);
+  $id('btnRetry').onclick=()=>startFull();
+  $id('btnHomeResult').onclick=()=>goHome();
+  $id('btnHomeResult').focus();
+  renderStats(); renderAch();
+}
+
+/* ============================================================
+   SALIDA y utilidades
+============================================================ */
+function confirmExitGame(){
+  openDialog('¿Salir de la práctica?',
+    'Conservarás los puntos ya ganados, pero la práctica se termina aquí.',
+    'Sí, salir', goHome);
+}
+$id('btnExitGame').addEventListener('click',confirmExitGame);
+
+// Clic en el mapa de navegación
+document.querySelectorAll('nav.steps .step').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const s=el.getAttribute('data-step');
+    if(s===view)return;
+    if(s==='home'){ if(view==='game')confirmExitGame(); else goHome(); }
+    else if(s==='intro' && (view==='intro'||view==='game')){
+      if(view==='game'){ confirmExitGame(); return; }
+      if(current.mode==='full')openFull(); else openBlock(current.blockIdx);
+    }
+    // 'game' y 'result' solo se marcan como ubicación (no son destino clicable)
+  });
+});
+
+// Ocultar el banner "¿Cómo funciona?" (queda marcado en el navegador)
+$id('btnGuideOk').addEventListener('click',()=>{
+  state.seen=true; save();
+  $id('guideCard').classList.add('hidden');
+});
+
+$id('btnHome').addEventListener('click',goHome);
+
+function confetti(n){
+  if(!n||reduceMotion())return;
+  const colors=['#f59e0b','#34d399','#38bdf8','#fb7185','#a78bfa','#fb923c'];
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    const s=6+Math.random()*6;
+    c.style.width=s+'px'; c.style.height=s*1.4+'px';
+    c.style.borderRadius=Math.random()<.5?'50%':'2px';
+    c.style.animationDuration=(1.6+Math.random()*1.6)+'s';
+    c.style.animationDelay=(Math.random()*.5)+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3400);
+  }
+}
+
+// Teclado: Escape cierra el diálogo
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDialog();});
+
+/* Iconos de bloque (para la insignia de la intro) */
+const BLOCK_ICON={
+  b1:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  b2:'<path d="M4 4h16M4 12h16M10 20h10"/><circle cx="6" cy="20" r="1.6"/>',
+  b3:'<path d="M7 17 17 7M7 7h10v10"/>',
+  b4:'<path d="M3 21 21 3M5 21h4v-6H5zM13 21h6v-9h-6z"/>',
+  b5:'<path d="M3 3v18h18"/><path d="M7 15c2.5-5 5-9 10-4v4"/>'
+};
+
+/* Arranque */
+$id('btnHint').onclick=showHint;
+
+if(state.seen){$id('guideCard').classList.add('hidden');}
+
+renderHome();
+</script>
+</body>
+</html>

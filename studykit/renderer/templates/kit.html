@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="{{ schema.title }} — kit de refuerzo Studykit.">
+<title>{{ schema.title }} — Studykit</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%23f59e0b'/%3E%3Cpath d='M8 22V10M8 22h16' stroke='%23111' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0b1220;--panel:#152237;--panel2:#1e2f4d;--text:#eef2ff;--muted:#a9b8d6;--line:#2b3f63;
+  --ok:#34d399;--bad:#fb7185;--accent:#f59e0b;--accent-ink:#111;--paper:#dfe6f2;--ink:#1c2333;
+  --ease:cubic-bezier(.22,.8,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Nunito,Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;line-height:1.5}
+button,input{font:inherit}
+.hidden{display:none!important}
+:focus-visible{outline:3px solid #7dd3fc;outline-offset:2px}
+.kit-bar{position:sticky;top:0;z-index:80;background:rgba(11,18,32,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:8px 12px}
+.kit-row{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.kit-brand{display:flex;align-items:center;gap:10px;background:none;border:none;color:var(--text);cursor:pointer;text-align:left;padding:4px 6px;border-radius:12px}
+.kit-logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#fb923c);color:#111}
+.kit-brand h1{font-size:1.02rem;line-height:1.15}.kit-brand small{display:block;font-size:.7rem;color:var(--muted)}
+.kit-nav{display:none;margin-left:auto;gap:6px}
+.kit-nav button,.kit-tabs button{border:1px solid var(--line);background:var(--panel2);color:var(--text);font-weight:800;padding:8px 14px;border-radius:999px;cursor:pointer}
+.kit-nav button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.kit-tabs{position:fixed;left:0;right:0;bottom:0;z-index:90;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:rgba(15,23,42,.96);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+.kit-tabs button{border:none;background:transparent;color:var(--muted);font-size:.68rem;min-height:52px;border-radius:12px;display:flex;flex-direction:column;align-items:center}
+.kit-tabs button.on{color:#fff;background:rgba(245,158,11,.16)}
+.app-view{display:none} .app-view.activa{display:block}
+body{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+.hero{max-width:980px;margin:0 auto;padding:22px 14px 10px}
+.hero-card{background:linear-gradient(135deg,rgba(99,102,241,.22),var(--panel));border:1px solid #818cf8;border-radius:22px;padding:22px 20px}
+.kicker{font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#c4b5fd}
+.hero-card h2{font-size:clamp(1.4rem,4vw,2rem);margin:6px 0 8px}
+.hero-card p{color:var(--muted)}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.hero-pills span{background:rgba(15,23,42,.55);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.78rem;font-weight:700}
+.hero-pills b{color:var(--accent)}
+.kit-grid{max-width:980px;margin:0 auto;padding:8px 14px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.kit-card{text-align:left;cursor:pointer;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;min-height:180px;display:flex;flex-direction:column;gap:8px}
+.kit-card:hover{transform:translateY(-3px)}
+.kit-card .go{font-weight:800;color:var(--accent);margin-top:auto}
+.blocks-row{max-width:980px;margin:0 auto 24px;padding:0 14px;display:flex;gap:8px;flex-wrap:wrap}
+.blocks-row a{text-decoration:none;color:#fff;font-weight:800;font-size:.8rem;padding:10px 12px;border-radius:12px}
+.bb{background:#334155}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin:16px auto;max-width:980px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.block{text-align:left;background:#0f172a;border:1px solid var(--line);border-radius:16px;padding:16px;color:var(--text);cursor:pointer}
+.block h3{margin:6px 0}
+.muted{color:var(--muted)}
+.btn{border:none;border-radius:999px;padding:10px 16px;font-weight:800;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+.opts{display:grid;gap:8px;margin:12px 0}
+.opts button{text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.opts button.ok{border-color:var(--ok);background:rgba(52,211,153,.15)}
+.opts button.bad{border-color:var(--bad);background:rgba(251,113,133,.14)}
+#numAns{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#0f172a;color:var(--text)}
+.hintbox,.explain{margin-top:10px;padding:10px 12px;border-radius:12px;background:#0f172a;border:1px solid var(--line);font-size:.92rem}
+.explain.ok{border-color:var(--ok)}.explain.bad{border-color:var(--bad)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.stat{background:var(--panel2);border:1px solid var(--line);padding:5px 12px;border-radius:999px;font-size:.84rem;font-weight:700}
+.stat b{color:var(--accent)}
+.bar{height:8px;background:#0f172a;border-radius:999px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:0;background:var(--accent)}
+.sheet{max-width:210mm;margin:14px auto 40px;background:#fff;color:var(--ink);padding:16px;border-radius:12px}
+.sheet h2{display:flex;align-items:center;gap:8px;margin:16px 0 8px}
+.sheet .num{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:#1d4ed8;color:#fff;font-size:.85rem}
+.sheet table{width:100%;border-collapse:collapse;font-size:.9rem;margin-bottom:10px}
+.sheet th,.sheet td{border:1px solid #d5dce8;padding:6px 8px;text-align:left}
+.sheet th{background:#f4f6fb}
+.eq{font-weight:800;background:#f1f4fa;padding:.05em .32em;border-radius:4px}
+body.sheet-mode{background:var(--paper);color:var(--ink)}
+#view-expres.recitando .eq{background:#1c2333;color:#1c2333;user-select:none}
+#view-expres.recitando .eq:active{background:#eef1f7;color:inherit}
+.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(16px);background:#111827;color:#fff;padding:10px 14px;border-radius:12px;opacity:0;transition:.2s;z-index:200}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.kit-foot{max-width:980px;margin:28px auto 12px;padding:16px;color:var(--muted);font-size:.78rem;text-align:center}
+@media (min-width:840px){body{padding-bottom:12px}.kit-nav{display:flex}.kit-tabs{display:none}}
+@media print{
+  .kit-bar,.kit-tabs,.kit-foot,#view-inicio,#view-practica,.toast{display:none!important}
+  body{background:#fff;padding:0}
+  .app-view{display:none!important}
+  body[data-vista="formulas"] #view-formulas,body[data-vista="expres"] #view-expres{display:block!important}
+}
+</style>
+</head>
+<body data-vista="inicio">
+<header class="kit-bar">
+  <div class="kit-row">
+    <button class="kit-brand" type="button" onclick="irA('inicio')">
+      <span class="kit-logo" aria-hidden="true">Σ</span>
+      <span><h1>{{ schema.title }} <small>{{ schema.kicker }}</small></h1></span>
+    </button>
+    <nav class="kit-nav" aria-label="Secciones">
+      <button type="button" data-vista="inicio" onclick="irA('inicio')">Inicio</button>
+      <button type="button" data-vista="practica" onclick="irA('practica')">Practicar</button>
+      <button type="button" data-vista="formulas" onclick="irA('formulas')">Fórmulas</button>
+      <button type="button" data-vista="expres" onclick="irA('expres')">Exprés</button>
+    </nav>
+    <div class="stats" id="kitStats">
+      <span class="stat">Pts <b id="statPts">0</b></span>
+      <span class="stat">Racha <b id="statStreak">0</b></span>
+      <span class="stat"><b id="statHit">0</b>/<b id="statTot">0</b></span>
+    </div>
+  </div>
+</header>
+
+<section id="view-inicio" class="app-view activa">
+  <div class="hero">
+    <div class="hero-card">
+      <div class="kicker">{{ schema.kicker }}</div>
+      <h2>{{ schema.title }}</h2>
+      <p>{{ schema.subtitle or "Practica, consulta las fórmulas y recita la hoja exprés. Funciona sin instalar nada." }}</p>
+      <div class="hero-pills">
+        <span>Puntos <b id="homePts">0</b></span>
+        <span>Aciertos <b id="homeHit">0/0</b></span>
+        <span>{{ schema.blocks|length }} bloques · 100 pts</span>
+      </div>
+    </div>
+  </div>
+  <div class="kit-grid">
+    <button type="button" class="kit-card" onclick="irA('practica')"><h3>Practicar</h3><p>Retos por bloque o un simulacro mezclado. Respuesta al instante y pistas.</p><span class="go">Empezar →</span></button>
+    <button type="button" class="kit-card" onclick="irA('formulas')"><h3>Fórmulas</h3><p>Tablas y notas de cada bloque. También se puede imprimir.</p><span class="go">Abrir ficha →</span></button>
+    <button type="button" class="kit-card" onclick="irA('expres')"><h3>Hoja exprés</h3><p>Activa el modo recitar, tápate la respuesta y dilas en voz alta.</p><span class="go">Recitar →</span></button>
+  </div>
+  <div class="blocks-row">
+    {% for b in schema.blocks %}
+    <a class="bb" href="#f-{{ b.id }}" onclick="irA('formulas','f-{{ b.id }}');return false;">{{ loop.index }} {{ b.name }}</a>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="view-practica" class="app-view">
+  <div class="card" id="pracHome">
+    <h2>Elige un bloque</h2>
+    <p class="muted">{{ kit.session_len }} ejercicios aleatorios, o un simulacro de {{ kit.full_len }} preguntas.</p>
+    <p style="margin:12px 0"><button class="btn" type="button" id="btnFull">Simulacro /100</button></p>
+    <div class="grid" id="blocksGrid"></div>
+  </div>
+  <div class="card hidden" id="pracIntro">
+    <p class="kicker" id="introEyebrow">Bloque</p>
+    <h2 id="introTitle"></h2>
+    <p class="muted" id="introPts"></p>
+    <ul id="introTopics" class="muted"></ul>
+    <p style="margin-top:14px">
+      <button class="btn" type="button" id="btnStart">Empezar</button>
+      <button class="btn ghost" type="button" onclick="showPrac('home')">Volver</button>
+    </p>
+  </div>
+  <div class="card hidden" id="pracGame">
+    <p class="kicker" id="gameTag">Pregunta</p>
+    <div class="bar"><i id="progFill"></i></div>
+    <h3 id="qPrompt" style="margin:14px 0"></h3>
+    <div id="qMc" class="opts"></div>
+    <div id="qNum" class="hidden">
+      <input id="numAns" type="text" inputmode="decimal" aria-label="Respuesta numérica">
+      <p style="margin-top:10px"><button class="btn" type="button" id="btnCheck">Comprobar</button></p>
+    </div>
+    <p><button class="btn ghost" type="button" id="btnHint">Pista</button></p>
+    <div id="hintbox" class="hintbox hidden"></div>
+    <div id="explain" class="explain hidden"></div>
+    <p style="margin-top:12px"><button class="btn hidden" type="button" id="btnNext">Siguiente</button></p>
+  </div>
+  <div class="card hidden" id="pracResult">
+    <h2 id="resTitle">Resultado</h2>
+    <p class="muted" id="resSub"></p>
+    <p style="margin-top:14px">
+      <button class="btn" type="button" onclick="showPrac('home')">Otra ronda</button>
+      <button class="btn ghost" type="button" onclick="irA('formulas')">Ver fórmulas</button>
+    </p>
+  </div>
+</section>
+
+<section id="view-formulas" class="app-view">
+  <div class="sheet">
+    <p class="kicker">{{ schema.kicker }}</p>
+    <h1>{{ schema.title }} — Fórmulas</h1>
+    {% for b in schema.blocks %}
+    <article id="f-{{ b.id }}">
+      <h2><span class="num">{{ loop.index }}</span> {{ b.name }} <small class="muted">/{{ b.weight }}</small></h2>
+      <p class="muted">{{ b.topics | join(" · ") }}</p>
+      {% if b.formulas %}
+      <table>
+        <thead><tr><th>Tema</th><th>Fórmula</th><th>Nota</th></tr></thead>
+        <tbody>
+        {% for f in b.formulas %}
+          <tr><td>{{ f.label }}</td><td><span class="eq">{{ f.eq }}</span></td><td>{{ f.note }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </article>
+    {% endfor %}
+    <p><button class="btn" type="button" onclick="window.print()">Imprimir ficha</button></p>
+  </div>
+</section>
+
+<section id="view-expres" class="app-view">
+  <div class="sheet">
+    <p class="kicker">Hoja exprés</p>
+    <h1>{{ schema.title }}</h1>
+    <p><button class="btn ghost" type="button" id="btnRecitar" aria-pressed="false">Modo recitar</button>
+       <button class="btn" type="button" onclick="window.print()">Imprimir</button></p>
+    <table>
+      <thead><tr><th>#</th><th>Recita esto</th></tr></thead>
+      <tbody>
+      {% for line in schema.express %}
+        <tr>
+          <td>{{ line.n }}</td>
+          <td>{{ line.text }}{% if line.hide %} <span class="eq">{{ line.hide }}</span>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer class="kit-foot">
+  <p>Esta es una <b>herramienta de refuerzo</b>. No se garantizan resultados sin el compromiso del alumno.</p>
+  <p>Generada con Studykit · <a href="https://focampo.com" style="color:var(--accent)">Francisco Ocampo</a>.</p>
+</footer>
+<nav class="kit-tabs">
+  <button type="button" data-vista="inicio" onclick="irA('inicio')">Inicio</button>
+  <button type="button" data-vista="practica" onclick="irA('practica')">Practicar</button>
+  <button type="button" data-vista="formulas" onclick="irA('formulas')">Fórmulas</button>
+  <button type="button" data-vista="expres" onclick="irA('expres')">Exprés</button>
+</nav>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const KIT_DATA = {{ kit | tojson }};
+const STORAGE_KEY = KIT_DATA.storage_key;
+const SESSION_LEN = KIT_DATA.session_len || 8;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]= [a[j],a[i]];}return a;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function $id(id){return document.getElementById(id);}
+function toast(msg){const t=$id('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
+let state={pts:0,streak:0,hit:0,tot:0,block:{}};
+try{const s=localStorage.getItem(STORAGE_KEY);if(s) Object.assign(state,JSON.parse(s));}catch(e){}
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}}
+function renderStats(){
+  $id('statPts').textContent=state.pts;
+  $id('statStreak').textContent=state.streak;
+  $id('statHit').textContent=state.hit;
+  $id('statTot').textContent=state.tot;
+  $id('homePts').textContent=state.pts;
+  $id('homeHit').textContent=state.hit+'/'+state.tot;
+}
+const VISTAS=["inicio","practica","formulas","expres"];
+function aplicarVista(nombre, ancla){
+  if(!VISTAS.includes(nombre)) nombre="inicio";
+  document.body.dataset.vista=nombre;
+  document.body.classList.toggle("sheet-mode", nombre==="formulas"||nombre==="expres");
+  document.querySelectorAll(".app-view").forEach(el=>el.classList.toggle("activa", el.id==="view-"+nombre));
+  document.querySelectorAll("[data-vista]").forEach(el=>el.classList.toggle("on", el.getAttribute("data-vista")===nombre));
+  if(nombre==="practica") renderPracHome();
+  if(nombre==="inicio") renderStats();
+  if(ancla){const t=document.getElementById(ancla);if(t) setTimeout(()=>t.scrollIntoView({behavior:"smooth"}),40);}
+  else window.scrollTo({top:0});
+}
+function irA(nombre, ancla){aplicarVista(nombre, ancla);}
+window.irA=irA;
+
+function showPrac(which){
+  ["pracHome","pracIntro","pracGame","pracResult"].forEach(id=>$id(id).classList.toggle("hidden", id!=="prac"+which.charAt(0).toUpperCase()+which.slice(1) && !(which==="home"&&id==="pracHome") && !(which==="intro"&&id==="pracIntro") && !(which==="game"&&id==="pracGame") && !(which==="result"&&id==="pracResult")));
+}
+function renderPracHome(){
+  showPrac("home");
+  const grid=$id("blocksGrid");
+  grid.innerHTML=KIT_DATA.blocks.map((b,i)=>{
+    const st=state.block[b.id]||{ok:0,total:0};
+    const pct=st.total?Math.round(st.ok/st.total*100):0;
+    return `<button class="block" type="button" onclick="openBlock(${i})"><h3>${esc(b.name)}</h3><p class="muted">${esc((b.topics||[]).slice(0,2).join(" · "))}</p><span class="muted">/${b.weight} pts</span><div class="bar"><i style="width:${pct}%"></i></div></button>`;
+  }).join("");
+}
+let current={mode:"block",idx:0,list:[],pos:0,answered:false,ok:0};
+function openBlock(i){
+  const b=KIT_DATA.blocks[i];
+  current.idx=i; current.mode="block";
+  $id("introEyebrow").textContent="Bloque "+(i+1);
+  $id("introTitle").textContent=b.name;
+  $id("introPts").textContent="/"+b.weight+" · "+SESSION_LEN+" ejercicios aleatorios.";
+  $id("introTopics").innerHTML=(b.topics||[]).map(t=>"<li>"+esc(t)+"</li>").join("");
+  $id("btnStart").onclick=()=>startBlock(i);
+  showPrac("intro");
+}
+function startBlock(i){
+  const b=KIT_DATA.blocks[i];
+  const n=Math.min(SESSION_LEN, b.bank.length);
+  current.mode="block"; current.idx=i;
+  current.list=shuffle(b.bank).slice(0,n).map(q=>({q,blockId:b.id}));
+  current.pos=0; current.ok=0; current.answered=false;
+  showQuestion();
+}
+$id("btnFull").onclick=function(){
+  const list=[];
+  (KIT_DATA.full_plan||[]).forEach(p=>{
+    const b=KIT_DATA.blocks.find(x=>x.id===p.id);
+    shuffle(b.bank).slice(0,p.count).forEach(q=>list.push({q,blockId:p.id}));
+  });
+  current.mode="full"; current.list=shuffle(list); current.pos=0; current.ok=0; current.answered=false;
+  showQuestion();
+};
+function showQuestion(){
+  if(current.pos>=current.list.length){return showResult();}
+  const item=current.list[current.pos];
+  const q=item.q;
+  const b=KIT_DATA.blocks.find(x=>x.id===item.blockId);
+  current.answered=false;
+  showPrac("game");
+  $id("gameTag").textContent=(current.mode==="full"?"Simulacro · ":"")+(b?b.name:"");
+  $id("progFill").style.width=Math.round(current.pos/current.list.length*100)+"%";
+  $id("qPrompt").textContent=q.prompt;
+  $id("hintbox").classList.add("hidden"); $id("hintbox").textContent=q.hint||"";
+  $id("explain").classList.add("hidden");
+  $id("btnNext").classList.add("hidden");
+  $id("btnHint").onclick=()=>$id("hintbox").classList.remove("hidden");
+  const mc=$id("qMc"); const num=$id("qNum");
+  if(q.type==="mc"){
+    mc.classList.remove("hidden"); num.classList.add("hidden");
+    const order=q.opts.map((t,i)=>({t,i}));
+    shuffle(order);
+    mc.innerHTML="";
+    order.forEach(o=>{
+      const btn=document.createElement("button");
+      btn.type="button"; btn.innerHTML=esc(o.t);
+      btn.onclick=()=>gradeMc(btn,o.i,q,mc);
+      mc.appendChild(btn);
+    });
+  } else {
+    mc.classList.add("hidden"); num.classList.remove("hidden");
+    $id("numAns").value=""; $id("numAns").focus();
+    $id("btnCheck").onclick=()=>gradeNum(q);
+  }
+}
+function mark(ok,q){
+  if(current.answered) return;
+  current.answered=true;
+  state.tot+=1; if(ok){state.hit+=1;state.streak+=1;state.pts+=5;current.ok+=1;} else {state.streak=0;}
+  const bid=current.list[current.pos].blockId;
+  state.block[bid]=state.block[bid]||{ok:0,total:0};
+  state.block[bid].total+=1; if(ok) state.block[bid].ok+=1;
+  save(); renderStats();
+  const box=$id("explain");
+  box.className="explain "+(ok?"ok":"bad");
+  box.innerHTML=(ok?"Correcto. ":"Casi. ")+(q.explain||"");
+  box.classList.remove("hidden");
+  $id("btnNext").classList.remove("hidden");
+  $id("btnNext").onclick=()=>{current.pos+=1;showQuestion();};
+  if(ok) toast("+"+5+" pts");
+}
+function gradeMc(btn,idx,q,mc){
+  if(current.answered) return;
+  const ok=idx===q.correct;
+  btn.classList.add(ok?"ok":"bad");
+  [...mc.querySelectorAll("button")].forEach(el=>el.disabled=true);
+  mark(ok,q);
+}
+function gradeNum(q){
+  const raw=String($id("numAns").value).replace(",",".").trim();
+  const n=Number(raw);
+  const tol=q.tol==null?0.01:q.tol;
+  const ok=Number.isFinite(n) && Math.abs(n-q.answer)<=tol;
+  mark(ok,q);
+}
+function showResult(){
+  showPrac("result");
+  const n=current.list.length;
+  $id("resTitle").textContent=current.mode==="full"?"Simulacro":"Práctica";
+  $id("resSub").textContent="Acertaste "+current.ok+" de "+n+(current.mode==="full"?" · nota "+(current.ok*(KIT_DATA.points_per_item||5))+" / 100":"");
+}
+$id("btnRecitar").addEventListener("click",function(){
+  const on=$id("view-expres").classList.toggle("recitando");
+  this.textContent=on?"Dejar de recitar":"Modo recitar";
+  this.setAttribute("aria-pressed", on?"true":"false");
+});
+renderStats();
+renderPracHome();
+(function(){
+  const h=(location.hash||"#inicio").replace(/^#/,"");
+  if(h.startsWith("f-")) aplicarVista("formulas", h);
+  else if(VISTAS.includes(h)) aplicarVista(h);
+})();
+</script>
+</body>
+</html>

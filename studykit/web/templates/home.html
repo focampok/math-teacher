@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Studykit — Subir temario</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+  <div class="shell">
+    {% set current_step = 1 %}
+    {% include "_chrome.html" %}
+    <main id="main">
+      {% if error %}
+      <p class="banner bad" role="alert"><strong>No se pudo subir</strong>{{ error }}</p>
+      {% endif %}
+      {% if notice %}
+      <p class="banner ok" role="status"><strong>Listo</strong>{{ notice }}</p>
+      {% endif %}
+
+      <section class="card">
+        <h1>Sube el temario</h1>
+        <p class="lead">Acepta Markdown, texto o un JSON de Studykit. Después verás el avance: generar → revisar → publicar.</p>
+        <form action="/ui/upload" method="post" enctype="multipart/form-data" data-remember-token>
+          <label class="field" for="token">Token de publicación
+            <span class="pw-row">
+              <input id="token" name="token" type="password" required autocomplete="current-password" value="{{ token or '' }}">
+              <button type="button" class="ghost" data-toggle-pw="token">Mostrar</button>
+            </span>
+            <span class="hint">El mismo valor de UPLOAD_TOKEN. En local suele ser change-me.</span>
+            {% if field_error == 'token' %}<span class="error-text" role="alert">El token no coincide.</span>{% endif %}
+          </label>
+          <label class="field" for="file">Archivo
+            <span class="file-box" data-file-box>
+              <input id="file" name="file" type="file" accept=".md,.txt,.json,text/markdown,text/plain,application/json" required data-file-input>
+              <span data-file-label>Elige un .md, .txt o .json</span>
+            </span>
+            <span class="hint">JSON = preguntas exactas. MD/TXT sin API key genera un kit de demostración.</span>
+            {% if field_error == 'file' %}<span class="error-text" role="alert">{{ error }}</span>{% endif %}
+          </label>
+          <div class="actions">
+            <button type="submit" data-busy="Subiendo…">Subir y generar</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Kits de ejemplo</h2>
+        <p class="lead">Ábrelos sin subir nada. Así ves el resultado final.</p>
+        <p class="examples">
+          <a href="/k/matematica-iv">Matemática IV original</a>
+          <a href="/k/matematica-iv/generated">Mismo temario, renderer</a>
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Tus kits</h2>
+        {% if kits %}
+        <ul class="kits">
+          {% for kit in kits %}
+          {% set st = statuses[kit.status] %}
+          <li>
+            <a class="title" href="/kits/{{ kit.id }}/ui">{{ kit.title }}</a>
+            <span class="chip {{ st.tone }}">{{ st.label }}</span>
+            <span class="meta">{{ kit.original_filename }}{% if kit.slug %} · /k/{{ kit.slug }}{% endif %}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="lead">Todavía no has subido ninguno. El ejemplo de Matemática IV está arriba.</p>
+        {% endif %}
+      </section>
+    </main>
+    <footer class="foot">
+      MIT · Herramienta de refuerzo, no garantiza resultados. <a href="https://focampo.com">Francisco Ocampo</a>
+    </footer>
+  </div>
+  <script src="/static/pipeline.js"></script>
+</body>
+</html>

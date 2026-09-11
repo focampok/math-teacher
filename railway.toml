@@ -1,0 +1,14 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "sh -c 'alembic upgrade head && uvicorn studykit.api.main:app --host 0.0.0.0 --port $PORT'"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+
+# Add a second Railway service from this same repo with:
+#   start command:  sh -c 'alembic upgrade head && python -m studykit.worker'
+# Mount the same Volume at /data on both services.
+# Attach the Postgres plugin and set DATABASE_URL, UPLOAD_TOKEN, DATA_DIR=/data.
