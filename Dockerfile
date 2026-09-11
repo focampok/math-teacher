@@ -14,6 +14,8 @@ COPY examples ./examples
 
 RUN pip install --no-cache-dir .
 
+RUN mkdir -p /data /app/data
+
 ENV DATA_DIR=/data \
     PYTHONUNBUFFERED=1
 

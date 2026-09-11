@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import threading
 import time
 from pathlib import Path
 
@@ -60,18 +61,28 @@ def process_one() -> bool:
     return True
 
 
-def run() -> None:
+def run_loop(stop_event: threading.Event | None = None) -> None:
     settings = get_settings()
-    init_db()
     log.info("worker %s polling every %ss", settings.worker_id, settings.worker_poll_seconds)
     while True:
+        if stop_event is not None and stop_event.is_set():
+            break
         try:
             did = process_one()
         except Exception:
             log.exception("claim loop failed")
             did = False
-        if not did:
+        if did:
+            continue
+        if stop_event is None:
             time.sleep(settings.worker_poll_seconds)
+        elif stop_event.wait(settings.worker_poll_seconds):
+            break
+
+
+def run() -> None:
+    init_db()
+    run_loop()
 
 
 def render_example_schema(schema_path: Path) -> str:

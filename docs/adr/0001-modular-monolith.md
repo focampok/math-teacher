@@ -9,7 +9,7 @@ Studykit has one maintainer, an evolving domain, and ~0.1 QPS of generation jobs
 
 ## Decision
 
-Ship a single FastAPI process plus a worker process from the **same image**. Module boundaries (`api`, `catalog`, `compiler`, `renderer`, `storage`) live in one package.
+Ship a single FastAPI process from one image. The job worker runs in that process (a thread) so Railway can keep uploads and HTML on one volume. Module boundaries (`api`, `catalog`, `compiler`, `renderer`, `storage`) live in one package. `python -m studykit.worker` remains available for local isolation.
 
 ## Consequences
 

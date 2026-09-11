@@ -1,3 +1,4 @@
+import threading
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -9,7 +10,9 @@ from studykit import __version__
 from studykit.api.routes_health import router as health_router
 from studykit.api.routes_kits import router as kits_router
 from studykit.api.routes_pages import router as pages_router
+from studykit.config import get_settings
 from studykit.db import init_db
+from studykit.worker import run_loop
 
 WEB_STATIC = Path(__file__).resolve().parent.parent / "web" / "static"
 
@@ -17,7 +20,21 @@ WEB_STATIC = Path(__file__).resolve().parent.parent / "web" / "static"
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     init_db()
+    settings = get_settings()
+    stop = threading.Event()
+    thread: threading.Thread | None = None
+    if settings.run_embedded_worker:
+        thread = threading.Thread(
+            target=run_loop,
+            args=(stop,),
+            name="studykit-worker",
+            daemon=True,
+        )
+        thread.start()
     yield
+    if thread is not None:
+        stop.set()
+        thread.join(timeout=5)
 
 
 def create_app() -> FastAPI:

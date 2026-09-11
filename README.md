@@ -21,7 +21,7 @@ upload → Postgres job → compile → render → review → publish
                               ↘ failed (error on the job)
 ```
 
-Locally you can skip Docker: SQLite + the stub compiler. Railway uses Postgres, a volume at `/data`, and two processes from the same image (web + worker).
+Locally you can skip Docker: SQLite + the stub compiler. Railway uses Postgres, a volume at `/data`, and one web service (the queue worker runs inside that process).
 
 ## Requirements
 
@@ -40,6 +40,8 @@ pytest -q
 uvicorn studykit.api.main:app --reload
 ```
 
+The API also polls the job queue (no second process and no Redis). Set `RUN_EMBEDDED_WORKER=false` only if you start `python -m studykit.worker` yourself.
+
 - Health: <http://127.0.0.1:8000/health>
 - App: <http://127.0.0.1:8000/>
 - Original Matemática IV kit: <http://127.0.0.1:8000/k/matematica-iv>
@@ -51,7 +53,6 @@ Upload (default token `change-me`, or whatever you put in `.env`):
 curl -F file=@examples/matematica-iv/kit.schema.json \
   -H "X-Upload-Token: change-me" \
   http://127.0.0.1:8000/kits
-python -m studykit.worker   # another terminal; processes one queue
 ```
 
 `StubCompiler` accepts a raw `KitSchema` JSON file (or a fenced ` ```json ` block). Any other Markdown becomes a small demonstration kit so contributors can exercise the pipeline without paying for tokens.
@@ -62,22 +63,20 @@ python -m studykit.worker   # another terminal; processes one queue
 docker compose up --build
 ```
 
-Web is on port 8000. The worker shares the `/data` volume.
+Web is on port 8000. The embedded worker writes kits to the same `/data` volume.
 
 ## Deploy on Railway
 
 1. Create a project from this repo (Dockerfile builder).
-2. Add the **Postgres** plugin. Set `DATABASE_URL` (SQLAlchemy URL: `postgresql+psycopg://…`).
-3. Add a **Volume** mounted at `/data` on **both** services.
+2. Add the **Postgres** plugin **before** the first successful boot. The app rewrites `postgres://` / `postgresql://` to `postgresql+psycopg://` automatically.
+3. Add a **Volume** mounted at `/data` on the **web** service (Railway cannot share one volume across two services).
 4. Web service start command (already in `railway.toml`):
 
    `sh -c 'alembic upgrade head && uvicorn studykit.api.main:app --host 0.0.0.0 --port $PORT'`
 
-5. Duplicate the service as **worker**, same image, start command:
+   Do not add a second worker service. The web process drains the Postgres queue itself.
 
-   `sh -c 'alembic upgrade head && python -m studykit.worker'`
-
-6. Environment on both:
+5. Environment on web:
 
    | Variable | Notes |
    |---|---|

@@ -31,8 +31,10 @@ STEM sources: prefer extractive items. Do not invent numeric answers the notes d
 
 ## Running a worker locally
 
+`uvicorn` starts the queue worker in-process. A second terminal is optional:
+
 ```bash
-uvicorn studykit.api.main:app --reload
+RUN_EMBEDDED_WORKER=false uvicorn studykit.api.main:app --reload
 python -m studykit.worker
 ```
 

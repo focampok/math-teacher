@@ -8,6 +8,7 @@ os.environ.setdefault("DATABASE_URL", "sqlite:///./data/test.sqlite")
 os.environ.setdefault("UPLOAD_TOKEN", "test-token")
 os.environ.setdefault("DATA_DIR", "./data")
 os.environ.setdefault("LLM_API_KEY", "")
+os.environ.setdefault("RUN_EMBEDDED_WORKER", "false")
 
 from studykit.config import get_settings
 from studykit.db import init_db, reset_engine
@@ -21,6 +22,7 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{db_path}")
     monkeypatch.setenv("DATA_DIR", str(data_dir))
     monkeypatch.setenv("UPLOAD_TOKEN", "test-token")
+    monkeypatch.setenv("RUN_EMBEDDED_WORKER", "false")
     get_settings.cache_clear()
     reset_engine()
     init_db()

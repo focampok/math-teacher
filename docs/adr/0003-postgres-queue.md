@@ -13,5 +13,6 @@ Jobs live in the same Postgres database. The worker claims a row with `FOR UPDAT
 
 ## Consequences
 
-- Railway needs only the Postgres plugin plus a volume.
-- Revisit Redis if concurrent jobs exceed what one worker can drain.
+- Railway needs only the Postgres plugin plus a volume on the web service.
+- Redis is not used for the queue or for files. A Railway volume cannot be mounted on two services; the web process embeds the worker so `/data` stays local to that container.
+- Revisit Redis only if concurrent jobs exceed what one in-process worker can drain.
